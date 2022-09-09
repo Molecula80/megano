@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+    <div>
+        <h1>Online Store</h1>
+        <a href="#">Главная страница</a>
+        <a href="#">Каталог</a>
+    </div>
+    <div>
+        {% block content %}{% endblock %}
+    </div>
+    <div>
+        <footer>
+            <h3>Online Store</h3>
+        </footer>
+    </div>
+</body>
+</html>

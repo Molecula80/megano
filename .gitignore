@@ -8,7 +8,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-os_venv/Lib/site-packages/pip/_internal/operations/build/
+online_store/os_venv/Lib/site-packages/pip/_internal/operations/build/
 develop-eggs/
 dist/
 downloads/
@@ -183,5 +183,5 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-os_venv/
+online_store/os_venv/
 .idea/
