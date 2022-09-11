@@ -186,3 +186,5 @@ Temporary Items
 dd_venv/
 .idea/
 *.sqlite3
+Pipfile
+*.lock
