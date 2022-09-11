@@ -183,5 +183,6 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-online_store/os_venv/
+dd_venv/
 .idea/
+*.sqlite3
