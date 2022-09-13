@@ -6,16 +6,35 @@
 </head>
 <body>
     <div>
-        <h1>Online Store</h1>
-        <a href="#">Главная страница</a>
-        <a href="#">Каталог</a>
+        <span>Online Store</span>
+        <div>
+            <ul>
+                <li><a href="#">Главная страница</a></li>
+                <li><a href="#">Каталог</a></li>
+            </ul>
+        </div>
+        <div>
+            {% if request.user.is_authenticated %}
+                <span>Здравствуйте {{ request.user.first_name }}</span>
+                <ul>
+                    <li><a href="#">Личный кабинет</a></li>
+                    <li><a href="#">Выйти</a></li>
+                </ul>
+            {% else %}
+                <span>Вы не авторизованы на нашем сайте.</span>
+                <ul>
+                    <li><a href="#">Войти</a></li>
+                    <li><a href="#">Зарегистрироваться</a></li>
+                </ul>
+            {% endif %}
+        </div>
     </div>
     <div>
         {% block content %}{% endblock %}
     </div>
     <div>
         <footer>
-            <h3>Online Store</h3>
+            <span>Online Store</span>
         </footer>
     </div>
 </body>
