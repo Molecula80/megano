@@ -37,9 +37,15 @@
             <div class="row ControlPanel-rowSplit">
               <div class="row-block">
                 {% if request.user.is_authenticated %}
-                  <a class="ControlPanel-title" href="#">Личный кабинет</a>
+                  <p>
+                    <a class="ControlPanel-title" href="#">Личный кабинет</a> /
+                    <a class="ControlPanel-title" href="{% url 'app_users:logout' %}">Выйти</a>
+                  </p>
                 {% else %}
-                  <a class="ControlPanel-title" href="account.html">Login / Register</a>
+                  <p>
+                    <a class="ControlPanel-title" href="account.html">Войти</a> /
+                    <a class="ControlPanel-title" href="{% url 'app_users:register' %}">Зарегистрироваться</a>
+                  </p>
                 {% endif %}
               </div>
             </div>
