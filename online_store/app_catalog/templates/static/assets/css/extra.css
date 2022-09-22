@@ -3782,6 +3782,7 @@ a.Cart-title {
 .Profile-avatar_noimg .Profile-img {
   display: none;
 }
+
 .Profile-success {
   color: #3cb878;
   display: block;
@@ -4166,6 +4167,7 @@ a.Cart-title {
   font-size: 18px;
   line-height: 1.67em;
   width: 100%;
+  margin: 0, 20px, 0;
 }
 .Section-content .Section-header {
   margin-right: 0;

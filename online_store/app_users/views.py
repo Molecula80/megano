@@ -7,7 +7,7 @@ from django.views import View
 from django.views.generic import DetailView, ListView
 
 from .forms import RegisterForm
-from .models import Profile
+from .models import User
 
 
 class AccountDetailView(DetailView):
