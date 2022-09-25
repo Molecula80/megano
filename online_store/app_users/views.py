@@ -25,7 +25,6 @@ def register_view(request):
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(email=email, password=raw_password)
             login(request, user)
-            return HttpResponseRedirect(reverse('app_catalog:index'))
     else:
         form = RegisterForm()
     return render(request, 'app_users/register.html', {'form': form})
