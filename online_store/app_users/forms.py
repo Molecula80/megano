@@ -6,12 +6,25 @@ from .models import User
 
 class RegisterForm(UserCreationForm):
     """ Форма регистрации пользователя. """
-    full_name = forms.CharField(max_length=255, required=True)
-    telephone = forms.CharField(max_length=255, required=False)
-    email = forms.EmailField(required=True)
-    avatar = forms.ImageField(required=False)
-    password1 = forms.CharField(widget=forms.PasswordInput())
-    password2 = forms.CharField(widget=forms.PasswordInput())
+    full_name = forms.CharField(max_length=255, required=True,
+                                widget=forms.TextInput(attrs={"class": "form-input", "id": "name", "name": "name",
+                                                              "type": "text", "value": "", "data-validate": "require"}))
+    telephone = forms.CharField(max_length=255, required=False,
+                                widget=forms.TextInput(attrs={"class": "form-input", "id": "phone", "name": "phone",
+                                                              "type": "text", "value": ""}))
+    email = forms.EmailField(required=True,
+                             widget=forms.EmailInput(attrs={"class": "form-input", "id": "mail", "name": "mail",
+                                                            "type": "text", "value": "", "data-validate": "require"}))
+    avatar = forms.ImageField(required=False,
+                              widget=forms.FileInput(attrs={"class": "Profile-file form-input", "id": "avatar",
+                                                            "name": "avatar", "type": "file",
+                                                            "data-validate": "onlyImgAvatar"}))
+    password1 = forms.CharField(widget=forms.PasswordInput(attrs={"class": "form-input", "id": "password",
+                                                                  "name": "password", "type": "password",
+                                                                  "placeholder": ""}))
+    password2 = forms.CharField(widget=forms.PasswordInput(attrs={"class": "form-input", "id": "passwordReply",
+                                                                  "name": "passwordReply", "type": "password",
+                                                                  "placeholder": "Введите пароль повторно"}))
 
     class Meta:
         model = User
