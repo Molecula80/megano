@@ -1,70 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    {% extends "base.html" %}
+    {% extends "middle_base.html" %}
     <meta charset="UTF-8">
     <title>{% block title %}Регистрация{% endblock %}</title>
 </head>
 <body>
-  {% block content %}
-    <div class="Section-content">
-      <div class="Profile">
-        <form class="form Profile-form" action="#" method="post">
-          {% csrf_token %}
-          <div class="row">
-            <div class="row-block">
-              <div class="form-group">
-                <label class="form-label" for="avatar">Аватар
-                </label>
-                <div class="Profile-avatar Profile-avatar_noimg">
-                  <div class="Profile-img"><img src="assets/img/#.png" alt="#.png"/>
+  {% block mb_content %}
+    <div class="Section">
+      <div class="wrap">
+        <div class="Section-content">
+          <div class="Profile">
+            <form class="form Profile-form" action="#" method="post">
+              {% csrf_token %}
+              <div class="row">
+                <div class="row-block">
+                  <div class="form-group">
+                    <label class="form-label" for="avatar">Аватар
+                    </label>
+                    <div class="Profile-avatar Profile-avatar_noimg">
+                      <div class="Profile-img"><img src="assets/img/#.png" alt="#.png"/>
+                      </div>
+                      <label class="Profile-fileLabel" for="avatar">Выберите аватар
+                      </label>
+                      {{ form.avatar }}
+                    </div>
                   </div>
-                  <label class="Profile-fileLabel" for="avatar">Выберите аватар
-                  </label>
-                  {{ form.avatar }}
+                  <div class="form-group">
+                    <label class="form-label" for="name">ФИО
+                    </label>
+                    {{ form.full_name }}
+                  </div>
+                </div>
+                <div class="row-block">
+                  <div class="form-group">
+                    <label class="form-label" for="phone">Телефон
+                    </label>
+                    {{ form.telephone }}
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="mail">E-mail
+                    </label>
+                    {{ form.email }}
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="password">Пароль
+                    </label>
+                    {{ form.password1 }}
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="passwordReply">Подтверждение пароля
+                    </label>
+                    {{ form.password2 }}
+                  </div>
+                  <div class="form-group">
+                    <div class="Profile-btn">
+                      <button class="btn btn_success" type="submit">Сохранить
+                      </button>
+                    </div>
+                    {% if request.method == 'POST' and form.is_valid %}
+                      <div class="Profile-success">
+                        Профиль успешно создан
+                      </div>
+                    {% endif %}
+                  </div>
                 </div>
               </div>
-              <div class="form-group">
-                <label class="form-label" for="name">ФИО
-                </label>
-                {{ form.full_name }}
-              </div>
-            </div>
-            <div class="row-block">
-              <div class="form-group">
-                <label class="form-label" for="phone">Телефон
-                </label>
-                {{ form.telephone }}
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="mail">E-mail
-                </label>
-                {{ form.email }}
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="password">Пароль
-                </label>
-                {{ form.password1 }}
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="passwordReply">Подтверждение пароля
-                </label>
-                {{ form.password2 }}
-              </div>
-              <div class="form-group">
-                <div class="Profile-btn">
-                  <button class="btn btn_success" type="submit">Сохранить
-                  </button>
-                </div>
-                {% if request.method == 'POST' and form.is_valid %}
-                  <div class="Profile-success">Профиль успешно сохранен</div>
-                {% endif %}
-              </div>
-            </div>
+            </form>
           </div>
-        </form>
+        </div>
       </div>
     </div>
-  {% endblock %}
+ {% endblock %}
 </body>
 </html>

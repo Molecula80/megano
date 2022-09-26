@@ -6,13 +6,16 @@ from .models import User
 
 class RegisterForm(UserCreationForm):
     """ Форма регистрации пользователя. """
-    full_name = forms.CharField(max_length=255, required=True,
+    full_name = forms.CharField(max_length=255, required=True, error_messages={'required': 'Заполните это поле!'},
                                 widget=forms.TextInput(attrs={"class": "form-input", "id": "name", "name": "name",
                                                               "type": "text", "value": "", "data-validate": "require"}))
     telephone = forms.CharField(max_length=255, required=False,
+                                error_messages={'unique': 'Пользователь с таким телефоном уже есть!'},
                                 widget=forms.TextInput(attrs={"class": "form-input", "id": "phone", "name": "phone",
                                                               "type": "text", "value": ""}))
-    email = forms.EmailField(required=True,
+    email = forms.EmailField(required=True, error_messages={'required': 'Заполните это поле!',
+                                                            'invalid': 'Недопустимое значение!',
+                                                            'unique': 'Пользователь с таким email уже есть!'},
                              widget=forms.EmailInput(attrs={"class": "form-input", "id": "mail", "name": "mail",
                                                             "type": "text", "value": "", "data-validate": "require"}))
     avatar = forms.ImageField(required=False,

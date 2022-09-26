@@ -17,6 +17,7 @@ class AccountDetailView(DetailView):
 
 def register_view(request):
     """ Страница регистрации. """
+    page_title = 'регистрация'
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
@@ -27,7 +28,7 @@ def register_view(request):
             login(request, user)
     else:
         form = RegisterForm()
-    return render(request, 'app_users/register.html', {'form': form})
+    return render(request, 'app_users/register.html', {'form': form, 'page_title': page_title})
 
 
 def login_view(request):
