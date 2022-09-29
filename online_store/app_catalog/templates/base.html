@@ -52,7 +52,7 @@
                   </p>
                 {% else %}
                   <p>
-                    <a class="ControlPanel-title" href="account.html">Войти</a> /
+                    <a class="ControlPanel-title" href="{% url 'app_users:login' %}">Войти</a> /
                     <a class="ControlPanel-title" href="{% url 'app_users:register' %}">Зарегистрироваться</a>
                   </p>
                 {% endif %}
