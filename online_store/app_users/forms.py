@@ -6,9 +6,11 @@ from .models import User
 
 class AuthForm(forms.Form):
     email = forms.CharField(label='Имя пользователя',
+                            error_messages={'required': 'Это поле обязательно для заполнения.'},
                             widget=forms.EmailInput(attrs={"class": "form-input", "id": "mail", "name": "mail",
                                                            "type": "text", "value": "", "data-validate": "require"}))
     password = forms.CharField(label='Пароль',
+                               error_messages={'required': 'Это поле обязательно для заполнения.'},
                                widget=forms.PasswordInput(attrs={"class": "form-input", "id": "password",
                                                                  "name": "password", "type": "password",
                                                                  "placeholder": ""}))

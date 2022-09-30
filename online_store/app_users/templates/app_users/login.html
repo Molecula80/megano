@@ -8,7 +8,8 @@
 <body>
   {% block mb_content %}
     <div class="Section">
-      <div class="wrap">
+      <div style="padding: 0 600px; max-width: 1630px; min-width: 320px; width: 100%; box-sizing: border-box;
+      margin: 0 auto; position: relative;">
         <div class="Section-content">
           <div class="Profile">
             <form class="form Profile-form" action="#" method="post">
@@ -36,9 +37,9 @@
                       <button class="btn btn_success" type="submit">Войти
                       </button>
                     </div>
-                    {% if request.method == 'POST' and form.is_valid %}
-                      <div class="Profile-success">
-                        Профиль успешно создан
+                    {% if error %}
+                      <div style="color: #f26d7d; display: block; margin-top: 20px; text-align: right;">
+                        {{ error }}
                       </div>
                     {% endif %}
                   </div>
