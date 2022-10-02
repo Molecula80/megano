@@ -132,3 +132,5 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'app_catalog', 'templates', 'static'),)
 
 AUTH_USER_MODEL = 'app_users.User'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
