@@ -4,8 +4,6 @@ from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetCom
 
 from .views import register_view, UserLogoutView, login_view
 
-app_name = 'app_users'
-
 urlpatterns = [
     path('register/', register_view, name='register'),
     path('login/', login_view, name='login'),

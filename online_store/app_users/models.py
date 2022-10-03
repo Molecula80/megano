@@ -6,7 +6,7 @@ from .managers import UserManager
 
 class User(AbstractBaseUser, PermissionsMixin):
     full_name = models.CharField(max_length=255, verbose_name='ФИО')
-    telephone = models.CharField(max_length=255, blank=True, null=True, unique=True, verbose_name='телефон')
+    telephone = models.CharField(max_length=255, blank=True, null=True, verbose_name='телефон')
     email = models.EmailField(unique=True)
     avatar = models.ImageField(upload_to='images/avatars/', blank=True, null=True, verbose_name='аватар')
     is_staff = models.BooleanField(default=False, verbose_name='персонал')
@@ -24,3 +24,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+    def save(self, *args, **kwargs):
+        return super().save(*args, **kwargs)

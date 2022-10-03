@@ -48,12 +48,12 @@
                 {% if request.user.is_authenticated %}
                   <p>
                     <a class="ControlPanel-title" href="#">Личный кабинет</a> /
-                    <a class="ControlPanel-title" href="{% url 'app_users:logout' %}">Выйти</a>
+                    <a class="ControlPanel-title" href="{% url 'logout' %}">Выйти</a>
                   </p>
                 {% else %}
                   <p>
-                    <a class="ControlPanel-title" href="{% url 'app_users:login' %}">Войти</a> /
-                    <a class="ControlPanel-title" href="{% url 'app_users:register' %}">Зарегистрироваться</a>
+                    <a class="ControlPanel-title" href="{% url 'login' %}">Войти</a> /
+                    <a class="ControlPanel-title" href="{% url 'register' %}">Зарегистрироваться</a>
                   </p>
                 {% endif %}
               </div>
