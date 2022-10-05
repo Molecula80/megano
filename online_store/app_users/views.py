@@ -1,5 +1,5 @@
 from django.contrib.auth import authenticate, login
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth.views import LogoutView
 from django.urls import reverse
@@ -7,6 +7,7 @@ from django.views import View
 from django.views.generic import DetailView, ListView
 
 from .forms import RegisterForm, AuthForm
+from .models import User
 
 
 class AccountDetailView(DetailView):
@@ -21,12 +22,17 @@ def register_view(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            form.save()
-            email = form.cleaned_data.get('email')
-            raw_password = form.cleaned_data.get('password1')
-            user = authenticate(email=email, password=raw_password)
-            login(request, user)
-            return HttpResponseRedirect(reverse('app_catalog:index'))
+            form.save(commit=False)
+            telephone = form.cleaned_data.get('telephone')
+            if telephone and User.objects.filter(telephone=telephone).exists():
+                form.add_error('telephone', 'Пользователь с таким номером телефона уже есть.')
+            else:
+                form.save()
+                email = form.cleaned_data.get('email')
+                raw_password = form.cleaned_data.get('password1')
+                user = authenticate(email=email, password=raw_password)
+                login(request, user)
+                return HttpResponseRedirect(reverse('app_catalog:index'))
     else:
         form = RegisterForm()
     return render(request, 'app_users/register.html', {'form': form, 'page_title': page_title})
