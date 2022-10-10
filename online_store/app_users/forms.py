@@ -23,7 +23,6 @@ class RegisterForm(UserCreationForm):
                                 widget=forms.TextInput(attrs={"class": "form-input", "id": "name", "name": "name",
                                                               "type": "text", "value": "", "data-validate": "require"}))
     telephone = forms.CharField(max_length=255, required=False,
-                                error_messages={'unique': 'Пользователь с таким номером телефона уже есть.'},
                                 widget=forms.TextInput(attrs={"class": "form-input", "id": "phone", "name": "phone",
                                                               "type": "text", "value": ""}))
     email = forms.EmailField(required=True, error_messages={'required': 'Это поле обязательно для заполнения.',

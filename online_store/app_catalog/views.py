@@ -1,6 +1,12 @@
 # from django.shortcuts import render
 from django.views.generic import TemplateView, ListView, DetailView
 
+from rest_framework.generics import GenericAPIView
+from rest_framework.mixins import ListModelMixin, CreateModelMixin
+
+from .models import Category
+from .serializers import CategorySerializer
+
 
 class IndexView(TemplateView):
     """ Главная страница. """
@@ -24,3 +30,14 @@ class ProductDetailView(DetailView):
 
     def post(self, request, slug):
         pass
+
+
+class CategoryList(ListModelMixin, CreateModelMixin, GenericAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+    def get(self, request):
+        return self.list(request)
+
+    def post(self, request, format=None):
+        return self.create(request)

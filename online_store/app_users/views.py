@@ -6,8 +6,12 @@ from django.urls import reverse
 from django.views import View
 from django.views.generic import DetailView, ListView
 
+from rest_framework.generics import GenericAPIView
+from rest_framework.mixins import ListModelMixin, CreateModelMixin
+
 from .forms import RegisterForm, AuthForm
 from .models import User
+from .serializers import UserSerializer
 
 
 class AccountDetailView(DetailView):
@@ -93,3 +97,13 @@ class OrderDetailView(DetailView):
     def post(self, request, profile_id, order_id):
         pass
 
+
+class UserList(ListModelMixin, CreateModelMixin, GenericAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    def get(self, request):
+        return self.list(request)
+
+    def post(self, request, format=None):
+        return self.create(request)

@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'app_catalog',
     'app_users',
     'app_cart',
@@ -134,3 +135,9 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, 'app_catalog', 'templates', 'static')
 AUTH_USER_MODEL = 'app_users.User'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10,
+}
