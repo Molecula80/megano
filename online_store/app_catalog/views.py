@@ -2,10 +2,12 @@
 from django.views.generic import TemplateView, ListView, DetailView
 
 from rest_framework.generics import GenericAPIView
-from rest_framework.mixins import ListModelMixin, CreateModelMixin
+from rest_framework.mixins import ListModelMixin, CreateModelMixin, RetrieveModelMixin, UpdateModelMixin, \
+    DestroyModelMixin
 
 from .models import Category
 from .serializers import CategorySerializer
+from .filters import CategoryFilter
 
 
 class IndexView(TemplateView):
@@ -32,12 +34,29 @@ class ProductDetailView(DetailView):
         pass
 
 
-class CategoryList(ListModelMixin, CreateModelMixin, GenericAPIView):
+class CategoryListApi(ListModelMixin, CreateModelMixin, GenericAPIView):
+    """ Представление для получения списка категорий и создания новой категории. """
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    filterset_class = CategoryFilter
 
     def get(self, request):
         return self.list(request)
 
     def post(self, request, format=None):
         return self.create(request)
+
+
+class CategoryDetailApi(UpdateModelMixin, RetrieveModelMixin, DestroyModelMixin, GenericAPIView):
+    """ Представление для получения детальной информации о категории, а также ее редактирования и удаления. """
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)

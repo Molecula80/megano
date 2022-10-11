@@ -7,7 +7,8 @@ from django.views import View
 from django.views.generic import DetailView, ListView
 
 from rest_framework.generics import GenericAPIView
-from rest_framework.mixins import ListModelMixin, CreateModelMixin
+from rest_framework.mixins import ListModelMixin, CreateModelMixin, RetrieveModelMixin, UpdateModelMixin, \
+    DestroyModelMixin
 
 from .forms import RegisterForm, AuthForm
 from .models import User
@@ -98,12 +99,29 @@ class OrderDetailView(DetailView):
         pass
 
 
-class UserList(ListModelMixin, CreateModelMixin, GenericAPIView):
+class UserListApi(ListModelMixin, CreateModelMixin, GenericAPIView):
+    """ Представление для получения списка пользователей и создания нового пользователя. """
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    filterset_fields = ['is_superuser', 'full_name', 'email', 'is_staff', 'is_active']
 
     def get(self, request):
         return self.list(request)
 
     def post(self, request, format=None):
         return self.create(request)
+
+
+class UserDetailApi(UpdateModelMixin, RetrieveModelMixin, DestroyModelMixin, GenericAPIView):
+    """ Представление для получения детальной информации о пользователе, а также его редактирования и удаления. """
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
