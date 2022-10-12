@@ -2,6 +2,7 @@ from django.db import models
 
 
 class Category(models.Model):
+    """ Модель категории товаров. """
     parent = models.ForeignKey('Category', blank=True, null=True, on_delete=models.SET_NULL, related_name='children',
                                verbose_name='родитель')
     title = models.CharField(max_length=255, verbose_name='название')

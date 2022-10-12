@@ -1,4 +1,5 @@
 # from django.shortcuts import render
+from django.core.exceptions import PermissionDenied
 from django.views.generic import TemplateView, ListView, DetailView
 
 from rest_framework.generics import GenericAPIView
@@ -44,6 +45,8 @@ class CategoryListApi(ListModelMixin, CreateModelMixin, GenericAPIView):
         return self.list(request)
 
     def post(self, request, format=None):
+        if not request.user.has_perm('app_catalog.add_category'):
+            raise PermissionDenied()
         return self.create(request)
 
 
@@ -56,7 +59,11 @@ class CategoryDetailApi(UpdateModelMixin, RetrieveModelMixin, DestroyModelMixin,
         return self.retrieve(request, *args, **kwargs)
 
     def put(self, request, *args, **kwargs):
+        if not request.user.has_perm('app_catalog.change_category'):
+            raise PermissionDenied()
         return self.update(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
+        if not request.user.has_perm('app_catalog.delete_category'):
+            raise PermissionDenied()
         return self.destroy(request, *args, **kwargs)

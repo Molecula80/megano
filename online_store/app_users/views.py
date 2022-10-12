@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, login
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth.views import LogoutView
@@ -106,9 +107,13 @@ class UserListApi(ListModelMixin, CreateModelMixin, GenericAPIView):
     filterset_fields = ['is_superuser', 'full_name', 'email', 'is_staff', 'is_active']
 
     def get(self, request):
+        if not request.user.has_perm('app_users.view_user'):
+            raise PermissionDenied()
         return self.list(request)
 
     def post(self, request, format=None):
+        if not request.user.has_perm('app_users.add_user'):
+            raise PermissionDenied()
         return self.create(request)
 
 
@@ -118,10 +123,16 @@ class UserDetailApi(UpdateModelMixin, RetrieveModelMixin, DestroyModelMixin, Gen
     serializer_class = UserSerializer
 
     def get(self, request, *args, **kwargs):
+        if not request.user.has_perm('app_users.view_user'):
+            raise PermissionDenied()
         return self.retrieve(request, *args, **kwargs)
 
     def put(self, request, *args, **kwargs):
+        if not request.user.has_perm('app_users.change_user'):
+            raise PermissionDenied()
         return self.update(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
+        if not request.user.has_perm('app_users.delete_user'):
+            raise PermissionDenied()
         return self.destroy(request, *args, **kwargs)

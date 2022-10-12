@@ -5,6 +5,7 @@ from .managers import UserManager
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+    """ Модель пользователя. """
     full_name = models.CharField(max_length=255, verbose_name='ФИО')
     telephone = models.CharField(max_length=255, blank=True, null=True, verbose_name='телефон')
     email = models.EmailField(unique=True)
