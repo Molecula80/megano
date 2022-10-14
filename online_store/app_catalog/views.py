@@ -22,14 +22,24 @@ class IndexView(TemplateView):
 
 class ProductListView(ListView):
     """ Страница со списком товаров. """
+    template_name = 'app_catalog/catalog.html'
+    queryset = Category.objects.all()
+
     def get_context_data(self, **kwargs):
-        pass
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Каталог'
+        return context
 
 
 class ProductDetailView(DetailView):
     """ Детальная страница товара. """
+    template_name = 'app_catalog/product_detail.html'
+    queryset = Category.objects.all()
+
     def get_context_data(self, **kwargs):
-        pass
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Продукт'
+        return context
 
     def post(self, request, slug):
         pass

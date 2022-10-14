@@ -1,5 +1,5 @@
 class Cart(object):
-    def __init__(self):
+    def __init__(self, request):
         """ Инициализация объекта корзины. """
         pass
 
@@ -9,7 +9,7 @@ class Cart(object):
 
     def __len__(self):
         """ Возвращает общее количество товаров в корзине. """
-        pass
+        return 3
 
     def add(self, product):
         """ Добавление товара в корзину. """
@@ -21,7 +21,7 @@ class Cart(object):
 
     def get_total_price(self):
         """ Возвращает общую стоимость всех товаров вкорзине. """
-        pass
+        return 200.99
 
     def clear(self):
         """ Очистка корзины. """
