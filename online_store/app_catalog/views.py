@@ -1,5 +1,6 @@
 # from django.shortcuts import render
 from django.core.exceptions import PermissionDenied
+from django.http import HttpResponse
 from django.views.generic import TemplateView, ListView, DetailView
 
 from rest_framework.generics import GenericAPIView
@@ -7,6 +8,7 @@ from rest_framework.mixins import ListModelMixin, CreateModelMixin, RetrieveMode
     DestroyModelMixin
 
 from .models import Category
+from .forms import ReviewForm
 from .serializers import CategorySerializer
 from .filters import CategoryFilter
 
@@ -39,10 +41,14 @@ class ProductDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['page_title'] = 'Продукт'
+        context['form'] = ReviewForm()
+        context['reviews_count'] = 1
         return context
 
-    def post(self, request, slug):
-        pass
+    def post(self, request, pk):
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            return HttpResponse('Отзыв успешно добавлен.')
 
 
 class CategoryListApi(ListModelMixin, CreateModelMixin, GenericAPIView):
