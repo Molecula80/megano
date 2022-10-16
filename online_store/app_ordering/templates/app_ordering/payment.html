@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% extends "middle_base.html" %}
+    <meta charset="UTF-8">
+    <title>{% block title %}Оплата{% endblock %}</title>
+</head>
+<body>
+  {% block mb_content %}
+    <div class="Section">
+      <div class="wrap">
+        <form class="form Payment" action="#" method="post">
+          {% csrf_token %}
+          <div class="Payment-card">
+            <div class="form-group">
+              <label class="form-label">Номер карты
+              </label>
+              <input class="form-input Payment-bill" id="numero1" name="numero1" type="text" placeholder="9999 9999" data-mask="9999 9999" data-validate="require pay"/>
+            </div>
+          </div>
+          <div class="Payment-pay"><a class="btn btn_primary">Оплатить</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  {% endblock %}
+</body>
+</html>

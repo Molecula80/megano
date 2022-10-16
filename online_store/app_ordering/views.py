@@ -1,44 +1,34 @@
-# from django.shortcuts import render
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
+from django.urls import reverse
 from django.views import View
-from django.views.generic import TemplateView
+
+from .forms import OrderCreateForm, PaymentForm
 
 
-class UserParamsView(View):
+class OrderCreateView(View):
     """ Ввод параметров пользователя. """
     def get(self, request):
-        pass
+        form = OrderCreateForm()
+        return render(request, 'app_ordering/order_create.html', {'form': form, 'page_title': 'Оформление заказа'})
 
     def post(self, request):
-        pass
+        form = OrderCreateForm(request.POST)
+        if form.is_valid():
+            return HttpResponseRedirect(reverse('app_ordering:payment'))
 
 
-class DeliveryMethodView(View):
-    """ Выбор способа доставки. """
-    def get(self, request):
-        pass
-
-    def post(self, request):
-        pass
-
-
-class PaymentMethodView(View):
-    """ Выбор способа оплаты. """
-    def get(self, request):
-        pass
-
-    def post(self, request):
-        pass
-
-
-class OrderConfirmationView(TemplateView):
-    """ Подтверждение заказа. """
-    def get_context_data(self, **kwargs):
-        pass
-
-    def post(self):
-        pass
-
-
-def payment_process(request):
+class PaymentView(View):
     """ Оплата заказа. """
-    pass
+    def get(self, request):
+        form = PaymentForm()
+        return render(request, 'app_ordering/payment.html', {'form Payment': form, 'page_title': 'Оплата'})
+
+    def post(self, request):
+        form = PaymentForm(request.POST)
+        if form.is_valid():
+            return HttpResponseRedirect(reverse('app_ordering:progress_payment'))
+
+
+def progress_payment(request):
+    return render(request, 'app_ordering/progress_payment.html', {'page_title': 'Ожидание оплаты'})
