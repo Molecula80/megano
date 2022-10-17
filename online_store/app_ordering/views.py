@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.views import View
 
-from .forms import OrderCreateForm, PaymentForm
+from .forms import OrderCreateForm
 
 
 class OrderCreateView(View):
@@ -21,13 +21,10 @@ class OrderCreateView(View):
 class PaymentView(View):
     """ Оплата заказа. """
     def get(self, request):
-        form = PaymentForm()
-        return render(request, 'app_ordering/payment.html', {'form Payment': form, 'page_title': 'Оплата'})
+        return render(request, 'app_ordering/payment.html', {'page_title': 'Оплата'})
 
     def post(self, request):
-        form = PaymentForm(request.POST)
-        if form.is_valid():
-            return HttpResponseRedirect(reverse('app_ordering:progress_payment'))
+        return render(request, 'app_ordering/payment.html', {'page_title': 'Оплата'})
 
 
 def progress_payment(request):

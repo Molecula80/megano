@@ -18,7 +18,8 @@
               <input class="form-input Payment-bill" id="numero1" name="numero1" type="text" placeholder="9999 9999" data-mask="9999 9999" data-validate="require pay"/>
             </div>
           </div>
-          <div class="Payment-pay"><a class="btn btn_primary">Оплатить</a>
+          <div class="Payment-pay">
+            <a class="btn btn_primary" href="{% url 'app_ordering:progress_payment' %}">Оплатить</a>
           </div>
         </form>
       </div>
