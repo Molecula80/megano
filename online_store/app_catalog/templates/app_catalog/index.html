@@ -11,44 +11,25 @@
       <div class="Middle">
         <div class="Section">
           <div class="wrap">
-            <div class="BannersHome"><a class="BannersHomeBlock" href="#">
-              <div class="BannersHomeBlock-row">
-                <div class="BannersHomeBlock-block">
-                  <strong class="BannersHomeBlock-title">Video Cards
-                  </strong>
-                  <div class="BannersHomeBlock-content">from&#32;<span class="BannersHomeBlock-price">$199.00</span>
+            <div class="BannersHome">
+              {% for category in three_categories %}
+                <a class="BannersHomeBlock" href="#">
+                  <div class="BannersHomeBlock-row">
+                    <div class="BannersHomeBlock-block">
+                      <strong class="BannersHomeBlock-title">{{ category.title }}</strong>
+                      <div class="BannersHomeBlock-content">от&#32;<span class="BannersHomeBlock-price">$199.00</span>
+                      </div>
+                    </div>
+                    <div class="BannersHomeBlock-block">
+                      <div class="BannersHomeBlock-img">
+                        {% if category.icon %}
+                          <img src="{{ category.icon.url }}" alt="videoca.png"/>
+                        {% endif %}
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div class="BannersHomeBlock-block">
-                  <div class="BannersHomeBlock-img">
-                    <img src="{% static 'assets/img/content/home/videoca.png' %}" alt="videoca.png"/>
-                  </div>
-                </div>
-              </div></a><a class="BannersHomeBlock" href="#">
-              <div class="BannersHomeBlock-row">
-                <div class="BannersHomeBlock-block">
-                  <strong class="BannersHomeBlock-title">Head Phones
-                  </strong>
-                  <div class="BannersHomeBlock-content">from&#32;<span class="BannersHomeBlock-price">$210.00</span>
-                  </div>
-                </div>
-                <div class="BannersHomeBlock-block">
-                  <div class="BannersHomeBlock-img"><img src="{% static 'assets/img/content/home/videoca.png' %}" alt="videoca.png"/>
-                  </div>
-                </div>
-              </div></a><a class="BannersHomeBlock" href="#">
-              <div class="BannersHomeBlock-row">
-                <div class="BannersHomeBlock-block">
-                  <strong class="BannersHomeBlock-title">Bass Speakers
-                  </strong>
-                  <div class="BannersHomeBlock-content">from&#32;<span class="BannersHomeBlock-price">$159.00</span>
-                  </div>
-                </div>
-                <div class="BannersHomeBlock-block">
-                  <div class="BannersHomeBlock-img"><img src="{% static 'assets/img/content/home/videoca.png' %}" alt="videoca.png"/>
-                  </div>
-                </div>
-              </div></a>
+                </a>
+              {% endfor %}
             </div>
           </div>
         </div>
@@ -72,7 +53,9 @@
                       </div>
                       <div class="Card-category">Games / xbox
                       </div>
-                      <div class="Card-hover"><a class="Card-btn" href="{% url 'app_cart:cart_add'  %}"><img src="{% static 'assets/img/icons/card/cart.svg' %}" alt="cart.svg"/></a>
+                      <div class="Card-hover">
+                        <a class="Card-btn" href="{% url 'app_cart:cart_add'  %}">
+                          <img src="{% static 'assets/img/icons/card/cart.svg' %}" alt="cart.svg"/></a>
                       </div>
                     </div>
                   </div>

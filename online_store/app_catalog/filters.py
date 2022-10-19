@@ -1,5 +1,5 @@
 from django_filters import FilterSet
-from .models import Category
+from .models import Category, Product
 
 
 class CategoryFilter(FilterSet):
@@ -10,4 +10,21 @@ class CategoryFilter(FilterSet):
             'title': ['exact'],
             'sort_index': ['gt', 'gte', 'exact', 'lte', 'lt'],
             'active': ['exact'],
+        }
+
+
+class ProductFilter(FilterSet):
+    class Meta:
+        model = Product
+        fields = {
+            'fabricator__title': ['exact'],
+            'title': ['exact'],
+            'slug': ['exact'],
+            'price': ['gt', 'gte', 'exact', 'lte', 'lt'],
+            'added_at': ['gt', 'gte', 'exact', 'lte', 'lt'],
+            'num_purchases': ['gt', 'gte', 'exact', 'lte', 'lt'],
+            'sort_index': ['gt', 'gte', 'exact', 'lte', 'lt'],
+            'in_stock': ['exact'],
+            'free_delivery': ['exact'],
+            'limited_edition': ['exact'],
         }

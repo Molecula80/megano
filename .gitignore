@@ -187,3 +187,4 @@ dd_venv/
 .idea/
 *.sqlite3
 *.lock
+media/
