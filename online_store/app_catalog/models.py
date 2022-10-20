@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 
 class Category(models.Model):
@@ -36,7 +37,7 @@ class Product(models.Model):
                                    related_name='products', verbose_name='производитель')
     categories = models.ManyToManyField(Category, related_name='products', verbose_name='категории')
     title = models.CharField(max_length=255, verbose_name='название')
-    slug = models.SlugField(max_length=255, unique_for_date='added_at')
+    slug = models.SlugField(max_length=255, unique=True)
     description = models.TextField(verbose_name='описание')
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='цена')
     image = models.ImageField(upload_to='images/products/', blank=True, null=True, verbose_name='иконка')
@@ -53,6 +54,9 @@ class Product(models.Model):
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return reverse('app_catalog:product_detail', args=[self.slug])
 
 
 class DescrPoint(models.Model):
