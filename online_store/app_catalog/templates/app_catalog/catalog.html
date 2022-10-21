@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    {% extends "middle_base.html" %}
-    {% load static %}
-    <meta charset="UTF-8">
-    <title>{% block title %}Каталог{% endblock %}</title>
+  {% extends "middle_base.html" %}
+  {% load static %}
+  {% load cache %}
+  <meta charset="UTF-8">
+  <title>{% block title %}Каталог{% endblock %}</title>
 </head>
 <body>
   {% block mb_content %}
@@ -76,9 +77,11 @@
           </div>
           <div class="Cards">
             {% if products %}
-              {% for product in products %}
-                {% include "app_catalog/product_link.html" %}
-              {% endfor %}
+              {% cache 1 catalog %}
+                {% for product in products %}
+                  {% include "app_catalog/product_link.html" %}
+                {% endfor %}
+              {% endcache %}
             {% else %}
               Товары еще не добавлены.
             {% endif %}
@@ -89,9 +92,12 @@
                  href="{% if page_obj.has_previous %}?page={{ page_obj.previous_page_number }}
                  {% else %}?page={{ page_obj.paginator.num_pages }}{% endif %}">
                 <img src="{% static 'assets/img/icons/prevPagination.svg' %}" alt="prevPagination.svg"/></a>
-              <a class="Pagination-element Pagination-element_current" href="#"><span class="Pagination-text">1</span>
-              </a><a class="Pagination-element" href="#"><span class="Pagination-text">2</span></a>
-              <a class="Pagination-element" href="#"><span class="Pagination-text">3</span></a>
+              {% for p in page_obj.paginator.page_range %}
+                <a class="Pagination-element {% if page_obj.number == p %}Pagination-element_current{% endif %}"
+                   href="?page={{ p }}">
+                  <span class="Pagination-text">{{ p }}</span>
+                </a>
+              {% endfor %}
               <a class="Pagination-element Pagination-element_prev"
                  href="{% if page_obj.has_next %}?page={{ page_obj.next_page_number }}{% else %}?page=1{% endif %}">
                 <img src="{% static 'assets/img/icons/nextPagination.svg' %}" alt="nextPagination.svg"/></a>
