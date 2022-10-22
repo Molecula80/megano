@@ -40,10 +40,11 @@ INSTALLED_APPS = [
     'django.contrib.admindocs',
     'rest_framework',
     'django_filters',
-    'app_catalog',
-    'app_users',
-    'app_cart',
-    'app_ordering',
+    'app_catalog.apps.AppCatalogConfig',
+    'app_users.apps.AppUsersConfig',
+    'app_cart.apps.AppCartConfig',
+    'app_ordering.apps.AppOrderingConfig',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -54,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'online_store.urls'
@@ -148,3 +150,5 @@ REST_FRAMEWORK = {
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 MEDIA_URL = '/media/'
+
+INTERNAL_IPS = ['127.0.0.1']

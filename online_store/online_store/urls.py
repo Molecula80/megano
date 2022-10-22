@@ -17,6 +17,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
+import debug_toolbar
 
 urlpatterns = [
     path('admin/doc/', include('django.contrib.admindocs.urls')),
@@ -25,4 +26,5 @@ urlpatterns = [
     path('app_users/', include('app_users.urls')),
     path('app_cart/', include('app_cart.urls', namespace='app_cart')),
     path('app_ordering/', include('app_ordering.urls', namespace='app_ordering')),
+    path('__debug__/', include(debug_toolbar.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

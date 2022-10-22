@@ -10,7 +10,7 @@ from .serializers import UserSerializer
 
 class UserListApi(ListModelMixin, CreateModelMixin, GenericAPIView):
     """ Представление для получения списка пользователей и создания нового пользователя. """
-    queryset = User.objects.only('groups', 'user_permissions').prefetch_related('groups', 'user_permissions').all()
+    queryset = User.objects.prefetch_related('groups', 'user_permissions').all()
     serializer_class = UserSerializer
     filterset_fields = ['is_superuser', 'full_name', 'email', 'is_staff', 'is_active']
 
@@ -27,7 +27,7 @@ class UserListApi(ListModelMixin, CreateModelMixin, GenericAPIView):
 
 class UserDetailApi(UpdateModelMixin, RetrieveModelMixin, DestroyModelMixin, GenericAPIView):
     """ Представление для получения детальной информации о пользователе, а также его редактирования и удаления. """
-    queryset = User.objects.only('groups', 'user_permissions').prefetch_related('groups', 'user_permissions').all()
+    queryset = User.objects.prefetch_related('groups', 'user_permissions').all()
     serializer_class = UserSerializer
 
     def get(self, request, *args, **kwargs):

@@ -24,8 +24,7 @@ def register_view(request):
         if form.is_valid():
             form.save(commit=False)
             telephone = form.cleaned_data.get('telephone')
-            if telephone and User.objects.only('groups', 'user_permissions', 'telephone').prefetch_related(
-                    'groups', 'user_permissions').filter(telephone=telephone).exists():
+            if telephone and User.objects.only('telephone').filter(telephone=telephone).exists():
                 form.add_error('telephone', 'Пользователь с таким номером телефона уже есть.')
             else:
                 form.save()

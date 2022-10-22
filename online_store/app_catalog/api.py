@@ -44,7 +44,7 @@ class ModelDetailApi(UpdateModelMixin, RetrieveModelMixin, DestroyModelMixin, Ge
 
 class CategoryListApi(ModelListApi):
     """ Представление для получения списка категорий и создания новой категории. """
-    queryset = Category.objects.only('parent').select_related('parent').all()
+    queryset = Category.objects.select_related('parent').all()
     serializer_class = CategorySerializer
     filterset_class = CategoryFilter
     model_name = 'category'
@@ -52,14 +52,14 @@ class CategoryListApi(ModelListApi):
 
 class CategoryDetailApi(ModelDetailApi):
     """ Представление для получения детальной информации о категории, а также ее редактирования и удаления. """
-    queryset = Category.objects.only('parent').select_related('parent').all()
+    queryset = Category.objects.select_related('parent').all()
     serializer_class = CategorySerializer
     model_name = 'category'
 
 
 class FabricatorListApi(ModelListApi):
     """ Представление для получения списка производителей и создания нового производителя. """
-    queryset = Fabricator.objects.only('id').all()
+    queryset = Fabricator.objects.all()
     serializer_class = FabricatorSerializer
     filterset_fields = ['title']
     model_name = 'fabricator'
@@ -67,15 +67,14 @@ class FabricatorListApi(ModelListApi):
 
 class FabricatorDetailApi(ModelDetailApi):
     """ Представление для получения детальной информации о производителе, а также его редактирования и удаления. """
-    queryset = Fabricator.objects.only('id').all()
+    queryset = Fabricator.objects.all()
     serializer_class = FabricatorSerializer
     model_name = 'fabricator'
 
 
 class ProductListApi(ModelListApi):
     """ Представление для получения списка товаров и создания нового товара. """
-    queryset = Product.objects.only('fabricator', 'categories').select_related('fabricator').prefetch_related(
-        'categories').all()
+    queryset = Product.objects.select_related('fabricator').prefetch_related('categories').all()
     serializer_class = ProductSerializer
     filterset_class = ProductFilter
     model_name = 'product'
@@ -83,15 +82,14 @@ class ProductListApi(ModelListApi):
 
 class ProductDetailApi(ModelDetailApi):
     """ Представление для получения детальной информации о товаре, а также его редактирования и удаления. """
-    queryset = Product.objects.only('fabricator', 'categories').select_related('fabricator').prefetch_related(
-        'categories').all()
+    queryset = Product.objects.select_related('fabricator').prefetch_related('categories').all()
     serializer_class = ProductSerializer
     model_name = 'product'
 
 
 class DescrPointListApi(ModelListApi):
     """ Представление для получения списка пунктов описания и создания нового пункта описания. """
-    queryset = DescrPoint.objects.only('product').select_related('product').all()
+    queryset = DescrPoint.objects.select_related('product').all()
     serializer_class = DescrPointSerializer
     filterset_fields = ['product', 'content']
     model_name = 'descr_point'
@@ -99,14 +97,14 @@ class DescrPointListApi(ModelListApi):
 
 class DescrPointDetailApi(ModelDetailApi):
     """ Представление для получения детальной информации о пункте описания, а также его редактирования и удаления. """
-    queryset = DescrPoint.objects.only('product').select_related('product').all()
+    queryset = DescrPoint.objects.select_related('product').all()
     serializer_class = DescrPointSerializer
     model_name = 'descr_point'
 
 
 class AddInfoPointListApi(ModelListApi):
     """ Представление для получения списка пункта доп. информации и создания нового пункта. """
-    queryset = AddInfoPoint.objects.only('product').select_related('product').all()
+    queryset = AddInfoPoint.objects.select_related('product').all()
     serializer_class = AddInfoPointSerializer
     filterset_fields = ['product', 'characteristic', 'value']
     model_name = 'add_info_point'
@@ -116,6 +114,6 @@ class AddInfoPointDetailApi(ModelDetailApi):
     """
     Представление для получения детальной информации о пункте доп. информации, а также его редактирования и удаления.
     """
-    queryset = AddInfoPoint.objects.only('product').select_related('product').all()
+    queryset = AddInfoPoint.objects.select_related('product').all()
     serializer_class = AddInfoPointSerializer
     model_name = 'add_info_point'
