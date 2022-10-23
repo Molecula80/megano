@@ -15,10 +15,17 @@ class ModelListApi(ListModelMixin, CreateModelMixin, GenericAPIView):
     """ Представление для получения списка моделей и создания новой модели. """
     model_name = str()
 
-    def get(self, request):
+    def get(self, request) -> list:
+        """
+        Метод для получения списка моделей.
+        :param request:
+        :return: список моделей
+        :rtype: list
+        """
         return self.list(request)
 
     def post(self, request, format=None):
+        """ Метод для создания новой модели. """
         if not request.user.has_perm('app_catalog.add_{}'.format(self.model_name)):
             raise PermissionDenied()
         return self.create(request)
@@ -29,14 +36,17 @@ class ModelDetailApi(UpdateModelMixin, RetrieveModelMixin, DestroyModelMixin, Ge
     model_name = str()
 
     def get(self, request, *args, **kwargs):
+        """ Метод для получения детальной информации о модели. """
         return self.retrieve(request, *args, **kwargs)
 
     def put(self, request, *args, **kwargs):
+        """ Метод для редактирования модели. """
         if not request.user.has_perm('app_catalog.change_{}'.format(self.model_name)):
             raise PermissionDenied()
         return self.update(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
+        """ Метод для удаления модели. """
         if not request.user.has_perm('app_catalog.delete_{}'.format(self.model_name)):
             raise PermissionDenied()
         return self.destroy(request, *args, **kwargs)

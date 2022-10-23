@@ -12,7 +12,8 @@ class IndexView(TemplateView):
     """ Главная страница. """
     template_name = 'app_catalog/index.html'
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> dict:
+        """ Метод для передачи параметров главной странице магазина. """
         context = super().get_context_data(**kwargs)
         tc_cache_key = 'three_categories'
         pp_cache_key = 'popular_products'
@@ -36,7 +37,8 @@ class ProductListView(ListView):
     context_object_name = 'products'
     paginate_by = 8
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> dict:
+        """ Метод для передачи названия страницы. """
         context = super().get_context_data(**kwargs)
         context['page_title'] = 'Каталог'
         return context
@@ -48,7 +50,8 @@ class ProductDetailView(DetailView):
     model = Product
     context_object_name = 'product'
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> dict:
+        """ Метод для передачи параметров странице товара. """
         context = super().get_context_data(**kwargs)
         context['page_title'] = self.object.title
         context['categories'] = self.object.categories.all()
@@ -58,7 +61,8 @@ class ProductDetailView(DetailView):
         context['reviews_count'] = 1
         return context
 
-    def post(self, request, slug):
+    def post(self, request, slug: str):
+        """ Метод для добавления отзыва к товару. """
         form = ReviewForm(request.POST)
         if form.is_valid():
             return HttpResponse('Отзыв успешно добавлен.')

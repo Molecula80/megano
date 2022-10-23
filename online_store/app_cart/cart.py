@@ -7,8 +7,12 @@ class Cart(object):
         """ Проходим по товарам корзины. """
         pass
 
-    def __len__(self):
-        """ Возвращает общее количество товаров в корзине. """
+    def __len__(self) -> int:
+        """
+         Возвращает общее количество товаров в корзине.
+        :return: количество товаров в корзине
+        :rtype: int
+        """
         return 3
 
     def add(self, product):
@@ -19,8 +23,12 @@ class Cart(object):
         """ Удаление товара из корзины. """
         pass
 
-    def get_total_price(self):
-        """ Возвращает общую стоимость всех товаров вкорзине. """
+    def get_total_price(self) -> float:
+        """
+        Возвращает общую стоимость всех товаров вкорзине.
+        :return: общая стоимость товаров
+        :rtype: float
+        """
         return 200.99
 
     def clear(self):
@@ -28,4 +36,5 @@ class Cart(object):
         pass
 
     def save(self):
+        """ Сохоанение корзины. """
         pass

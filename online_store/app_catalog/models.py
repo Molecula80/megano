@@ -15,8 +15,13 @@ class Category(models.Model):
         verbose_name = 'категория'
         verbose_name_plural = 'категории'
 
-    def __str__(self):
-        return self.title
+    def __str__(self) -> str:
+        """
+        Возвращает название каегории товаров.
+        :return: название категории
+        :rtype: str
+        """
+        return str(self.title)
 
 
 class Fabricator(models.Model):
@@ -27,8 +32,13 @@ class Fabricator(models.Model):
         verbose_name = 'производитель'
         verbose_name_plural = 'производители'
 
-    def __str__(self):
-        return self.title
+    def __str__(self) -> str:
+        """
+        Возвращает название производителя.
+        :return: название производителя
+        :rtype: str
+        """
+        return str(self.title)
 
 
 class Product(models.Model):
@@ -53,10 +63,20 @@ class Product(models.Model):
         verbose_name_plural = 'товары'
         ordering = ['id']
 
-    def __str__(self):
-        return self.title
+    def __str__(self) -> str:
+        """
+        Возвращает название товара.
+        :return: название товара
+        :rtype: str
+        """
+        return str(self.title)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
+        """
+        Возвращает url детальной страницы товара.
+        :return: url детальной страницы товара
+        :rtype str
+        """
         return reverse('app_catalog:product_detail', args=[self.slug])
 
 
@@ -69,8 +89,13 @@ class DescrPoint(models.Model):
         verbose_name = 'пункт описания'
         verbose_name_plural = 'пункты описания'
 
-    def __str__(self):
-        return self.content
+    def __str__(self) -> str:
+        """
+        Возвращает содержание пункта описания товара.
+        :return: содержание пункта описания
+        :rtype: str
+        """
+        return str(self.content)
 
 
 class AddInfoPoint(models.Model):
@@ -83,5 +108,10 @@ class AddInfoPoint(models.Model):
         verbose_name = 'пункт доп. информации'
         verbose_name_plural = 'пункты доп. информации'
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """
+        Возвращает характеристику товара и ее значение.
+        :return: характеристика товара и ее значение
+        :rtype: str
+        """
         return '{characteristic}: {value}'.format(characteristic=self.characteristic, value=self.value)

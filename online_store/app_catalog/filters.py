@@ -3,6 +3,7 @@ from .models import Category, Product
 
 
 class CategoryFilter(FilterSet):
+    """ Класс для фильтрации категорий товаров. """
     class Meta:
         model = Category
         fields = {
@@ -14,6 +15,7 @@ class CategoryFilter(FilterSet):
 
 
 class ProductFilter(FilterSet):
+    """ Класс для фильтрации товаров. """
     class Meta:
         model = Product
         fields = {

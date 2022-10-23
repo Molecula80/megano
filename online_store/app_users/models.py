@@ -23,5 +23,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name = 'пользователь'
         verbose_name_plural = 'пользователи'
 
-    def __str__(self):
-        return self.email
+    def __str__(self) -> str:
+        """
+        Возвращает email пользователя.
+        :return: email
+        :rtype: str
+        """
+        return str(self.email)

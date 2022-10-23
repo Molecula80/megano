@@ -3,21 +3,25 @@ from .models import Category, Fabricator, Product, DescrPoint, AddInfoPoint
 
 
 class CategoryInline(admin.TabularInline):
+    """ Инлайн класс для редактирования дочерних категорий товаров. """
     model = Category
     extra = 0
 
 
 class CategoryAdmin(admin.ModelAdmin):
+    """ Административная модель категории. """
     list_display = ['id', 'title', 'parent', 'sort_index', 'active']
     list_filter = ['parent', 'sort_index', 'active']
     search_fields = ['title']
     inlines = [CategoryInline]
     actions = ['mark_as_active', 'mark_as_inactive']
 
-    def mark_as_active(self, request, queryset):
+    def mark_as_active(self, request, queryset) -> None:
+        """ Помечает категории как активные. """
         queryset.update(active=True)
 
-    def mark_as_inactive(self, request, queryset):
+    def mark_as_inactive(self, request, queryset) -> None:
+        """ Помечает категории как неактивные. """
         queryset.update(active=False)
 
     mark_as_active.short_description = 'Пометить как активные'
@@ -25,27 +29,32 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 class ProductInline(admin.TabularInline):
+    """ Инлайн класс для редактирования товаров. """
     model = Product
     extra = 0
 
 
 class FabricatorAdmin(admin.ModelAdmin):
+    """ Административная модель производителя. """
     list_display = ['id', 'title']
     search_fields = ['title']
     inlines = [ProductInline]
 
 
 class DescrPointInline(admin.TabularInline):
+    """ Инлайн класс для редактирования пунктов описания товаров. """
     model = DescrPoint
     extra = 0
 
 
 class AddInfoPointInline(admin.TabularInline):
+    """ Инлайн класс для редактирования пунктов дополнительной информации о товарах. """
     model = AddInfoPoint
     extra = 0
 
 
 class ProductAdmin(admin.ModelAdmin):
+    """ Административная модель товара. """
     list_display = ['id', 'title', 'fabricator', 'price', 'num_purchases', 'sort_index', 'in_stock', 'free_delivery',
                     'limited_edition']
     list_filter = ['fabricator', 'sort_index', 'in_stock', 'free_delivery', 'limited_edition']
@@ -69,22 +78,28 @@ class ProductAdmin(admin.ModelAdmin):
         })
     )
 
-    def mark_as_in_stock(self, request, queryset):
+    def mark_as_in_stock(self, request, queryset) -> None:
+        """ Помечает товары как имеющиеся в наличии. """
         queryset.update(in_stock=True)
 
-    def mark_as_out_of_stock(self, request, queryset):
+    def mark_as_out_of_stock(self, request, queryset) -> None:
+        """ Помечает товары как отсутствующие. """
         queryset.update(in_stock=False)
 
-    def mark_as_free_delivery(self, request, queryset):
+    def mark_as_free_delivery(self, request, queryset) -> None:
+        """ Помечает товары как имеющие свободную доставку. """
         queryset.update(free_delivery=True)
 
-    def mark_as_no_free_delivery(self, request, queryset):
+    def mark_as_no_free_delivery(self, request, queryset) -> None:
+        """ Помечает товары как не имеющие свободную доставку. """
         queryset.update(in_stock=False)
 
-    def mark_as_limited_edition(self, request, queryset):
+    def mark_as_limited_edition(self, request, queryset) -> None:
+        """ Помечает как товары с ограниченным тиражом. """
         queryset.update(limited_edition=True)
 
-    def mark_as_unlimited_edition(self, request, queryset):
+    def mark_as_unlimited_edition(self, request, queryset) -> None:
+        """ Помечает как товары с не ограниченным тиражом. """
         queryset.update(limited_edition=False)
 
     mark_as_in_stock.short_description = 'Пометить как имеющиеся в наличии'
@@ -96,12 +111,14 @@ class ProductAdmin(admin.ModelAdmin):
 
 
 class DescrPointAdmin(admin.ModelAdmin):
+    """ Административная панель пункта описания товара. """
     list_display = ['id', 'product', 'content']
     list_filter = ['product']
     search_fields = ['content']
 
 
 class AddInfoPointAdmin(admin.ModelAdmin):
+    """ Административная панель пункта дополнительной информации о товаре. """
     list_display = ['id', 'product', 'characteristic', 'value']
     list_filter = ['product']
     search_fields = ['characteristic', 'value']

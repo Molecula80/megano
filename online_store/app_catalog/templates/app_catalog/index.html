@@ -18,7 +18,11 @@
                     <div class="BannersHomeBlock-block">
                       <strong class="BannersHomeBlock-title">{{ category.title }}</strong>
                       <div class="BannersHomeBlock-content">
-                        от&#32;<span class="BannersHomeBlock-price">${{ category.min_price }}</span>
+                        {% if category.min_price %}
+                          от&#32;<span class="BannersHomeBlock-price">${{ category.min_price }}</span>
+                        {% else %}
+                          В данной категории нет товаров.
+                        {% endif %}
                       </div>
                     </div>
                     <div class="BannersHomeBlock-block">

@@ -10,16 +10,23 @@ from .serializers import UserSerializer
 
 class UserListApi(ListModelMixin, CreateModelMixin, GenericAPIView):
     """ Представление для получения списка пользователей и создания нового пользователя. """
-    queryset = User.objects.prefetch_related('groups', 'user_permissions').all()
+    queryset = User.objects.prefetch_related('groups').all()
     serializer_class = UserSerializer
     filterset_fields = ['is_superuser', 'full_name', 'email', 'is_staff', 'is_active']
 
-    def get(self, request):
+    def get(self, request) -> list:
+        """
+        Метод для получения списка пользователей.
+        :param request:
+        :return: список пользователей
+        :rtype: list
+        """
         if not request.user.has_perm('app_users.view_user'):
             raise PermissionDenied()
         return self.list(request)
 
     def post(self, request, format=None):
+        """ Метод для создания нового пользователя. """
         if not request.user.has_perm('app_users.add_user'):
             raise PermissionDenied()
         return self.create(request)
@@ -27,20 +34,23 @@ class UserListApi(ListModelMixin, CreateModelMixin, GenericAPIView):
 
 class UserDetailApi(UpdateModelMixin, RetrieveModelMixin, DestroyModelMixin, GenericAPIView):
     """ Представление для получения детальной информации о пользователе, а также его редактирования и удаления. """
-    queryset = User.objects.prefetch_related('groups', 'user_permissions').all()
+    queryset = User.objects.prefetch_related('groups').all()
     serializer_class = UserSerializer
 
     def get(self, request, *args, **kwargs):
+        """ Метод для получения детальной информации о пользователе. """
         if not request.user.has_perm('app_users.view_user'):
             raise PermissionDenied()
         return self.retrieve(request, *args, **kwargs)
 
     def put(self, request, *args, **kwargs):
+        """ Метод для редактирования пользователя. """
         if not request.user.has_perm('app_users.change_user'):
             raise PermissionDenied()
         return self.update(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
+        """ Метод для удаления пользователя. """
         if not request.user.has_perm('app_users.delete_user'):
             raise PermissionDenied()
         return self.destroy(request, *args, **kwargs)

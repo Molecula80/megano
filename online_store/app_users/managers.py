@@ -2,7 +2,17 @@ from django.contrib.auth.base_user import BaseUserManager
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, full_name, password, **extra_fields):
+    """ Менеджер модели пользователя. """
+    def create_user(self, email: str, full_name: str, password: str, **extra_fields):
+        """
+        Метод для создания пользователя.
+        :param email:
+        :param full_name:
+        :param password:
+        :param extra_fields:
+        :return: модель пользователя
+        :rtype: 'User'
+        """
         if not email:
             raise ValueError('Укажите адрес эдектронной почты')
         elif not full_name:
@@ -13,7 +23,8 @@ class UserManager(BaseUserManager):
         user.save()
         return user
 
-    def create_superuser(self, email, full_name, password, **extra_fields):
+    def create_superuser(self, email: str, full_name: str, password: str, **extra_fields):
+        """ Метод для создания суперпользователя. """
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_active', True)

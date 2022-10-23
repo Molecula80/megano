@@ -5,6 +5,7 @@ from .models import User
 
 
 class AuthForm(forms.Form):
+    """ Форма для аутентификации пользователя. """
     email = forms.CharField(label='Имя пользователя',
                             error_messages={'required': 'Это поле обязательно для заполнения.'},
                             widget=forms.EmailInput(attrs={"class": "form-input", "id": "mail", "name": "mail",

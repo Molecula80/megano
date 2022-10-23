@@ -24,6 +24,8 @@ def register_view(request):
         if form.is_valid():
             form.save(commit=False)
             telephone = form.cleaned_data.get('telephone')
+            # Если был введен номер телефона, и пользователь с указанным номером телефона уже есть,
+            # выводим сообщение об ошибке.
             if telephone and User.objects.only('telephone').filter(telephone=telephone).exists():
                 form.add_error('telephone', 'Пользователь с таким номером телефона уже есть.')
             else:
