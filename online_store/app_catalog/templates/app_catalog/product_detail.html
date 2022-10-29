@@ -75,19 +75,14 @@
           </div>
           <div class="Tabs Tabs_default" id="tabs">
             <div class="Tabs-links"><a class="Tabs-link_ACTIVE Tabs-link" href="#description"><span>Описание</span></a>
-                <a class="Tabs-link" href="#addit"><span>AdditionaL Info</span></a>
+                <a class="Tabs-link" href="#addit"><span>Доп. информация</span></a>
                 <a class="Tabs-link" href="#reviews"><span>Отзывы ({{ reviews_count }})</span></a>
             </div>
             <div class="Tabs-wrap">
               <div class="Tabs-block" id="description">
-                <h2>Megano Store Hystory
+                <h2>{{ product.title }}
                 </h2>
-                <p>Lorem ipsum dolor sit amet, consectetuer&#32;
-                  <strong>adipiscing
-                  </strong>&#32;elit doli. Aenean commodo ligula eget dolor. Aenean massa.&#32;
-                    <a href="#">Cumtipsu</a>&#32;sociis natoque penatibus et magnis dis parturient montesti, nascetur
-                  ridiculus mus. Donec quam felis, ultricies nec, pellentesque eutu, pretiumem.
-                </p>
+                <p>{{ product.description }}</p>
                   {% if product.image %}
                     <img class="pict pict_right" src="{{ product.image.url }}" alt="bigGoods.png"/>
                   {% endif %}
