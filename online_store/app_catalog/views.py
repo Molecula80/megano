@@ -33,7 +33,7 @@ class IndexView(TemplateView):
 class ProductListView(ListView):
     """ Страница со списком товаров. """
     template_name = 'app_catalog/catalog.html'
-    model = Product
+    queryset = Product.objects.prefetch_related('categories').filter(active=True)
     context_object_name = 'products'
     paginate_by = 8
 

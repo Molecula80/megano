@@ -55,14 +55,15 @@ class AddInfoPointInline(admin.TabularInline):
 
 class ProductAdmin(admin.ModelAdmin):
     """ Административная модель товара. """
-    list_display = ['id', 'title', 'fabricator', 'price', 'num_purchases', 'sort_index', 'in_stock', 'free_delivery',
-                    'limited_edition']
-    list_filter = ['fabricator', 'sort_index', 'in_stock', 'free_delivery', 'limited_edition']
+    list_display = ['id', 'title', 'fabricator', 'price', 'num_purchases', 'sort_index', 'active', 'in_stock',
+                    'free_delivery', 'limited_edition']
+    list_filter = ['fabricator', 'sort_index', 'active', 'in_stock', 'free_delivery', 'limited_edition']
     search_fields = ['title']
     prepopulated_fields = {'slug': ('title',)}
     inlines = [DescrPointInline, AddInfoPointInline]
-    actions = ['mark_as_in_stock', 'mark_as_out_of_stock', 'mark_as_free_delivery', 'mark_as_no_free_delivery',
-               'mark_as_limited_edition', 'mark_as_unlimited_edition']
+    actions = ['mark_as_active', 'mark_as_inactive', 'mark_as_in_stock', 'mark_as_out_of_stock',
+               'mark_as_free_delivery', 'mark_as_no_free_delivery', 'mark_as_limited_edition',
+               'mark_as_unlimited_edition']
     fieldsets = (
         ('Основные сведения', {
             'fields': ('title', 'slug', 'description', 'price', 'image')
@@ -73,10 +74,19 @@ class ProductAdmin(admin.ModelAdmin):
             'classes': ['collapse']
         }),
         ('Дополнительные сведения', {
-            'fields': ('num_purchases', 'sort_index', 'added_at', 'in_stock', 'free_delivery', 'limited_edition'),
+            'fields': ('num_purchases', 'sort_index', 'added_at', 'active', 'in_stock', 'free_delivery',
+                       'limited_edition'),
             'classes': ['collapse']
         })
     )
+
+    def mark_as_active(self, request, queryset) -> None:
+        """ Помечает товары как активные. """
+        queryset.update(active=True)
+
+    def mark_as_inactive(self, request, queryset) -> None:
+        """ Помечает товары как неактивные. """
+        queryset.update(active=False)
 
     def mark_as_in_stock(self, request, queryset) -> None:
         """ Помечает товары как имеющиеся в наличии. """
@@ -102,6 +112,8 @@ class ProductAdmin(admin.ModelAdmin):
         """ Помечает как товары с не ограниченным тиражом. """
         queryset.update(limited_edition=False)
 
+    mark_as_active.short_description = 'Пометить как активные'
+    mark_as_inactive.short_description = 'Пометить как неактивные'
     mark_as_in_stock.short_description = 'Пометить как имеющиеся в наличии'
     mark_as_out_of_stock.short_description = 'Пометить как отсутствующие'
     mark_as_free_delivery.short_description = 'Пометить как имеющие свободную доставку'

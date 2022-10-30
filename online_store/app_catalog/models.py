@@ -54,6 +54,7 @@ class Product(models.Model):
     added_at = models.DateTimeField(verbose_name='дата публикации')
     num_purchases = models.PositiveIntegerField(default=0, verbose_name='количество покупок')
     sort_index = models.PositiveIntegerField(verbose_name='индекс сортировки')
+    active = models.BooleanField(default=False, verbose_name='активно')
     in_stock = models.BooleanField(default=False, verbose_name='в наличии')
     free_delivery = models.BooleanField(default=False, verbose_name='с бесплатной доставкой')
     limited_edition = models.BooleanField(default=False, verbose_name='ограниченный тираж')
