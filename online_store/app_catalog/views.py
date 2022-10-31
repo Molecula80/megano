@@ -5,7 +5,7 @@ from django.core.cache import cache
 from django.db.models import Min
 
 from .models import Category, Product
-from .forms import ReviewForm
+from .forms import ReviewForm, ProductFilterForm
 
 
 class IndexView(TemplateView):
@@ -41,6 +41,7 @@ class ProductListView(ListView):
         """ Метод для передачи названия страницы. """
         context = super().get_context_data(**kwargs)
         context['page_title'] = 'Каталог'
+        context['form'] = ProductFilterForm
         return context
 
 
