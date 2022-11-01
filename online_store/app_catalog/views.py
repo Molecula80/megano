@@ -1,11 +1,14 @@
-# from django.shortcuts import render
-from django.http import HttpResponse
-from django.views.generic import TemplateView, ListView, DetailView
+from django.shortcuts import render
+from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import reverse
+from django.views.generic import TemplateView, DetailView
 from django.core.cache import cache
 from django.db.models import Min
+from django_filters.views import FilterView
 
 from .models import Category, Product
 from .forms import ReviewForm, ProductFilterForm
+from .filters import ProductFilter
 
 
 class IndexView(TemplateView):
@@ -30,18 +33,39 @@ class IndexView(TemplateView):
         return context
 
 
-class ProductListView(ListView):
+class ProductListView(FilterView):
     """ Страница со списком товаров. """
     template_name = 'app_catalog/catalog.html'
-    queryset = Product.objects.prefetch_related('categories').filter(active=True)
     context_object_name = 'products'
     paginate_by = 8
+    filterset_class = ProductFilter
 
     def get_context_data(self, **kwargs) -> dict:
-        """ Метод для передачи названия страницы. """
+        """ Метод для данных страницы. """
         context = super().get_context_data(**kwargs)
+        self.queryset = Product.objects.prefetch_related('categories').filter(active=True)
         context['page_title'] = 'Каталог'
         context['form'] = ProductFilterForm
+        return context
+
+    def post(self, request):
+        """ Метод для применения фильтров. """
+        form = ProductFilterForm(request.POST)
+        if form.is_valid():
+            price_range = form.cleaned_data.get('price_range').split(';')
+            min_price = int(price_range[0])
+            max_price = int(price_range[1])
+            self.queryset = Product.objects.prefetch_related('categories').filter(active=True, price__gte=min_price,
+                                                                                  price__lte=max_price)
+        return render(request, 'app_catalog/catalog.html', context={'page_title': 'Каталог', 'form': form})
+
+
+class ProductFilterView(ProductListView):
+    """ Страница с отфильтрованным списком товаров. """
+    def get_context_data(self, **kwargs) -> dict:
+        """ Метод для данных страницы. """
+        self.queryset = self.queryset.filter(price__gte=kwargs['min_price'], price__lte=kwargs['max_price'])
+        context = super().get_context_data(**kwargs)
         return context
 
 

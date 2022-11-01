@@ -16,12 +16,10 @@ class ReviewForm(forms.Form):
 
 class ProductFilterForm(forms.Form):
     """ Форма для фильтрацции товаров в каталоге. """
-    min_price = forms.IntegerField(min_value=0)
-    max_price = forms.IntegerField(min_value=0)
-    price_range = forms.MultiValueField(fields=[min_price, max_price],
-                                        widget={"class": "range-line", "id": "price", "name": "price", "type": "text",
-                                                "data-type": "double", "data-min": "7", "data-max": "50",
-                                                "data-from": "7", "data-to": "27"})
+    price_range = forms.CharField(widget=forms.TextInput(attrs={"class": "range-line", "id": "price", "name": "price",
+                                                                "type": "text", "data-type": "double", "data-min": "0",
+                                                                "data-max": "1000", "data-from": "0",
+                                                                "data-to": "500"}))
 
     class Meta:
         fields = ('price_range',)
