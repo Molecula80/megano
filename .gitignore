@@ -188,4 +188,4 @@ dd_venv/
 *.sqlite3
 *.lock
 media/
-sqlite3.exe
+sqlite-shell-win32-x86-3081002/

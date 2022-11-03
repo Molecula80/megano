@@ -1,4 +1,7 @@
 from django import forms
+from django.db.models import Min, Max
+
+from .models import Product
 
 
 class ReviewForm(forms.Form):
@@ -16,10 +19,13 @@ class ReviewForm(forms.Form):
 
 class ProductFilterForm(forms.Form):
     """ Форма для фильтрацции товаров в каталоге. """
-    price_range = forms.CharField(widget=forms.TextInput(attrs={"class": "range-line", "id": "price", "name": "price",
-                                                                "type": "text", "data-type": "double", "data-min": "0",
-                                                                "data-max": "1000", "data-from": "0",
-                                                                "data-to": "500"}))
+    # Рассчитываем минимальную и максимальную цены товаров.
+    price_data = Product.objects.prefetch_related('categories').filter(active=True).aggregate(min_price=Min('price'),
+                                                                                              max_price=Max('price'))
+    price_range = forms.CharField(widget=forms.TextInput(
+        attrs={"class": "range-line", "id": "price", "name": "price", "type": "text", "data-type": "double",
+               "data-min": price_data['min_price'], "data-max": price_data['max_price']}))
+    title = forms.CharField()
 
     class Meta:
-        fields = ('price_range',)
+        fields = ('price_range', 'title')
