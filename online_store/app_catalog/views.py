@@ -1,14 +1,12 @@
-from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
-from django.views.generic import TemplateView, DetailView
+# from django.shortcuts import render
+from django.http import HttpResponse
+from django.views.generic import TemplateView, DetailView, ListView
 from django.core.cache import cache
 from django.db.models import Min
-from django_filters.views import FilterView
 from django.contrib.postgres.search import SearchVector
 
 from .models import Category, Product
 from .forms import ReviewForm, ProductFilterForm
-from .filters import ProductFilter
 
 
 class IndexView(TemplateView):
@@ -33,13 +31,11 @@ class IndexView(TemplateView):
         return context
 
 
-class ProductListView(FilterView):
+class ProductListView(ListView):
     """ Страница со списком товаров. """
     template_name = 'app_catalog/catalog.html'
-    queryset = Product.objects.prefetch_related('categories').filter(active=True)
     context_object_name = 'products'
     paginate_by = 8
-    filterset_class = ProductFilter
 
     def get_context_data(self, **kwargs) -> dict:
         """ Метод для данных страницы. """
@@ -48,31 +44,30 @@ class ProductListView(FilterView):
         context['form'] = ProductFilterForm
         return context
 
-    def post(self, request):
-        """ Метод для применения фильтров. """
-        form = ProductFilterForm(request.POST)
+    def get_queryset(self):
+        """ Метод для вывода и фильтрации продуктов. """
+        queryset = Product.objects.prefetch_related('categories').filter(active=True)
+        form = ProductFilterForm(self.request.GET)
         if form.is_valid():
-            # Рассчитываем минимальную и максимальную цены.
-            price_range = form.cleaned_data.get('price_range').split(';')
-            p_from = price_range[0]
-            p_to = price_range[1]
-            # Подставляем полученные данные в url.
-            relative_url = '?price__gte={p_from}&price__lte={p_to}'.format(p_from=p_from, p_to=p_to)
-            return HttpResponseRedirect(relative_url)
-        return render(request, 'app_catalog/catalog.html', context={'page_title': 'Каталог', 'form': form})
+            queryset = self.filter_by_price(queryset=queryset, form=form)
+            queryset = self.search_by_text(queryset=queryset, form=form)
+        return queryset
 
+    @classmethod
+    def filter_by_price(cls, queryset, form):
+        """ Метод для фильтрации продуктов по цене. """
+        # Рассчитываем минимальную и максимальную цены.
+        price_range = form.cleaned_data.get('price_range').split(';')
+        p_from = price_range[0]
+        p_to = price_range[1]
+        return queryset.filter(price__gte=p_from, price__lte=p_to)
 
-def product_filter(request):
-    form = ProductFilterForm()
-    query = None
-    products = []
-    if 'title' in request.GET:
-        form = ProductFilterForm(request.GET)
-    if form.is_valid():
-        title = form.cleaned_data.get('title')
-        products = Product.objects.annotate(search=SearchVector('title', 'description')).\
-            prefetch_related('categories').filter(active=True, search=title)
-        return render(request, 'app_catalog/catalog.html', context={'page_title': 'Каталог', 'form': form})
+    def search_by_text(self, queryset, form):
+        """ Метод для поиска продуктов по нвзванию и описанию. """
+        if 'title' in self.request.GET:
+            title = form.cleaned_data.get('title')
+            return queryset.annotate(search=SearchVector('title', 'description')).filter(search=title)
+        return queryset
 
 
 class ProductDetailView(DetailView):
