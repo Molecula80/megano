@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.views.generic import TemplateView, DetailView, ListView
 from django.core.cache import cache
 from django.db.models import Min
-from django.contrib.postgres.search import SearchVector
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 
 from .models import Category, Product
 from .forms import ReviewForm, ProductFilterForm
@@ -62,11 +62,15 @@ class ProductListView(ListView):
         p_to = price_range[1]
         return queryset.filter(price__gte=p_from, price__lte=p_to)
 
-    def search_by_text(self, queryset, form):
+    @classmethod
+    def search_by_text(cls, queryset, form):
         """ Метод для поиска продуктов по нвзванию и описанию. """
-        if 'title' in self.request.GET:
-            title = form.cleaned_data.get('title')
-            return queryset.annotate(search=SearchVector('title', 'description')).filter(search=title)
+        title = form.cleaned_data.get('title')
+        if title:
+            search_vector = SearchVector('title', weight='A') + SearchVector('description', weight='B')
+            search_query = SearchQuery(title)
+            rank = SearchRank(search_vector, search_query)
+            return queryset.annotate(search=search_vector, rank=rank).filter(search=search_query).order_by('-rank')
         return queryset
 
 

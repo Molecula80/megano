@@ -1,4 +1,4 @@
-from .models import Category, Fabricator, Product, DescrPoint, AddInfoPoint
+from .models import Category, Fabricator, Product, DescrPoint, AddInfoPoint, Seller
 from rest_framework import serializers
 
 
@@ -6,6 +6,13 @@ class CategorySerializer(serializers.ModelSerializer):
     """ Сериализатор для категорий товаров. """
     class Meta:
         model = Category
+        fields = '__all__'
+
+
+class SellerSerializer(serializers.ModelSerializer):
+    """ Сериализатор для продавцов. """
+    class Meta:
+        model = Seller
         fields = '__all__'
 
 

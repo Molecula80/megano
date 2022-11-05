@@ -5,10 +5,10 @@ from rest_framework.mixins import ListModelMixin, CreateModelMixin, RetrieveMode
     DestroyModelMixin
 
 from .serializers import CategorySerializer, FabricatorSerializer, ProductSerializer, DescrPointSerializer, \
-    AddInfoPointSerializer
+    AddInfoPointSerializer, SellerSerializer
 from .filters import CategoryFilter, ProductFilter
 
-from .models import Category, Fabricator, Product, DescrPoint, AddInfoPoint
+from .models import Category, Fabricator, Product, DescrPoint, AddInfoPoint, Seller
 
 
 class ModelListApi(PermissionRequiredMixin, ListModelMixin, CreateModelMixin, GenericAPIView):
@@ -57,6 +57,21 @@ class CategoryDetailApi(ModelDetailApi):
     permission_required = ('app_catalog.view_category', 'app_catalog.change_category', 'app_catalog.delete_category')
     queryset = Category.objects.select_related('parent').all()
     serializer_class = CategorySerializer
+
+
+class SellerListApi(ModelListApi):
+    """ Представление для получения списка продавцов и создания нового продавца. """
+    permission_required = ('app_catalog.view_seller', 'app_catalog.add_seller')
+    queryset = Seller.objects.all()
+    serializer_class = SellerSerializer
+    filterset_fields = ['name']
+
+
+class SellerDetailApi(ModelDetailApi):
+    """ Представление для получения детальной информации о продавце, а также его редактирования и удаления. """
+    permission_required = ('app_catalog.view_seller', 'app_catalog.change_seller', 'app_catalog.delete_seller')
+    queryset = Seller.objects.all()
+    serializer_class = SellerSerializer
 
 
 class FabricatorListApi(ModelListApi):

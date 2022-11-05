@@ -24,6 +24,23 @@ class Category(models.Model):
         return str(self.title)
 
 
+class Seller(models.Model):
+    """ Модель продавца."""
+    name = models.CharField(max_length=255, verbose_name='имя')
+
+    class Meta:
+        verbose_name = 'продавец'
+        verbose_name_plural = 'продавцы'
+
+    def __str__(self) -> str:
+        """
+        Возвращает имя продавца.
+        :return: имя продавца
+        :rtype: str
+        """
+        return str(self.name)
+
+
 class Fabricator(models.Model):
     """ Модель производителя. """
     title = models.CharField(max_length=255, verbose_name='название')
@@ -43,6 +60,8 @@ class Fabricator(models.Model):
 
 class Product(models.Model):
     """ Модель товара. """
+    seller = models.ForeignKey(Seller, blank=True, null=True, on_delete=models.SET_NULL, related_name='products',
+                               verbose_name='продавец')
     fabricator = models.ForeignKey(Fabricator, blank=True, null=True, on_delete=models.SET_NULL,
                                    related_name='products', verbose_name='производитель')
     categories = models.ManyToManyField(Category, related_name='products', verbose_name='категории')

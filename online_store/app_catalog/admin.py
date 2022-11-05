@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Fabricator, Product, DescrPoint, AddInfoPoint
+from .models import Category, Fabricator, Product, DescrPoint, AddInfoPoint, Seller
 
 
 class CategoryInline(admin.TabularInline):
@@ -34,6 +34,13 @@ class ProductInline(admin.TabularInline):
     extra = 0
 
 
+class SellerAdmin(admin.ModelAdmin):
+    """ Административная модель продавца. """
+    list_display = ['id', 'name']
+    search_fields = ['name']
+    inlines = [ProductInline]
+
+
 class FabricatorAdmin(admin.ModelAdmin):
     """ Административная модель производителя. """
     list_display = ['id', 'title']
@@ -55,9 +62,9 @@ class AddInfoPointInline(admin.TabularInline):
 
 class ProductAdmin(admin.ModelAdmin):
     """ Административная модель товара. """
-    list_display = ['id', 'title', 'fabricator', 'price', 'num_purchases', 'sort_index', 'active', 'in_stock',
-                    'free_delivery', 'limited_edition']
-    list_filter = ['fabricator', 'sort_index', 'active', 'in_stock', 'free_delivery', 'limited_edition']
+    list_display = ['id', 'title', 'fabricator', 'seller', 'price', 'num_purchases', 'sort_index', 'active',
+                    'in_stock', 'free_delivery', 'limited_edition']
+    list_filter = ['fabricator', 'seller', 'sort_index', 'active', 'in_stock', 'free_delivery', 'limited_edition']
     search_fields = ['title']
     prepopulated_fields = {'slug': ('title',)}
     inlines = [DescrPointInline, AddInfoPointInline]
@@ -68,9 +75,9 @@ class ProductAdmin(admin.ModelAdmin):
         ('Основные сведения', {
             'fields': ('title', 'slug', 'description', 'price', 'image')
         }),
-        ('Производитель и категории', {
-            'fields': ('fabricator', 'categories'),
-            'description': 'Сведения о производителе и категориях',
+        ('Производитель, продавец и категории', {
+            'fields': ('fabricator', 'seller', 'categories'),
+            'description': 'Сведения о производителе продавце и категориях',
             'classes': ['collapse']
         }),
         ('Дополнительные сведения', {
@@ -137,6 +144,7 @@ class AddInfoPointAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Category, CategoryAdmin)
+admin.site.register(Seller, SellerAdmin)
 admin.site.register(Fabricator, FabricatorAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(DescrPoint, DescrPointAdmin)
