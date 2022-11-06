@@ -31,6 +31,9 @@
               <div class="ProductCard-header">
                 <h2 class="ProductCard-title">{{ product.title }}
                 </h2>
+                <div>
+                  (производитель: {{ product.fabricator.title }}, продавец: {{ product.seller.name }})
+                </div>
                 <div class="ProductCard-info">
                   <div class="ProductCard-cost">
                     <div class="ProductCard-price">${{ product.price }}

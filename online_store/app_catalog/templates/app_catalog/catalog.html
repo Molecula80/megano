@@ -14,8 +14,7 @@
         <div class="Section-column">
           <div class="Section-columnSection">
             <header class="Section-header">
-              <strong class="Section-title">Filter
-              </strong>
+              <strong class="Section-title">Фильтр</strong>
             </header>
             <div class="Section-columnContent">
               <form class="form" method="get">
@@ -33,7 +32,12 @@
                   {{ form.title }}
                 </div>
                 <div class="form-group">
-                  <!-- - var options = setOptions(items, ['value', 'selected', 'disabled']);-->
+                  <h4 style="color: #878a91";>Производители:</h4>
+                  {{ form.fabricators }}
+                </div>
+                <div class="form-group">
+                  <h4 style="color: #878a91;">Продавцы:</h4>
+                  {{ form.sellers }}
                 </div>
                 <div class="form-group">
                   <label class="toggle">
@@ -50,7 +54,7 @@
                 <div class="form-group">
                   <div class="buttons">
                     <button class="btn btn_square btn_dark btn_narrow" type="submit">
-                      Filter</button>
+                      Применить</button>
                   </div>
                 </div>
               </form>

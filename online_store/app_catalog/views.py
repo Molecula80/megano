@@ -51,6 +51,7 @@ class ProductListView(ListView):
         if form.is_valid():
             queryset = self.filter_by_price(queryset=queryset, form=form)
             queryset = self.search_by_text(queryset=queryset, form=form)
+            queryset = self.filter_by_sellers_choice_fields(queryset=queryset, form=form)
         return queryset
 
     @classmethod
@@ -71,6 +72,17 @@ class ProductListView(ListView):
             search_query = SearchQuery(title)
             rank = SearchRank(search_vector, search_query)
             return queryset.annotate(search=search_vector, rank=rank).filter(search=search_query).order_by('-rank')
+        return queryset
+
+    @classmethod
+    def filter_by_sellers_choice_fields(cls, queryset, form):
+        """ Метод для поиска товаров по производителям и продавцам. """
+        sellers = form.cleaned_data.get('sellers')
+        if sellers:
+            queryset = queryset.filter(seller__in=sellers)
+        fabricators = form.cleaned_data.get('fabricators')
+        if fabricators:
+            queryset = queryset.filter(fabricator__in=fabricators)
         return queryset
 
 
