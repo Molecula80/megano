@@ -29,11 +29,9 @@
             </div>
             <div class="ProductCard-desc">
               <div class="ProductCard-header">
-                <h2 class="ProductCard-title">{{ product.title }}
+                <h2 class="ProductCard-title">
+                  {{ product.title }}
                 </h2>
-                <div>
-                  (производитель: {{ product.fabricator.title }}, продавец: {{ product.seller.name }})
-                </div>
                 <div class="ProductCard-info">
                   <div class="ProductCard-cost">
                     <div class="ProductCard-price">${{ product.price }}
@@ -43,9 +41,18 @@
               </div>
               <div class="ProductCard-text">
                 <ul>
-                  {% for point in descr_points %}
-                    <li>{{ point.content }}</li>
-                  {% endfor %}
+                  <li>Производитель: {{ product.fabricator.title }}</li>
+                  <li>Продавец: {{ product.seller.name }}</li>
+                  {% if product.in_stock %}
+                    <li>Товар есть в магазине</li>
+                  {% else %}
+                    <li style="color: red">Товара нет в магазние</li>
+                  {% endif %}
+                  {% if product.free_delivery %}
+                    <li>Бесплатная доставка</li>
+                  {% else %}
+                    <li>Платная доставка</li>
+                  {% endif %}
                 </ul>
               </div>
               <div class="ProductCard-cart">

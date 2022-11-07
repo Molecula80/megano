@@ -29,9 +29,13 @@ class ProductFilterForm(forms.Form):
         attrs={"class": "form-input form-input_full", "id": "title", "name": "title", "type": "text",
                "placeholder": "Название"}))
     sellers = forms.ModelMultipleChoiceField(queryset=Seller.objects.all().order_by('name'), required=False,
-                                             label='Продавцы')
+                                             widget=forms.CheckboxSelectMultiple)
     fabricators = forms.ModelMultipleChoiceField(queryset=Fabricator.objects.all().order_by('title'), required=False,
-                                                 label='Производители')
+                                                 widget=forms.CheckboxSelectMultiple)
+    in_stock = forms.NullBooleanField(required=False,
+                                      widget=forms.Select(choices=[('', 'Не применять'), (True, 'Да'), (False, 'Нет')]))
+    free_delivery = forms.NullBooleanField(required=False, widget=forms.Select(
+        choices=[('', 'Не применять'), (True, 'Да'), (False, 'Нет')]))
 
     class Meta:
-        fields = ('price_range', 'title', 'sellers', 'fabricators')
+        fields = ('price_range', 'title', 'sellers', 'fabricators', 'in_stock', 'free_delivery')

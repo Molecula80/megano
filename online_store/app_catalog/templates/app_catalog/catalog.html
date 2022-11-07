@@ -22,7 +22,7 @@
                 <div class="form-group">
                   <div class="range Section-columnRange">
                     {{ form.price_range }}
-                    <div class="range-price">Price:&#32;
+                    <div class="range-price">Цена:&#32;
                       <div class="rangePrice">
                       </div>
                     </div>
@@ -32,7 +32,7 @@
                   {{ form.title }}
                 </div>
                 <div class="form-group">
-                  <h4 style="color: #878a91";>Производители:</h4>
+                  <h4 style="color: #878a91">Производители:</h4>
                   {{ form.fabricators }}
                 </div>
                 <div class="form-group">
@@ -41,14 +41,14 @@
                 </div>
                 <div class="form-group">
                   <label class="toggle">
-                    <input type="checkbox"/><span class="toggle-box"></span><span class="toggle-text">
-                    Только товары в наличии</span>
+                    <span class="toggle-text">Товары в наличии</span>
+                    {{ form.in_stock }}
                   </label>
                 </div>
                 <div class="form-group">
                   <label class="toggle">
-                    <input type="checkbox"/><span class="toggle-box"></span><span class="toggle-text">
-                    С бесплатной доставкой</span>
+                    <span class="toggle-text">С бесплатной доставкой</span>
+                    {{ form.free_delivery }}
                   </label>
                 </div>
                 <div class="form-group">

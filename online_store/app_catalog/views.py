@@ -21,10 +21,10 @@ class IndexView(TemplateView):
         le_cache_key = 'limited_edition'
         three_categories = Category.objects.filter(active=True).annotate(
             min_price=Min('products__price')).order_by('-sort_index')[:3]
-        popular_products = Product.objects.prefetch_related('categories').filter(in_stock=True).order_by(
+        popular_products = Product.objects.prefetch_related('categories').filter(active=True).order_by(
             '-sort_index')[:8]
         limited_edition = Product.objects.prefetch_related('categories').filter(
-            in_stock=True, limited_edition=True).order_by('-sort_index')[:16]
+            active=True, limited_edition=True).order_by('-sort_index')[:16]
         context['three_categories'] = cache.get_or_set(tc_cache_key, three_categories, 30)
         context['popular_products'] = cache.get_or_set(pp_cache_key, popular_products, 30)
         context['limited_edition'] = cache.get_or_set(le_cache_key, limited_edition, 30)
@@ -51,7 +51,8 @@ class ProductListView(ListView):
         if form.is_valid():
             queryset = self.filter_by_price(queryset=queryset, form=form)
             queryset = self.search_by_text(queryset=queryset, form=form)
-            queryset = self.filter_by_sellers_choice_fields(queryset=queryset, form=form)
+            queryset = self.filter_by_choice_fields(queryset=queryset, form=form)
+            queryset = self.filter_by_checkboxes(queryset=queryset, form=form)
         return queryset
 
     @classmethod
@@ -68,14 +69,15 @@ class ProductListView(ListView):
         """ Метод для поиска продуктов по нвзванию и описанию. """
         title = form.cleaned_data.get('title')
         if title:
-            search_vector = SearchVector('title', weight='A') + SearchVector('description', weight='B')
+            search_vector = SearchVector('title', weight='A') + SearchVector('description', weight='B') + \
+                            SearchVector('descr_points', weight='B')
             search_query = SearchQuery(title)
             rank = SearchRank(search_vector, search_query)
             return queryset.annotate(search=search_vector, rank=rank).filter(search=search_query).order_by('-rank')
         return queryset
 
     @classmethod
-    def filter_by_sellers_choice_fields(cls, queryset, form):
+    def filter_by_choice_fields(cls, queryset, form):
         """ Метод для поиска товаров по производителям и продавцам. """
         sellers = form.cleaned_data.get('sellers')
         if sellers:
@@ -83,6 +85,17 @@ class ProductListView(ListView):
         fabricators = form.cleaned_data.get('fabricators')
         if fabricators:
             queryset = queryset.filter(fabricator__in=fabricators)
+        return queryset
+
+    @classmethod
+    def filter_by_checkboxes(cls, queryset, form):
+        """ Метод для поиска товаров по чекбоксам. """
+        in_stock = form.cleaned_data.get('in_stock')
+        if in_stock is not None:
+            queryset = queryset.filter(in_stock=in_stock)
+        free_delivery = form.cleaned_data.get('free_delivery')
+        if free_delivery is not None:
+            queryset = queryset.filter(free_delivery=free_delivery)
         return queryset
 
 
