@@ -8,7 +8,8 @@ class Category(models.Model):
                                verbose_name='родитель')
     title = models.CharField(max_length=255, verbose_name='название')
     sort_index = models.PositiveIntegerField(verbose_name='индекс сортировки')
-    icon = models.ImageField(upload_to='images/categories/', blank=True, null=True, verbose_name='иконка')
+    image = models.ImageField(upload_to='images/categories/', blank=True, null=True, verbose_name='изображение')
+    icon = models.FileField(upload_to='images/icons/', blank=True, null=True, verbose_name='иконка')
     active = models.BooleanField(default=False, verbose_name='активно')
 
     class Meta:

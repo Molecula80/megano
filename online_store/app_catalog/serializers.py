@@ -1,4 +1,4 @@
-from .models import Category, Fabricator, Product, DescrPoint, AddInfoPoint, Seller
+from .models import Category, Fabricator, Product, Seller, DescrPoint, AddInfoPoint
 from rest_framework import serializers
 
 

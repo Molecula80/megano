@@ -4,11 +4,11 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import ListModelMixin, CreateModelMixin, RetrieveModelMixin, UpdateModelMixin, \
     DestroyModelMixin
 
-from .serializers import CategorySerializer, FabricatorSerializer, ProductSerializer, DescrPointSerializer, \
-    AddInfoPointSerializer, SellerSerializer
+from .serializers import CategorySerializer, FabricatorSerializer, ProductSerializer, SellerSerializer, \
+    DescrPointSerializer, AddInfoPointSerializer
 from .filters import CategoryFilter, ProductFilter
 
-from .models import Category, Fabricator, Product, DescrPoint, AddInfoPoint, Seller
+from .models import Category, Fabricator, Product, Seller, DescrPoint, AddInfoPoint
 
 
 class ModelListApi(PermissionRequiredMixin, ListModelMixin, CreateModelMixin, GenericAPIView):

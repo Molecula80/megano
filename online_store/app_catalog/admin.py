@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Fabricator, Product, DescrPoint, AddInfoPoint, Seller
+from .models import Category, Fabricator, Product, Seller, DescrPoint, AddInfoPoint
 
 
 class CategoryInline(admin.TabularInline):

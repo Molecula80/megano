@@ -53,6 +53,9 @@ class ProductListView(ListView):
             queryset = self.search_by_text(queryset=queryset, form=form)
             queryset = self.filter_by_choice_fields(queryset=queryset, form=form)
             queryset = self.filter_by_checkboxes(queryset=queryset, form=form)
+        order = self.kwargs.get('order')
+        if order:
+            queryset = queryset.order_by(order)
         return queryset
 
     @classmethod

@@ -62,17 +62,14 @@
           </div>
           <div class="Section-columnSection">
             <header class="Section-header">
-              <strong class="Section-title">Popular tags
+              <strong class="Section-title">Популярные тэги
               </strong>
             </header>
             <div class="Section-columnContent">
               <div class="buttons">
-                <a class="btn btn_default btn_sm" href="#">Video</a>
-                <a class="btn btn_default btn_sm" href="#">Development</a>
-                <a class="btn btn_default btn_sm" href="#">Gaming</a>
-                <a class="btn btn_default btn_sm" href="#">Asus</a>
-                <a class="btn btn_default btn_sm" href="#">Development</a>
-                <a class="btn btn_default btn_sm" href="#">Video</a>
+                {% for category in categories|slice:":6" %}
+                  <a class="btn btn_default btn_sm" href="#">{{ category.title }}</a>
+                {% endfor %}
               </div>
             </div>
           </div>
@@ -82,7 +79,8 @@
             <div class="Sort-title">Сортировать по:
             </div>
             <div class="Sort-variants">
-              <a class="Sort-sortBy Sort-sortBy_dec" href="#">Популярности</a><a class="Sort-sortBy" href="#">Цене</a>
+              <a class="Sort-sortBy Sort-sortBy_dec" href="#">Популярности</a>
+              <a class="Sort-sortBy" href="{% url 'app_catalog:sorted_catalog' 'price' %}">Цене</a>
               <a class="Sort-sortBy" href="#">Отзывам</a><a class="Sort-sortBy Sort-sortBy_inc" href="#">Новизне</a>
             </div>
           </div>

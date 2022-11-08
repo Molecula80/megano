@@ -8,4 +8,4 @@ def categories(request) -> dict:
     :return: словарь, содержащий шесть категорий в качестве значения
     :rtype: dict
     """
-    return {'six_categories': Category.objects.filter(active=True).order_by('-sort_index')[:6]}
+    return {'categories': Category.objects.filter(active=True).order_by('-sort_index')}
