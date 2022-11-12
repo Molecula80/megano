@@ -42,6 +42,7 @@ class ProductListView(ListView):
         context = super().get_context_data(**kwargs)
         context['page_title'] = 'Каталог'
         context['form'] = ProductFilterForm
+        context['order'] = self.kwargs.get('order')
         return context
 
     def get_queryset(self):
@@ -53,8 +54,9 @@ class ProductListView(ListView):
             queryset = self.search_by_text(queryset=queryset, form=form)
             queryset = self.filter_by_choice_fields(queryset=queryset, form=form)
             queryset = self.filter_by_checkboxes(queryset=queryset, form=form)
+        orders = ['num_purchases', '-num_purchases', 'price', '-price', 'added_at', '-added_at']
         order = self.kwargs.get('order')
-        if order:
+        if order in orders:
             queryset = queryset.order_by(order)
         return queryset
 

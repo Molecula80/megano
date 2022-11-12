@@ -80,9 +80,9 @@ class Product(models.Model):
     limited_edition = models.BooleanField(default=False, verbose_name='ограниченный тираж')
 
     class Meta:
+        ordering = ['id']
         verbose_name = 'товар'
         verbose_name_plural = 'товары'
-        ordering = ['id']
 
     def __str__(self) -> str:
         """

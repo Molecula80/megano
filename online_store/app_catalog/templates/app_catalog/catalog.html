@@ -79,9 +79,28 @@
             <div class="Sort-title">Сортировать по:
             </div>
             <div class="Sort-variants">
-              <a class="Sort-sortBy Sort-sortBy_dec" href="#">Популярности</a>
-              <a class="Sort-sortBy" href="{% url 'app_catalog:sorted_catalog' 'price' %}">Цене</a>
-              <a class="Sort-sortBy" href="#">Отзывам</a><a class="Sort-sortBy Sort-sortBy_inc" href="#">Новизне</a>
+              {% if order == 'num_purchases' %}
+                <a class="Sort-sortBy Sort-sortBy_dec" href="{% url 'app_catalog:sorted_catalog' '-num_purchases' %}">Популярности</a>
+              {% elif order == '-num_purchases' %}
+                <a class="Sort-sortBy Sort-sortBy_inc" href="{% url 'app_catalog:sorted_catalog' 'num_purchases' %}">Популярности</a>
+              {% else %}
+                <a class="Sort-sortBy" href="{% url 'app_catalog:sorted_catalog' 'num_purchases' %}">Популярности</a>
+              {% endif %}
+              {% if order == 'price' %}
+                <a class="Sort-sortBy Sort-sortBy_dec" href="{% url 'app_catalog:sorted_catalog' '-price' %}">Цене</a>
+              {% elif order == '-price' %}
+                <a class="Sort-sortBy Sort-sortBy_inc" href="{% url 'app_catalog:sorted_catalog' 'price' %}">Цене</a>
+              {% else %}
+                <a class="Sort-sortBy" href="{% url 'app_catalog:sorted_catalog' 'price' %}">Цене</a>
+              {% endif %}
+              <a class="Sort-sortBy" href="#">Отзывам</a>
+              {% if order == 'added_at' %}
+                <a class="Sort-sortBy Sort-sortBy_dec" href="{% url 'app_catalog:sorted_catalog' '-added_at' %}">Новизне</a>
+              {% elif order == '-added_at' %}
+                <a class="Sort-sortBy Sort-sortBy_inc" href="{% url 'app_catalog:sorted_catalog' 'added_at' %}">Новизне</a>
+              {% else %}
+                <a class="Sort-sortBy" href="{% url 'app_catalog:sorted_catalog' 'added_at' %}">Новизне</a>
+              {% endif %}
             </div>
           </div>
           <div class="Cards">
