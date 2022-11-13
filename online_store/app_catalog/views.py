@@ -42,7 +42,7 @@ class ProductListView(ListView):
         context = super().get_context_data(**kwargs)
         context['page_title'] = 'Каталог'
         context['form'] = ProductFilterForm
-        context['order'] = self.kwargs.get('order')
+        context['sort_order'] = self.kwargs.get('sort_order')
         return context
 
     def get_queryset(self):
@@ -54,10 +54,7 @@ class ProductListView(ListView):
             queryset = self.search_by_text(queryset=queryset, form=form)
             queryset = self.filter_by_choice_fields(queryset=queryset, form=form)
             queryset = self.filter_by_checkboxes(queryset=queryset, form=form)
-        orders = ['num_purchases', '-num_purchases', 'price', '-price', 'added_at', '-added_at']
-        order = self.kwargs.get('order')
-        if order in orders:
-            queryset = queryset.order_by(order)
+        queryset = self.sort_products(queryset=queryset)
         return queryset
 
     @classmethod
@@ -74,8 +71,7 @@ class ProductListView(ListView):
         """ Метод для поиска продуктов по нвзванию и описанию. """
         title = form.cleaned_data.get('title')
         if title:
-            search_vector = SearchVector('title', weight='A') + SearchVector('description', weight='B') + \
-                            SearchVector('descr_points', weight='B')
+            search_vector = SearchVector('title', weight='A') + SearchVector('description', weight='B')
             search_query = SearchQuery(title)
             rank = SearchRank(search_vector, search_query)
             return queryset.annotate(search=search_vector, rank=rank).filter(search=search_query).order_by('-rank')
@@ -103,6 +99,15 @@ class ProductListView(ListView):
             queryset = queryset.filter(free_delivery=free_delivery)
         return queryset
 
+    def sort_products(self, queryset):
+        """ Сортирует товары. """
+        # Возможные порядки сортировки.
+        sort_orders = ['num_purchases', '-num_purchases', 'price', '-price', 'added_at', '-added_at']
+        sort_order = self.kwargs.get('sort_order')
+        if sort_order in sort_orders:
+            return queryset.order_by(sort_order)
+        return queryset
+
 
 class ProductDetailView(DetailView):
     """ Детальная страница товара. """
@@ -113,12 +118,13 @@ class ProductDetailView(DetailView):
     def get_context_data(self, **kwargs) -> dict:
         """ Метод для передачи параметров странице товара. """
         context = super().get_context_data(**kwargs)
-        context['page_title'] = self.object.title
-        context['categories'] = self.object.categories.all()
-        context['descr_points'] = self.object.descr_points.all()
-        context['add_info_points'] = self.object.add_info_points.all()
-        context['form'] = ReviewForm()
-        context['reviews_count'] = 1
+        day = 60 * 60 * 24
+        context['page_title'] = cache.get_or_set('page_title', self.object.title, day)
+        context['categories'] = cache.get_or_set('categories', self.object.categories.all(), day)
+        context['descr_points'] = cache.get_or_set('descr_points', self.object.descr_points.all(), day)
+        context['add_info_points'] = cache.get_or_set('add_info_points', self.object.add_info_points.all(), day)
+        context['form'] = cache.get_or_set('form', ReviewForm(), day)
+        context['reviews_count'] = cache.get_or_set('reviews_count', 0, day)
         return context
 
     def post(self, request, slug: str):

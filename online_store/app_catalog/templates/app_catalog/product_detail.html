@@ -14,7 +14,9 @@
           <div class="ProductCard">
             <div class="ProductCard-look">
               <div class="ProductCard-photo">
-                <img src="{{ product.image.url }}" alt="bigGoods.png"/>
+                {% if product.image %}
+                  <img src="{{ product.image.url }}" alt="bigGoods.png"/>
+                {% endif %}
               </div>
               <div class="ProductCard-picts">
                 {% if product.image %}
@@ -53,6 +55,8 @@
                   {% else %}
                     <li>Платная доставка</li>
                   {% endif %}
+                  <li>Дата публикации: {{ product.added_at }}</li>
+                  <li>Количество покупок: {{ product.num_purchases }}</li>
                 </ul>
               </div>
               <div class="ProductCard-cart">

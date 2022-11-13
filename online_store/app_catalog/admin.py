@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.core.cache import cache
+
 from .models import Category, Fabricator, Product, Seller, DescrPoint, AddInfoPoint
 
 
@@ -127,6 +129,11 @@ class ProductAdmin(admin.ModelAdmin):
     mark_as_no_free_delivery.short_description = 'Пометить как не имеющие свободную доставку'
     mark_as_limited_edition.short_description = 'Пометить как ограниченный тираж'
     mark_as_unlimited_edition.short_description = 'Пометить как неограниченный тираж'
+
+    def save_model(self, request, obj, form, change):
+        """ Очищает кеш при изменении товара. """
+        cache.clear()
+
 
 
 class DescrPointAdmin(admin.ModelAdmin):

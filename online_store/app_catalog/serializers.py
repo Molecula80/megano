@@ -6,7 +6,7 @@ class CategorySerializer(serializers.ModelSerializer):
     """ Сериализатор для категорий товаров. """
     class Meta:
         model = Category
-        fields = '__all__'
+        fields = ['id', 'parent', 'title', 'sort_index', 'active']
 
 
 class SellerSerializer(serializers.ModelSerializer):
@@ -27,7 +27,8 @@ class ProductSerializer(serializers.ModelSerializer):
     """ Сериализатор для товаров. """
     class Meta:
         model = Product
-        fields = '__all__'
+        fields = ['id', 'seller', 'fabricator', 'categories', 'title', 'slug', 'description', 'price', 'added_at',
+                  'num_purchases', 'sort_index', 'active', 'in_stock', 'free_delivery', 'limited_edition']
 
 
 class DescrPointSerializer(serializers.ModelSerializer):
