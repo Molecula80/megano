@@ -1,19 +1,24 @@
 from django import forms
 from django.db.models import Min, Max
 
-from .models import Product, Seller, Fabricator
+from .models import Product, Seller, Fabricator, Review
 
 
-class ReviewForm(forms.Form):
+class ReviewForm(forms.ModelForm):
     """ Форма для добавления отзыва к товару. """
-    text = forms.CharField(widget=forms.TextInput(attrs={"class": "form-textarea", "name": "review", "id": "review",
+    text = forms.CharField(error_messages={'required': 'Это поле обязательно для заполнения.'},
+                           widget=forms.TextInput(attrs={"class": "form-textarea", "name": "review", "id": "review",
                                                          "placeholder": "Отзыв"}))
-    name = forms.CharField(widget=forms.TextInput(attrs={"class": "form-input", "id": "name", "name": "name",
+    name = forms.CharField(error_messages={'required': 'Это поле обязательно для заполнения.'},
+                           widget=forms.TextInput(attrs={"class": "form-input", "id": "name", "name": "name",
                                                          "type": "text", "placeholder": "Имя"}))
-    email = forms.EmailField(widget=forms.EmailInput(attrs={"class": "form-input", "id": "email", "name": "email",
+    email = forms.EmailField(error_messages={'required': 'Это поле обязательно для заполнения.',
+                                             'invalid': 'Это значение недопустимо.'},
+                             widget=forms.EmailInput(attrs={"class": "form-input", "id": "email", "name": "email",
                                                             "type": "text", "placeholder": "Email"}))
 
     class Meta:
+        model = Review
         fields = ('text', 'name', 'email')
 
 

@@ -1,4 +1,4 @@
-from .models import Category, Fabricator, Product, Seller, DescrPoint, AddInfoPoint
+from .models import Category, Fabricator, Product, Seller, DescrPoint, AddInfoPoint, Review
 from rest_framework import serializers
 
 
@@ -42,4 +42,11 @@ class AddInfoPointSerializer(serializers.ModelSerializer):
     """ Сериализатор для пунктов дополнительной информации о товаре. """
     class Meta:
         model = AddInfoPoint
+        fields = '__all__'
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    """ Сериализатор для отзывов о товаре. """
+    class Meta:
+        model = Review
         fields = '__all__'

@@ -1,6 +1,8 @@
 from django.db import models
 from django.urls import reverse
 
+from app_users.models import User
+
 
 class Category(models.Model):
     """ Модель категории товаров. """
@@ -136,3 +138,26 @@ class AddInfoPoint(models.Model):
         :rtype: str
         """
         return '{characteristic}: {value}'.format(characteristic=self.characteristic, value=self.value)
+
+
+class Review(models.Model):
+    """ Модель отзыва о товаре. """
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews', verbose_name='товар')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews', verbose_name='пользователь')
+    name = models.CharField(max_length=255, verbose_name='имя')
+    email = models.EmailField()
+    text = models.TextField(verbose_name='текст')
+    added_at = models.DateTimeField(auto_now_add=True, verbose_name='дата написания')
+    active = models.BooleanField(default=True, verbose_name='активно')
+
+    class Meta:
+        verbose_name = 'отзыв'
+        verbose_name_plural = 'отзывы'
+
+    def __str__(self) -> str:
+        """
+        Возаращает название товара, имя автора и дату написания отзыва.
+        :return: название товара, имя автора и дату написания отзыва
+        :rtype: str
+        """
+        return '{product} {name} {added_at}'.format(product=self.product, name=self.name, added_at=self.added_at)

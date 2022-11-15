@@ -146,30 +146,27 @@
                   </h3>
                 </header>
                 <div class="Comments">
-                  <div class="Comment">
-                    <div class="Comment-column Comment-column_pict">
-                      <div class="Comment-avatar">
-                      </div>
-                    </div>
-                    <div class="Comment-column">
-                      <header class="Comment-header">
-                        <div>
-                          <strong class="Comment-title">Alexandra Brownie
-                          </strong><span class="Comment-date">December 25&#32;&#32;/&#32;&#32;2017&#32;&#32;/&#32;&#32;22:50</span>
+                  {% for review in reviews %}
+                    <div class="Comment">
+                      <div class="Comment-column Comment-column_pict">
+                        <div class="Comment-avatar">
+                          {% if review.user.avatar %}
+                            <img src="{{ review.user.avatar.url }}"/>
+                          {% endif %}
                         </div>
-                      </header>
-                      <div class="Comment-content">
-                        Lorem ipsum dolor sit amet, consectetuer adipiscing elit doli. Aenean commodo ligula eget
-                        dolor. Aenean massa. Cumtipsu sociis natoque penatibus et magnis dis parturient montesti,
-                        nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eutu, pretiumem.
-                        Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate
-                        eget, arcu. In enim justotuio, rhoncus ut loret, imperdiet a, venenatis vitae, justo.
-                        Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus element
-                        semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat
-                        vitae.
+                      </div>
+                      <div class="Comment-column">
+                        <header class="Comment-header">
+                          <div>
+                            <strong class="Comment-title">{{ review.name }}</strong><span class="Comment-date">
+                            {{ review.added_at.mounth }} {{ review.added_at.day }}&#32;&#32;/&#32;&#32;
+                            {{ review.added_at.year }}&#32;&#32;/&#32;&#32;{{ review.added_at.time }}</span>
+                          </div>
+                        </header>
+                        <div class="Comment-content">{{ review.text }}</div>
                       </div>
                     </div>
-                  </div>
+                  {% endfor %}
                 </div>
                 <header class="Section-header Section-header_product">
                   <h3 class="Section-title">Add Review

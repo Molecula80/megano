@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.core.cache import cache
 
-from .models import Category, Fabricator, Product, Seller, DescrPoint, AddInfoPoint
+from .models import Category, Fabricator, Product, Seller, DescrPoint, AddInfoPoint, Review
 
 
 class CategoryInline(admin.TabularInline):
@@ -62,6 +62,12 @@ class AddInfoPointInline(admin.TabularInline):
     extra = 0
 
 
+class ReviewInline(admin.TabularInline):
+    """ Инлайн класс для редактирования отзывов к товарам. """
+    model = Review
+    extra = 0
+
+
 class ProductAdmin(admin.ModelAdmin):
     """ Административная модель товара. """
     list_display = ['id', 'title', 'fabricator', 'seller', 'price', 'num_purchases', 'sort_index', 'active',
@@ -69,7 +75,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = ['fabricator', 'seller', 'sort_index', 'active', 'in_stock', 'free_delivery', 'limited_edition']
     search_fields = ['title']
     prepopulated_fields = {'slug': ('title',)}
-    inlines = [DescrPointInline, AddInfoPointInline]
+    inlines = [DescrPointInline, AddInfoPointInline, ReviewInline]
     actions = ['mark_as_active', 'mark_as_inactive', 'mark_as_in_stock', 'mark_as_out_of_stock',
                'mark_as_free_delivery', 'mark_as_no_free_delivery', 'mark_as_limited_edition',
                'mark_as_unlimited_edition']
@@ -135,19 +141,37 @@ class ProductAdmin(admin.ModelAdmin):
         cache.clear()
 
 
-
 class DescrPointAdmin(admin.ModelAdmin):
-    """ Административная панель пункта описания товара. """
+    """ Административная модель пункта описания товара. """
     list_display = ['id', 'product', 'content']
     list_filter = ['product']
     search_fields = ['content']
 
 
 class AddInfoPointAdmin(admin.ModelAdmin):
-    """ Административная панель пункта дополнительной информации о товаре. """
+    """ Административная модель пункта дополнительной информации о товаре. """
     list_display = ['id', 'product', 'characteristic', 'value']
     list_filter = ['product']
     search_fields = ['characteristic', 'value']
+
+
+class ReviewAdmin(admin.ModelAdmin):
+    """ Административная модель отзыва о товаре. """
+    list_display = ['id', 'product', 'user', 'name', 'email', 'added_at', 'active']
+    list_filter = ['product', 'user', 'name', 'email', 'active']
+    search_fields = ['name', 'email', 'text']
+    actions = ['mark_as_active', 'mark_as_inactive']
+
+    def mark_as_active(self, request, queryset) -> None:
+        """ Помечает отзывы как активные. """
+        queryset.update(active=True)
+
+    def mark_as_inactive(self, request, queryset) -> None:
+        """ Помечает отзывы как неактивные. """
+        queryset.update(active=False)
+
+    mark_as_active.short_description = 'Пометить как активные'
+    mark_as_inactive.short_description = 'Пометить как неактивные'
 
 
 admin.site.register(Category, CategoryAdmin)
@@ -156,3 +180,4 @@ admin.site.register(Fabricator, FabricatorAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(DescrPoint, DescrPointAdmin)
 admin.site.register(AddInfoPoint, AddInfoPointAdmin)
+admin.site.register(Review, ReviewAdmin)

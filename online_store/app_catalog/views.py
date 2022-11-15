@@ -1,5 +1,5 @@
-# from django.shortcuts import render
-from django.http import HttpResponse
+from django.shortcuts import render
+from django.http import HttpResponseRedirect
 from django.views.generic import TemplateView, DetailView, ListView
 from django.core.cache import cache
 from django.db.models import Min
@@ -123,7 +123,8 @@ class ProductDetailView(DetailView):
         context['categories'] = cache.get_or_set('categories', self.object.categories.all(), day)
         context['descr_points'] = cache.get_or_set('descr_points', self.object.descr_points.all(), day)
         context['add_info_points'] = cache.get_or_set('add_info_points', self.object.add_info_points.all(), day)
-        context['form'] = cache.get_or_set('form', ReviewForm(), day)
+        context['form'] = ReviewForm()
+        context['reviews'] = self.object.reviews.filter(active=True)
         context['reviews_count'] = cache.get_or_set('reviews_count', 0, day)
         return context
 
@@ -131,4 +132,9 @@ class ProductDetailView(DetailView):
         """ Метод для добавления отзыва к товару. """
         form = ReviewForm(request.POST)
         if form.is_valid():
-            return HttpResponse('Отзыв успешно добавлен.')
+            review = form.save(commit=False)
+            review.product = self.get_object()
+            review.user = request.user
+            review.save()
+            return HttpResponseRedirect('/')
+        return render(request, 'app_catalog/product_detail.html')
