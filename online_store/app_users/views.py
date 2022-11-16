@@ -20,7 +20,7 @@ def register_view(request):
     """ Страница регистрации. """
     page_title = 'регистрация'
     if request.method == 'POST':
-        form = RegisterForm(request.POST)
+        form = RegisterForm(request.POST, request.FILES)
         if form.is_valid():
             form.save(commit=False)
             telephone = form.cleaned_data.get('telephone')
