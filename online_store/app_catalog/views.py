@@ -1,5 +1,7 @@
-from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
+from django.shortcuts import render
+from django.urls import reverse
 from django.views.generic import TemplateView, DetailView, ListView
 from django.core.cache import cache
 from django.db.models import Min
@@ -123,18 +125,38 @@ class ProductDetailView(DetailView):
         context['categories'] = cache.get_or_set('categories', self.object.categories.all(), day)
         context['descr_points'] = cache.get_or_set('descr_points', self.object.descr_points.all(), day)
         context['add_info_points'] = cache.get_or_set('add_info_points', self.object.add_info_points.all(), day)
-        context['form'] = ReviewForm()
+        # Если пользователь аутентифицирован, подставляем в форму его имя и email.
+        context['form'] = ReviewForm(initial=self.get_initial_values(self.request.user))
         context['reviews'] = self.object.reviews.filter(active=True)
         context['reviews_count'] = cache.get_or_set('reviews_count', 0, day)
         return context
 
     def post(self, request, slug: str):
         """ Метод для добавления отзыва к товару. """
-        form = ReviewForm(request.POST)
+        # Если пользователь аутентифицирован, подставляем в форму его имя и email.
+        form = ReviewForm(request.POST, initial=self.get_initial_values(request.user))
+        if request.user.is_anonymous:
+            form.add_error('__all__', 'Вам нужно авторизироваться, чтобы оставить отзыв.')
         if form.is_valid():
             review = form.save(commit=False)
             review.product = self.get_object()
             review.user = request.user
             review.save()
-            return HttpResponseRedirect('/')
-        return render(request, 'app_catalog/product_detail.html')
+            return HttpResponseRedirect(reverse('app_catalog:product_detail', args=[slug]))
+        return render(request, 'app_catalog/product_detail.html', context={
+            'slug': slug,
+            'page_title': self.get_object().title,
+            'categories': self.get_object().categories.all(),
+            'descr_points': self.get_object().descr_points.all(),
+            'add_info_points': self.get_object().add_info_points.all(),
+            'form': form,
+            'reviews': self.get_object().reviews.filter(active=True),
+            'reviews_count': 0,
+        })
+
+    @classmethod
+    def get_initial_values(cls, user) -> dict:
+        """ Возвращает словарь, содержащий имя и email пользователя, если последний аутентифицирован. """
+        if user.is_authenticated:
+            return {'name': user.full_name, 'email': user.email}
+        return dict()
