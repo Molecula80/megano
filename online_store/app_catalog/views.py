@@ -1,6 +1,5 @@
-from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.views.generic import TemplateView, DetailView, ListView
 from django.core.cache import cache
@@ -135,24 +134,15 @@ class ProductDetailView(DetailView):
         """ Метод для добавления отзыва к товару. """
         # Если пользователь аутентифицирован, подставляем в форму его имя и email.
         form = ReviewForm(request.POST, initial=self.get_initial_values(request.user))
-        if request.user.is_anonymous:
-            form.add_error('__all__', 'Вам нужно авторизироваться, чтобы оставить отзыв.')
         if form.is_valid():
-            review = form.save(commit=False)
-            review.product = self.get_object()
-            review.user = request.user
-            review.save()
-            return HttpResponseRedirect(reverse('app_catalog:product_detail', args=[slug]))
-        return render(request, 'app_catalog/product_detail.html', context={
-            'slug': slug,
-            'page_title': self.get_object().title,
-            'categories': self.get_object().categories.all(),
-            'descr_points': self.get_object().descr_points.all(),
-            'add_info_points': self.get_object().add_info_points.all(),
-            'form': form,
-            'reviews': self.get_object().reviews.filter(active=True),
-            'reviews_count': 0,
-        })
+            if not request.user.is_authenticated:
+                form.add_error('email', 'Вам нужно авторизироваться, чтобы оставить отзыв.')
+            else:
+                review = form.save(commit=False)
+                review.product = self.get_object()
+                review.user = request.user
+                review.save()
+        return render(request, 'app_catalog/product_detail.html', context={'product': self.get_object(), 'form': form})
 
     @classmethod
     def get_initial_values(cls, user) -> dict:
@@ -160,3 +150,36 @@ class ProductDetailView(DetailView):
         if user.is_authenticated:
             return {'name': user.full_name, 'email': user.email}
         return dict()
+
+
+def product_detail_view(request, slug):
+    context = dict()
+    product = get_object_or_404(Product, slug=slug)
+    day = 60 * 60 * 24
+    context['product'] = product
+    context['page_title'] = cache.get_or_set('page_title', product.title, day)
+    context['categories'] = cache.get_or_set('categories', product.categories.all(), day)
+    context['descr_points'] = cache.get_or_set('descr_points', product.descr_points.all(), day)
+    context['add_info_points'] = cache.get_or_set('add_info_points', product.add_info_points.all(), day)
+    context['reviews'] = product.reviews.filter(active=True)
+    context['reviews_count'] = cache.get_or_set('reviews_count', 0, day)
+    # Если пользователь аутентифицирован, подставляем в форму его имя и email.
+    if request.user.is_authenticated:
+        initial = {'name': request.user.full_name, 'email': request.user.email}
+    else:
+        initial = dict()
+    if request.method == 'POST':
+        form = ReviewForm(request.POST, initial=initial)
+        if form.is_valid():
+            if not request.user.is_authenticated:
+                form.add_error('name', 'Вам нужно авторизироваться, чтобы оставить отзыв.')
+            else:
+                review = form.save(commit=False)
+                review.product = product
+                review.user = request.user
+                review.save()
+    else:
+        form = ReviewForm(initial=initial)
+    context['form'] = form
+    return render(request, 'app_catalog/product_detail.html', context=context)
+
