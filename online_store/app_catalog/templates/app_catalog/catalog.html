@@ -93,7 +93,13 @@
               {% else %}
                 <a class="Sort-sortBy" href="{% url 'app_catalog:sorted_catalog' '-price' %}">Цене</a>
               {% endif %}
-              <a class="Sort-sortBy" href="#">Отзывам</a>
+              {% if sort_order == 'num_reviews' %}
+                <a class="Sort-sortBy Sort-sortBy_dec" href="{% url 'app_catalog:sorted_catalog' '-num_reviews' %}">Отзывам</a>
+              {% elif sort_order == '-num_reviews' %}
+                <a class="Sort-sortBy Sort-sortBy_inc" href="{% url 'app_catalog:sorted_catalog' 'num_reviews' %}">Отзывам</a>
+              {% else %}
+                <a class="Sort-sortBy" href="{% url 'app_catalog:sorted_catalog' '-num_reviews' %}">Отзывам</a>
+              {% endif %}
               {% if sort_order == 'added_at' %}
                 <a class="Sort-sortBy Sort-sortBy_dec" href="{% url 'app_catalog:sorted_catalog' '-added_at' %}">Новизне</a>
               {% elif sort_order == '-added_at' %}

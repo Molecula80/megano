@@ -136,10 +136,6 @@ class ProductAdmin(admin.ModelAdmin):
     mark_as_limited_edition.short_description = 'Пометить как ограниченный тираж'
     mark_as_unlimited_edition.short_description = 'Пометить как неограниченный тираж'
 
-    def save_model(self, request, obj, form, change):
-        """ Очищает кеш при изменении товара. """
-        cache.clear()
-
 
 class DescrPointAdmin(admin.ModelAdmin):
     """ Административная модель пункта описания товара. """

@@ -91,7 +91,7 @@
             <div class="Tabs-links">
               <a class="Tabs-link_ACTIVE Tabs-link" href="#description"><span>Описание</span></a>
               <a class="Tabs-link" href="#addit"><span>Доп. информация</span></a>
-              <a class="Tabs-link" href="#reviews"><span>Отзывы ({{ reviews_count }})</span></a>
+              <a class="Tabs-link" href="#reviews"><span>Отзывы ({{ num_reviews }})</span></a>
             </div>
             <div class="Tabs-wrap">
               <div class="Tabs-block" id="description">
@@ -183,11 +183,6 @@
                       <div class="row">
                         <div class="row-block">
                           {{ form.name }}
-                          {% if form.name.errors %}
-                            <div style="font-size: 14px; color: #f26d7d;">
-                              {{ form.name.errors }}
-                            </div>
-                          {% endif %}
                         </div>
                         <div class="row-block">
                           {{ form.email }}
@@ -197,6 +192,12 @@
                     <div class="form-group">
                       <button class="btn btn_muted" type="submit">Добавить Отзыв
                       </button>
+                      {% if auth_error %}
+                        <div style="color: #f26d7d; display: block; margin-top: 20px; text-align: right;">
+                          Вам ннжно <a href="{% url 'login' %}">авторизироваться</a>, чтобы оставить отзыв. Если у вас
+                          нет аккаунта <a href="{% url 'register' %}">зарегистрируйтесь</a>.
+                        </div>
+                      {% endif %}
                     </div>
                   </form>
                 </div>

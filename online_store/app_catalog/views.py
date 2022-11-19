@@ -1,9 +1,7 @@
-from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
-from django.urls import reverse
-from django.views.generic import TemplateView, DetailView, ListView
+from django.views.generic import TemplateView, ListView
 from django.core.cache import cache
-from django.db.models import Min
+from django.db.models import Min, Count, Q
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 
 from .models import Category, Product
@@ -22,10 +20,11 @@ class IndexView(TemplateView):
         le_cache_key = 'limited_edition'
         three_categories = Category.objects.filter(active=True).annotate(
             min_price=Min('products__price')).order_by('-sort_index')[:3]
-        popular_products = Product.objects.prefetch_related('categories').filter(active=True).order_by(
-            '-sort_index')[:8]
-        limited_edition = Product.objects.prefetch_related('categories').filter(
-            active=True, limited_edition=True).order_by('-sort_index')[:16]
+        num_reviews = Count('reviews', filter=Q(reviews__active=True))  # Количество отзывов.
+        products = Product.objects.annotate(num_reviews=num_reviews).prefetch_related('categories').\
+            filter(active=True).order_by('-sort_index')
+        popular_products = products[:8]
+        limited_edition = products.filter(limited_edition=True)[:16]
         context['three_categories'] = cache.get_or_set(tc_cache_key, three_categories, 30)
         context['popular_products'] = cache.get_or_set(pp_cache_key, popular_products, 30)
         context['limited_edition'] = cache.get_or_set(le_cache_key, limited_edition, 30)
@@ -48,7 +47,9 @@ class ProductListView(ListView):
 
     def get_queryset(self):
         """ Метод для вывода и фильтрации продуктов. """
-        queryset = Product.objects.prefetch_related('categories').filter(active=True)
+        num_reviews = Count('reviews', filter=Q(reviews__active=True))  # Количество отзывов.
+        queryset = Product.objects.annotate(num_reviews=num_reviews).prefetch_related('categories').\
+            filter(active=True).order_by('-sort_index')
         form = ProductFilterForm(self.request.GET)
         if form.is_valid():
             queryset = self.filter_by_price(queryset=queryset, form=form)
@@ -103,53 +104,12 @@ class ProductListView(ListView):
     def sort_products(self, queryset):
         """ Сортирует товары. """
         # Возможные порядки сортировки.
-        sort_orders = ['num_purchases', '-num_purchases', 'price', '-price', 'added_at', '-added_at']
+        sort_orders = ['num_purchases', '-num_purchases', 'price', '-price', 'num_reviews', '-num_reviews', 'added_at',
+                       '-added_at']
         sort_order = self.kwargs.get('sort_order')
         if sort_order in sort_orders:
             return queryset.order_by(sort_order)
         return queryset
-
-
-class ProductDetailView(DetailView):
-    """ Детальная страница товара. """
-    template_name = 'app_catalog/product_detail.html'
-    model = Product
-    context_object_name = 'product'
-
-    def get_context_data(self, **kwargs) -> dict:
-        """ Метод для передачи параметров странице товара. """
-        context = super().get_context_data(**kwargs)
-        day = 60 * 60 * 24
-        context['page_title'] = cache.get_or_set('page_title', self.object.title, day)
-        context['categories'] = cache.get_or_set('categories', self.object.categories.all(), day)
-        context['descr_points'] = cache.get_or_set('descr_points', self.object.descr_points.all(), day)
-        context['add_info_points'] = cache.get_or_set('add_info_points', self.object.add_info_points.all(), day)
-        # Если пользователь аутентифицирован, подставляем в форму его имя и email.
-        context['form'] = ReviewForm(initial=self.get_initial_values(self.request.user))
-        context['reviews'] = self.object.reviews.filter(active=True)
-        context['reviews_count'] = cache.get_or_set('reviews_count', 0, day)
-        return context
-
-    def post(self, request, slug: str):
-        """ Метод для добавления отзыва к товару. """
-        # Если пользователь аутентифицирован, подставляем в форму его имя и email.
-        form = ReviewForm(request.POST, initial=self.get_initial_values(request.user))
-        if form.is_valid():
-            if not request.user.is_authenticated:
-                form.add_error('email', 'Вам нужно авторизироваться, чтобы оставить отзыв.')
-            else:
-                review = form.save(commit=False)
-                review.product = self.get_object()
-                review.user = request.user
-                review.save()
-        return render(request, 'app_catalog/product_detail.html', context={'product': self.get_object(), 'form': form})
-
-    @classmethod
-    def get_initial_values(cls, user) -> dict:
-        """ Возвращает словарь, содержащий имя и email пользователя, если последний аутентифицирован. """
-        if user.is_authenticated:
-            return {'name': user.full_name, 'email': user.email}
-        return dict()
 
 
 def product_detail_view(request, slug):
@@ -161,8 +121,10 @@ def product_detail_view(request, slug):
     context['categories'] = cache.get_or_set('categories', product.categories.all(), day)
     context['descr_points'] = cache.get_or_set('descr_points', product.descr_points.all(), day)
     context['add_info_points'] = cache.get_or_set('add_info_points', product.add_info_points.all(), day)
-    context['reviews'] = product.reviews.filter(active=True)
-    context['reviews_count'] = cache.get_or_set('reviews_count', 0, day)
+    reviews = product.reviews.filter(active=True)
+    context['reviews'] = reviews
+    context['num_reviews'] = cache.get_or_set('num_reviews', reviews.count(), day)
+    context['auth_error'] = False
     # Если пользователь аутентифицирован, подставляем в форму его имя и email.
     if request.user.is_authenticated:
         initial = {'name': request.user.full_name, 'email': request.user.email}
@@ -171,8 +133,9 @@ def product_detail_view(request, slug):
     if request.method == 'POST':
         form = ReviewForm(request.POST, initial=initial)
         if form.is_valid():
-            if not request.user.is_authenticated:
-                form.add_error('name', 'Вам нужно авторизироваться, чтобы оставить отзыв.')
+            # Если пользователь не аутентифицирован, выводим сообщение об ошибке.
+            if request.user.is_anonymous:
+                context['auth_error'] = True
             else:
                 review = form.save(commit=False)
                 review.product = product

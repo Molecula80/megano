@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import IndexView, ProductListView, ProductDetailView, product_detail_view
+from .views import IndexView, ProductListView, product_detail_view
 from .api import CategoryListApi, CategoryDetailApi, FabricatorListApi, FabricatorDetailApi, ProductListApi, \
     ProductDetailApi, DescrPointListApi, DescrPointDetailApi, AddInfoPointListApi, AddInfoPointDetailApi, \
     SellerListApi, SellerDetailApi, ReviewListApi, ReviewDetailApi
