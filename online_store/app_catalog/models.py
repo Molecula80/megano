@@ -1,5 +1,7 @@
 from django.db import models
 from django.urls import reverse
+from django.db.models.signals import post_save
+from django.core.cache import cache
 
 from app_users.models import User
 
@@ -161,3 +163,12 @@ class Review(models.Model):
         :rtype: str
         """
         return '{product} {name} {added_at}'.format(product=self.product, name=self.name, added_at=self.added_at)
+
+
+def clear_cache(*args, **kwargs):
+    """ Сбрасывает кеш при изменении товара. """
+    keys = ['page_title', 'categories', 'descr_points', 'add_info_points', 'num_reviews']
+    cache.delete_many(keys)
+
+
+post_save.connect(clear_cache, sender=Product)
