@@ -1,8 +1,10 @@
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import TemplateView, ListView
 from django.core.cache import cache
 from django.db.models import Min, Count, Q
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from .models import Category, Product
 from .forms import ReviewForm, ProductFilterForm
@@ -121,15 +123,11 @@ def product_detail_view(request, slug):
     context['categories'] = cache.get_or_set('categories', product.categories.all(), day)
     context['descr_points'] = cache.get_or_set('descr_points', product.descr_points.all(), day)
     context['add_info_points'] = cache.get_or_set('add_info_points', product.add_info_points.all(), day)
-    reviews = product.reviews.filter(active=True)
-    context['reviews'] = reviews
+    reviews = product.reviews.filter(active=True).order_by('-added_at')
     context['num_reviews'] = cache.get_or_set('num_reviews', reviews.count(), day)
     context['auth_error'] = False
     # Если пользователь аутентифицирован, подставляем в форму его имя и email.
-    if request.user.is_authenticated:
-        initial = {'name': request.user.full_name, 'email': request.user.email}
-    else:
-        initial = dict()
+    initial = get_initial_values(user=request.user)
     if request.method == 'POST':
         form = ReviewForm(request.POST, initial=initial)
         if form.is_valid():
@@ -144,5 +142,31 @@ def product_detail_view(request, slug):
     else:
         form = ReviewForm(initial=initial)
     context['form'] = form
-    return render(request, 'app_catalog/product_detail.html', context=context)
+    return product_paginator(request=request, reviews=reviews, context=context)
 
+
+def get_initial_values(user) -> dict:
+    """ Возвращает словарь, содержащий имя и email пользователя, если последний аутентифицирован. """
+    if user.is_authenticated:
+        return {'name': user.full_name, 'email': user.email}
+    return dict()
+
+
+def product_paginator(request, reviews, context):
+    """ Производит пагинацию отзывов к товару. """
+    paginator = Paginator(reviews, 5)
+    page = request.GET.get('page')
+    try:
+        context['reviews'] = paginator.page(page)
+    except PageNotAnInteger:
+        # Если переданная страница не является числом, возвращаем первую.
+        context['reviews'] = paginator.page(1)
+    except EmptyPage:
+        if request.is_ajax():
+            # Если получили AJAX-запрос с номером страницы, большим, чем их количество, возвращаем пустую страницу.
+            return HttpResponse('')
+        # Если номер страницы больше, чем их количество, возвращаем последню.
+        context['reviews'] = paginator.page(paginator.num_pages)
+    if request.is_ajax():
+        return render(request, 'app_catalog/reviews_ajax.html', context=context)
+    return render(request, 'app_catalog/product_detail.html', context=context)

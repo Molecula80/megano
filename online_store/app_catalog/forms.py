@@ -7,8 +7,8 @@ from .models import Product, Seller, Fabricator, Review
 class ReviewForm(forms.ModelForm):
     """ Форма для добавления отзыва к товару. """
     text = forms.CharField(error_messages={'required': 'Это поле обязательно для заполнения.'},
-                           widget=forms.TextInput(attrs={"class": "form-textarea", "name": "review", "id": "review",
-                                                         "placeholder": "Отзыв"}))
+                           widget=forms.Textarea(attrs={"class": "form-textarea", "name": "review", "id": "review",
+                                                        "placeholder": "Отзыв"}))
     name = forms.CharField(error_messages={'required': 'Это поле обязательно для заполнения.'},
                            widget=forms.TextInput(attrs={"class": "form-input", "id": "name", "name": "name",
                                                          "type": "text", "placeholder": "Имя"}))

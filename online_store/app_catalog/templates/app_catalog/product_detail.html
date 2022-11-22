@@ -147,27 +147,7 @@
                   </h3>
                 </header>
                 <div class="Comments">
-                  {% for review in reviews %}
-                    <div class="Comment">
-                      <div class="Comment-column Comment-column_pict">
-                        {% if review.user.avatar %}
-                          <img class="Comment-avatar" style="object-fit: cover" src="{{ review.user.avatar.url }}"/>
-                        {% else %}
-                          <div class="Comment-avatar"></div>
-                        {% endif %}
-                      </div>
-                      <div class="Comment-column">
-                        <header class="Comment-header">
-                          <div>
-                            <strong class="Comment-title">{{ review.name }}</strong><span class="Comment-date">
-                            {{ review.added_at|date:"E d" }}&#32;&#32;/&#32;&#32;{{ review.added_at.year }}
-                            &#32;&#32;/&#32;&#32;{{ review.added_at|date:"G:i" }}</span>
-                          </div>
-                        </header>
-                        <div class="Comment-content">{{ review.text }}</div>
-                      </div>
-                    </div>
-                  {% endfor %}
+                  {% include "app_catalog/reviews_ajax.html" %}
                 </div>
                 <header class="Section-header Section-header_product">
                   <h3 class="Section-title">Add Review
@@ -207,6 +187,9 @@
         </div>
       </div>
     </div>
+  {% endblock %}
+  {% block domready %}
+    {% include "app_catalog/js/reviews_ajax.js" %}
   {% endblock %}
 </body>
 </html>
