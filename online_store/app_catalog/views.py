@@ -154,7 +154,7 @@ def get_initial_values(user) -> dict:
 
 def product_paginator(request, reviews, context):
     """ Производит пагинацию отзывов к товару. """
-    paginator = Paginator(reviews, 5)
+    paginator = Paginator(reviews, 3)
     page = request.GET.get('page')
     try:
         context['reviews'] = paginator.page(page)

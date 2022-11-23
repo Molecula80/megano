@@ -146,8 +146,12 @@
                   <h3 class="Section-title">Отзывы: {{ reviews_count }}
                   </h3>
                 </header>
-                <div class="Comments">
+                <div class="Comments" id="reviews_list">
                   {% include "app_catalog/reviews_ajax.html" %}
+                </div>
+                <div id="pre_loader"></div>
+                <div style="margin-top: 25px;">
+                  <button class="btn btn_muted" id="lazy_more">Показать Ещё</button>
                 </div>
                 <header class="Section-header Section-header_product">
                   <h3 class="Section-title">Add Review
