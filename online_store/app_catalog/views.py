@@ -156,6 +156,8 @@ def product_paginator(request, reviews, context):
     """ Производит пагинацию отзывов к товару. """
     paginator = Paginator(reviews, 3)
     page = request.GET.get('page')
+    context['page'] = 1
+    context['num_pages'] = paginator.num_pages
     try:
         context['reviews'] = paginator.page(page)
     except PageNotAnInteger:
@@ -168,5 +170,6 @@ def product_paginator(request, reviews, context):
         # Если номер страницы больше, чем их количество, возвращаем последню.
         context['reviews'] = paginator.page(paginator.num_pages)
     if request.is_ajax():
+        context['page'] = page
         return render(request, 'app_catalog/reviews_ajax.html', context=context)
     return render(request, 'app_catalog/product_detail.html', context=context)

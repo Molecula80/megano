@@ -19,3 +19,9 @@
   </div>
 </div>
 {% endfor %}
+<div id="pre_loader"></div>
+{% if page < num_pages %}
+  <div style="margin-top: 25px;">
+    <button class="btn btn_muted" id="lazy_more">Показать Ещё</button>
+  </div>
+{% endif %}

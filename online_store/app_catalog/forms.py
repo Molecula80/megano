@@ -6,14 +6,14 @@ from .models import Product, Seller, Fabricator, Review
 
 class ReviewForm(forms.ModelForm):
     """ Форма для добавления отзыва к товару. """
-    text = forms.CharField(error_messages={'required': 'Это поле обязательно для заполнения.'},
+    text = forms.CharField(error_messages={'required': 'Поле "Текст" обязательно для заполнения.'},
                            widget=forms.Textarea(attrs={"class": "form-textarea", "name": "review", "id": "review",
                                                         "placeholder": "Отзыв"}))
-    name = forms.CharField(error_messages={'required': 'Это поле обязательно для заполнения.'},
+    name = forms.CharField(error_messages={'required': 'Поле "Имя" обязательно для заполнения.'},
                            widget=forms.TextInput(attrs={"class": "form-input", "id": "name", "name": "name",
                                                          "type": "text", "placeholder": "Имя"}))
-    email = forms.EmailField(error_messages={'required': 'Это поле обязательно для заполнения.',
-                                             'invalid': 'Это значение недопустимо.'},
+    email = forms.EmailField(error_messages={'required': 'Поле "Email" обязательно для заполнения.',
+                                             'invalid': 'Недопустимое значение поля "Email".'},
                              widget=forms.EmailInput(attrs={"class": "form-input", "id": "email", "name": "email",
                                                             "type": "text", "placeholder": "Email"}))
 
