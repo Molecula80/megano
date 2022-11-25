@@ -119,12 +119,14 @@ def product_detail_view(request, slug):
     product = get_object_or_404(Product, slug=slug)
     day = 60 * 60 * 24
     context['product'] = product
-    context['page_title'] = cache.get_or_set('page_title', product.title, day)
-    context['categories'] = cache.get_or_set('categories', product.categories.all(), day)
-    context['descr_points'] = cache.get_or_set('descr_points', product.descr_points.all(), day)
-    context['add_info_points'] = cache.get_or_set('add_info_points', product.add_info_points.all(), day)
+    # Создаем уникальные ключи кеша для товара.
+    context['page_title'] = cache.get_or_set('page_title{}'.format(product.id), product.title, day)
+    context['categories'] = cache.get_or_set('categories{}'.format(product.id), product.categories.all(), day)
+    context['descr_points'] = cache.get_or_set('descr_points{}'.format(product.id), product.descr_points.all(), day)
+    context['add_info_points'] = cache.get_or_set('add_info_points{}'.format(product.id),
+                                                  product.add_info_points.all(), day)
     reviews = product.reviews.filter(active=True).order_by('-added_at')
-    context['num_reviews'] = cache.get_or_set('num_reviews', reviews.count(), day)
+    context['num_reviews'] = cache.get_or_set('num_reviews{}'.format(product.id), reviews.count(), day)
     context['auth_error'] = False
     # Если пользователь аутентифицирован, подставляем в форму его имя и email.
     initial = get_initial_values(user=request.user)
@@ -154,9 +156,10 @@ def get_initial_values(user) -> dict:
 
 def product_paginator(request, reviews, context):
     """ Производит пагинацию отзывов к товару. """
-    paginator = Paginator(reviews, 3)
+    r_per_page = 3
+    context['r_per_page'] = r_per_page
+    paginator = Paginator(reviews, r_per_page)
     page = request.GET.get('page')
-    context['page'] = 1
     context['num_pages'] = paginator.num_pages
     try:
         context['reviews'] = paginator.page(page)
@@ -170,6 +173,5 @@ def product_paginator(request, reviews, context):
         # Если номер страницы больше, чем их количество, возвращаем последню.
         context['reviews'] = paginator.page(paginator.num_pages)
     if request.is_ajax():
-        context['page'] = page
         return render(request, 'app_catalog/reviews_ajax.html', context=context)
     return render(request, 'app_catalog/product_detail.html', context=context)

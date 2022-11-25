@@ -1,3 +1,4 @@
+var num_pages = {{ num_pages }}
 var page = 1;
 var empty_page = false;
 var block_request = false;
@@ -15,6 +16,9 @@ $('#lazy_more').click(function(e) {
       } else {
         block_request = false;
         $('#comments').append(data);
+        if (page === num_pages) {
+          $('#lazy_more').hide();
+        }
       }
     });
   }

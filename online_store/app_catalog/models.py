@@ -165,10 +165,11 @@ class Review(models.Model):
         return '{product} {name} {added_at}'.format(product=self.product, name=self.name, added_at=self.added_at)
 
 
-def clear_cache(*args, **kwargs):
+def clear_cache(instance, *args, **kwargs):
     """ Сбрасывает кеш при изменении товара. """
-    keys = ['page_title', 'categories', 'descr_points', 'add_info_points', 'num_reviews']
-    cache.delete_many(keys)
+    context_keys = ['page_title', 'categories', 'descr_points', 'add_info_points', 'num_reviews']
+    cache_keys = ['{key}{id}'.format(key=key, id=instance.id) for key in context_keys]
+    cache.delete_many(cache_keys)
 
 
 post_save.connect(clear_cache, sender=Product)

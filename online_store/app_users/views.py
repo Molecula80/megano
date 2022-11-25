@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth.views import LogoutView
@@ -10,8 +11,12 @@ from .forms import RegisterForm, AuthForm
 from .models import User
 
 
-class AccountDetailView(DetailView):
+class AccountDetailView(LoginRequiredMixin, DetailView):
     """ Персональный аккаунт. """
+    model = User
+    template_name = 'app_users/account_detail.html'
+    context_object_name = 'user'
+
     def get_context_data(self, **kwargs):
         pass
 
