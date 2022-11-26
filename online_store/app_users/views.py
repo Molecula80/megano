@@ -18,7 +18,10 @@ class AccountDetailView(LoginRequiredMixin, DetailView):
     context_object_name = 'user'
 
     def get_context_data(self, **kwargs):
-        pass
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Личный кабинет'
+        context['section'] = 'account'
+        return context
 
 
 def register_view(request):
