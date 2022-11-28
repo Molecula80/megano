@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% extends "navigation.html" %}
+    <meta charset="UTF-8">
+    <title>{% block title %}Профиль{% endblock %}</title>
+</head>
+<body>
+  {% block account_content %}
+    {% include "app_users/profile.html" %}
+  {% endblock %}
+</body>
+</html>

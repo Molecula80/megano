@@ -1,13 +1,13 @@
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.http import HttpResponseRedirect, Http404
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.views import LogoutView
 from django.urls import reverse
-from django.views import View
 from django.views.generic import DetailView, ListView
 
-from .forms import RegisterForm, AuthForm
+from .forms import RegisterForm, AuthForm, ProfileForm
 from .models import User
 
 
@@ -18,6 +18,8 @@ class AccountDetailView(LoginRequiredMixin, DetailView):
     context_object_name = 'user'
 
     def get_context_data(self, **kwargs):
+        if self.object != self.request.user:
+            raise Http404
         context = super().get_context_data(**kwargs)
         context['page_title'] = 'Личный кабинет'
         context['section'] = 'account'
@@ -29,23 +31,36 @@ def register_view(request):
     page_title = 'регистрация'
     if request.method == 'POST':
         form = RegisterForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save(commit=False)
-            telephone = form.cleaned_data.get('telephone')
-            # Если был введен номер телефона, и пользователь с указанным номером телефона уже есть,
-            # выводим сообщение об ошибке.
-            if telephone and User.objects.only('telephone').filter(telephone=telephone).exists():
-                form.add_error('telephone', 'Пользователь с таким номером телефона уже есть.')
-            else:
-                form.save()
-                email = form.cleaned_data.get('email')
-                raw_password = form.cleaned_data.get('password1')
-                user = authenticate(email=email, password=raw_password)
-                login(request, user)
-                return HttpResponseRedirect(reverse('app_catalog:index'))
+        if form_is_valid(form=form):
+            email = form.cleaned_data.get('email')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(email=email, password=raw_password)
+            login(request, user)
+            return HttpResponseRedirect(reverse('app_catalog:index'))
     else:
         form = RegisterForm()
     return render(request, 'app_users/register.html', {'form': form, 'page_title': page_title})
+
+
+def form_is_valid(form) -> bool:
+    """ Возвращает True, если форма регистрации или редактирования профиля, была заполнена правильно. """
+    if form.is_valid():
+        user = form.save(commit=False)
+        telephone_str = form.cleaned_data.get('telephone')
+        # Оставляем все цифры, кроме семёрки.
+        telephone = ''.join(sym for sym in telephone_str[3:] if sym.isdigit())
+        # Если пользователь ввёл меньще десяти цифр, выводим сообщение об ошибке.
+        if telephone and len(telephone) < 10:
+            form.add_error('telephone', 'Это значение недопустимо.')
+            return False
+        # Если был введен номер телефона, и пользователь с указанным номером телефона уже есть,
+        # выводим сообщение об ошибке.
+        if telephone and User.objects.only('telephone').filter(telephone=telephone).exists():
+            form.add_error('telephone', 'Пользователь с таким номером телефона уже есть.')
+            return False
+        user.telephone = telephone
+        user.save()
+        return True
 
 
 def login_view(request):
@@ -75,13 +90,26 @@ def login_view(request):
     return render(request, 'app_users/login.html', context=context)
 
 
-class ProfileView(View):
-    """ Профиль пользователя. """
-    def get(self, request, profile_id):
-        pass
-
-    def post(self, request, profile_id):
-        pass
+@login_required
+def profile_view(request, pk):
+    """ Страница изменения профиля пользователя. """
+    page_title = 'профиль'
+    section = 'profile'
+    success = False
+    user = get_object_or_404(User, id=pk)
+    if user != request.user:
+        raise Http404
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=user)
+        if form_is_valid(form=form):
+            email = form.cleaned_data.get('email')
+            raw_password = form.cleaned_data.get('password1')
+            authenticate(email=email, password=raw_password)
+            success = True
+    else:
+        form = RegisterForm(instance=user)
+    return render(request, 'app_users/edit_profile.html', {'form': form, 'page_title': page_title, 'section': section,
+                                                      'success': success})
 
 
 class UserLogoutView(LogoutView):

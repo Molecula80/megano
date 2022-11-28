@@ -17,14 +17,13 @@ class AuthForm(forms.Form):
                                                                  "placeholder": ""}))
 
 
-class RegisterForm(UserCreationForm):
-    """ Форма регистрации пользователя. """
+class ProfileForm(UserCreationForm):
+    """ Форма изменения профиля пользователя. """
     full_name = forms.CharField(max_length=255, required=True,
                                 error_messages={'required': 'Это поле обязательно для заполнения.'},
                                 widget=forms.TextInput(attrs={"class": "form-input", "id": "name", "name": "name",
                                                               "type": "text", "value": "", "data-validate": "require"}))
     telephone = forms.CharField(max_length=255, required=False,
-                                error_messages={'invalid': 'Это значение недопустимо.'},
                                 widget=forms.TextInput(attrs={"class": "form-input", "id": "phone", "name": "phone",
                                                               "type": "text", "value": "",
                                                               "data-mask": "+7(999)999-99-99"}))
@@ -40,7 +39,7 @@ class RegisterForm(UserCreationForm):
     password1 = forms.CharField(error_messages={'required': 'Это поле обязательно для заполнения.'},
                                 widget=forms.PasswordInput(attrs={"class": "form-input", "id": "password",
                                                                   "name": "password", "type": "password",
-                                                                  "placeholder": ""}))
+                                                                  "placeholder": "Тут можно изменить пароль"}))
     password2 = forms.CharField(error_messages={'required': 'Это поле обязательно для заполнения.'},
                                 widget=forms.PasswordInput(attrs={"class": "form-input", "id": "passwordReply",
                                                                   "name": "passwordReply", "type": "password",
@@ -49,3 +48,10 @@ class RegisterForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('full_name', 'telephone', 'email', 'avatar', 'password1', 'password2')
+
+
+class RegisterForm(ProfileForm):
+    """ Форма регистрации пользователя. """
+    password1 = forms.CharField(error_messages={'required': 'Это поле обязательно для заполнения.'},
+                                widget=forms.PasswordInput(attrs={"class": "form-input", "id": "password",
+                                                                  "name": "password", "type": "password"}))
