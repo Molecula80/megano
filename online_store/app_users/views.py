@@ -31,36 +31,28 @@ def register_view(request):
     page_title = 'регистрация'
     if request.method == 'POST':
         form = RegisterForm(request.POST, request.FILES)
-        if form_is_valid(form=form):
-            email = form.cleaned_data.get('email')
-            raw_password = form.cleaned_data.get('password1')
-            user = authenticate(email=email, password=raw_password)
-            login(request, user)
-            return HttpResponseRedirect(reverse('app_catalog:index'))
+        if form.is_valid():
+            user = form.save(commit=False)
+            telephone_str = form.cleaned_data.get('telephone')
+            # Оставляем все цифры, кроме семёрки.
+            telephone = ''.join(sym for sym in telephone_str[3:] if sym.isdigit())
+            if telephone and len(telephone) < 10:
+                form.add_error('telephone', 'Это значение недопустимо.')
+            # Если был введен номер телефона, и пользователь с указанным номером телефона уже есть,
+            # выводим сообщение об ошибке.
+            elif telephone and User.objects.only('telephone').filter(telephone=telephone).exists():
+                form.add_error('telephone', 'Пользователь с таким номером телефона уже есть.')
+            else:
+                user.telephone = telephone
+                user.save()
+                email = form.cleaned_data.get('email')
+                raw_password = form.cleaned_data.get('password1')
+                user = authenticate(email=email, password=raw_password)
+                login(request, user)
+                return HttpResponseRedirect(reverse('app_catalog:index'))
     else:
         form = RegisterForm()
     return render(request, 'app_users/register.html', {'form': form, 'page_title': page_title})
-
-
-def form_is_valid(form) -> bool:
-    """ Возвращает True, если форма регистрации или редактирования профиля, была заполнена правильно. """
-    if form.is_valid():
-        user = form.save(commit=False)
-        telephone_str = form.cleaned_data.get('telephone')
-        # Оставляем все цифры, кроме семёрки.
-        telephone = ''.join(sym for sym in telephone_str[3:] if sym.isdigit())
-        # Если пользователь ввёл меньще десяти цифр, выводим сообщение об ошибке.
-        if telephone and len(telephone) < 10:
-            form.add_error('telephone', 'Это значение недопустимо.')
-            return False
-        # Если был введен номер телефона, и пользователь с указанным номером телефона уже есть,
-        # выводим сообщение об ошибке.
-        if telephone and User.objects.only('telephone').filter(telephone=telephone).exists():
-            form.add_error('telephone', 'Пользователь с таким номером телефона уже есть.')
-            return False
-        user.telephone = telephone
-        user.save()
-        return True
 
 
 def login_view(request):
@@ -99,17 +91,30 @@ def profile_view(request, pk):
     user = get_object_or_404(User, id=pk)
     if user != request.user:
         raise Http404
+    old_number = str(user.telephone)  # Старый номер телефона.
     if request.method == 'POST':
         form = ProfileForm(request.POST, request.FILES, instance=user)
-        if form_is_valid(form=form):
-            email = form.cleaned_data.get('email')
-            raw_password = form.cleaned_data.get('password1')
-            authenticate(email=email, password=raw_password)
-            success = True
+        if form.is_valid():
+            user = form.save(commit=False)
+            telephone_str = form.cleaned_data.get('telephone')
+            # Оставляем все цифры, кроме семёрки.
+            telephone = ''.join(sym for sym in telephone_str[3:] if sym.isdigit())
+            if telephone and len(telephone) < 10:
+                form.add_error('telephone', 'Это значение недопустимо.')
+            # Если был введен номер телефона, и пользователь с указанным номером телефона уже есть,
+            # выводим сообщение об ошибке.
+            # Если пользователь не поменял свой номер телефона, сообщение об ошибке не выводится.
+            elif telephone and telephone != old_number and \
+                    User.objects.only('telephone').filter(telephone=telephone).exists():
+                form.add_error('telephone', 'Пользователь с таким номером телефона уже есть.')
+            else:
+                user.telephone = telephone
+                user.save()
+                success = True
     else:
-        form = RegisterForm(instance=user)
+        form = ProfileForm(instance=user)
     return render(request, 'app_users/edit_profile.html', {'form': form, 'page_title': page_title, 'section': section,
-                                                      'success': success})
+                                                           'success': success})
 
 
 class UserLogoutView(LogoutView):

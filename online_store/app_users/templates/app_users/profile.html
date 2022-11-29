@@ -6,13 +6,23 @@
         <div class="form-group">
           <label class="form-label" for="avatar">Аватар
           </label>
-          <div class="Profile-avatar Profile-avatar_noimg">
-            <div class="Profile-img"><img src="assets/img/#.png" alt="#.png"/>
+          {% if request.user.is_authenticated and request.user.avatar %}
+            <div class="Profile-avatar">
+              <div class="Profile-img"><img src="{{ request.user.avatar.url }}" alt="card.jpg"/>
+              </div>
+              <label class="Profile-fileLabel" for="avatar">Выберите аватар
+              </label>
+              {{ form.avatar }}
             </div>
-            <label class="Profile-fileLabel" for="avatar">Выберите аватар
-            </label>
-            {{ form.avatar }}
-          </div>
+          {% else %}
+            <div class="Profile-avatar Profile-avatar_noimg">
+              <div class="Profile-img"><img src="assets/img/#.png" alt="#.png"/>
+              </div>
+              <label class="Profile-fileLabel" for="avatar">Выберите аватар
+              </label>
+              {{ form.avatar }}
+            </div>
+          {% endif %}
         </div>
         <div class="form-group">
           <label class="form-label" for="name">ФИО
