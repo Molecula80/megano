@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -9,6 +11,9 @@ from django.views.generic import DetailView, ListView
 
 from .forms import RegisterForm, AuthForm, ProfileForm
 from .models import User
+
+
+logger = logging.getLogger(__name__)
 
 
 class AccountDetailView(LoginRequiredMixin, DetailView):
@@ -23,6 +28,7 @@ class AccountDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context['page_title'] = 'Личный кабинет'
         context['section'] = 'account'
+        logger.debug('Пользователь {} запросил страницу личного кабинета.'.format(self.request.user.email))
         return context
 
 
@@ -49,6 +55,7 @@ def register_view(request):
                 raw_password = form.cleaned_data.get('password1')
                 user = authenticate(email=email, password=raw_password)
                 login(request, user)
+                logger.debug('Пользователь {} зарегистрировался на сайте.'.format(email))
                 return HttpResponseRedirect(reverse('app_catalog:index'))
     else:
         form = RegisterForm()
@@ -67,6 +74,7 @@ def login_view(request):
             if user:
                 if user.is_active:
                     login(request, user)
+                    logger.debug('Пользователь {} вошел в систему.'.format(email))
                     return HttpResponseRedirect(reverse('app_catalog:index'))
                 else:
                     error = 'Ошибка! Аккаунт пользователя неактивен.'
@@ -109,10 +117,19 @@ def profile_view(request, pk):
                 form.add_error('telephone', 'Пользователь с таким номером телефона уже есть.')
             else:
                 user.telephone = telephone
+                user.set_password(form.cleaned_data['password1'])
                 user.save()
                 success = True
+                logger.debug('Пользователь {email} изменил свой профиль.\nОбновленные данные:'
+                             '\nФИО: {name}\nТелефон: {telephone}\nEmail: {email}'.format(email=user.email,
+                                                                                          name=user.full_name,
+                                                                                          telephone=user.telephone))
     else:
         form = ProfileForm(instance=user)
+        logger.debug('Пользователь {email} запросил страницу профиля.\nДанные пользователя:'
+                     '\nФИО: {name}\nТелефон: {telephone}\nEmail: {email}'.format(email=user.email,
+                                                                                  name=user.full_name,
+                                                                                  telephone=user.telephone))
     return render(request, 'app_users/edit_profile.html', {'form': form, 'page_title': page_title, 'section': section,
                                                            'success': success})
 

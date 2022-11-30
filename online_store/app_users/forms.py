@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.contrib.auth.forms import UserCreationForm
 
 from .models import User
 
@@ -49,7 +49,7 @@ class RegisterForm(UserCreationForm):
         fields = ('full_name', 'telephone', 'email', 'avatar', 'password1', 'password2')
 
 
-class ProfileForm(UserChangeForm):
+class ProfileForm(forms.ModelForm):
     """ Форма изменения профиля пользователя. """
     full_name = forms.CharField(max_length=255, required=True,
                                 error_messages={'required': 'Это поле обязательно для заполнения.'},
@@ -78,3 +78,10 @@ class ProfileForm(UserChangeForm):
     class Meta:
         model = User
         fields = ('full_name', 'telephone', 'email', 'avatar', 'password1', 'password2')
+
+    def clean_password2(self) -> str:
+        """ Метод для смены пароля. """
+        cd = self.cleaned_data
+        if cd['password1'] != cd['password2']:
+            raise forms.ValidationError('Пароли не совпадают.')
+        return cd['password2']

@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.core.cache import cache
 
 from .models import Category, Fabricator, Product, Seller, DescrPoint, AddInfoPoint, Review
 

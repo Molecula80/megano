@@ -1,9 +1,13 @@
+import logging
 from django.db import models
 from django.urls import reverse
 from django.db.models.signals import post_save
 from django.core.cache import cache
 
 from app_users.models import User
+
+
+logger = logging.getLogger(__name__)
 
 
 class Category(models.Model):
@@ -169,6 +173,7 @@ def clear_cache(instance, *args, **kwargs):
     """ Сбрасывает кеш при изменении товара. """
     context_keys = ['page_title', 'categories', 'descr_points', 'add_info_points', 'num_reviews']
     cache_keys = ['{key}{id}'.format(key=key, id=instance.id) for key in context_keys]
+    logger.debug('Данные товара {} изменены.'.format(instance.title))
     cache.delete_many(cache_keys)
 
 

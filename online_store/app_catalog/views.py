@@ -1,3 +1,5 @@
+import logging
+
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import TemplateView, ListView
@@ -8,6 +10,9 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from .models import Category, Product
 from .forms import ReviewForm, ProductFilterForm
+
+
+logger = logging.getLogger(__name__)
 
 
 class IndexView(TemplateView):
@@ -30,6 +35,7 @@ class IndexView(TemplateView):
         context['three_categories'] = cache.get_or_set(tc_cache_key, three_categories, 30)
         context['popular_products'] = cache.get_or_set(pp_cache_key, popular_products, 30)
         context['limited_edition'] = cache.get_or_set(le_cache_key, limited_edition, 30)
+        logger.debug('Запрошена главная страница.')
         return context
 
 
@@ -45,6 +51,7 @@ class ProductListView(ListView):
         context['page_title'] = 'Каталог'
         context['form'] = ProductFilterForm
         context['sort_order'] = self.kwargs.get('sort_order')
+        logger.debug('Запрошена страница со списком товаров.')
         return context
 
     def get_queryset(self):
@@ -68,6 +75,7 @@ class ProductListView(ListView):
         price_range = form.cleaned_data.get('price_range').split(';')
         p_from = price_range[0]
         p_to = price_range[1]
+        logger.debug('Выполнен поиск товаров стоимостью от {p_from} до {p_to} $.'.format(p_from=p_from, p_to=p_to))
         return queryset.filter(price__gte=p_from, price__lte=p_to)
 
     @classmethod
@@ -78,6 +86,7 @@ class ProductListView(ListView):
             search_vector = SearchVector('title', weight='A') + SearchVector('description', weight='B')
             search_query = SearchQuery(title)
             rank = SearchRank(search_vector, search_query)
+            logger.debug('Выполнен поиск по строке {}.'.format(title))
             return queryset.annotate(search=search_vector, rank=rank).filter(search=search_query).order_by('-rank')
         return queryset
 
@@ -87,9 +96,11 @@ class ProductListView(ListView):
         sellers = form.cleaned_data.get('sellers')
         if sellers:
             queryset = queryset.filter(seller__in=sellers)
+            logger.debug('Выполнен поиск товаров от продавцов: {}'.format(sellers))
         fabricators = form.cleaned_data.get('fabricators')
         if fabricators:
             queryset = queryset.filter(fabricator__in=fabricators)
+            logger.debug('Выполнен поиск товаров от производителей: {}'.format(fabricators))
         return queryset
 
     @classmethod
@@ -98,9 +109,11 @@ class ProductListView(ListView):
         in_stock = form.cleaned_data.get('in_stock')
         if in_stock is not None:
             queryset = queryset.filter(in_stock=in_stock)
+            logger.debug('Выполнен поиск товаров с параметром "В наличии: {}"'.format(in_stock))
         free_delivery = form.cleaned_data.get('free_delivery')
         if free_delivery is not None:
             queryset = queryset.filter(free_delivery=free_delivery)
+            logger.debug('Выполнен поиск товаров с параметром "Свободная доставка: {}"'.format(free_delivery))
         return queryset
 
     def sort_products(self, queryset):
@@ -110,13 +123,16 @@ class ProductListView(ListView):
                        '-added_at']
         sort_order = self.kwargs.get('sort_order')
         if sort_order in sort_orders:
+            logger.debug('Товары отсортированы по параметру "{}"'.format(sort_order))
             return queryset.order_by(sort_order)
         return queryset
 
 
-def product_detail_view(request, slug):
+def product_detail_view(request, slug: str):
+    """ Детальная страница товара. """
     context = dict()
     product = get_object_or_404(Product, slug=slug)
+    logger.debug('Запрошена детальная страница товара "{}"'.format(product.title))
     day = 60 * 60 * 24
     context['product'] = product
     # Создаем уникальные ключи кеша для товара.
@@ -140,6 +156,10 @@ def product_detail_view(request, slug):
                 review = form.save(commit=False)
                 review.product = product
                 review.user = request.user
+                logger.debug('Пользователь {email} оставил отзыв о товаре {product}'.format(
+                    email=request.user.email,
+                    product=product,
+                ))
                 review.save()
     else:
         form = ReviewForm(initial=initial)

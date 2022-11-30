@@ -1,5 +1,4 @@
 from django.contrib.auth.mixins import PermissionRequiredMixin
-
 from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import ListModelMixin, CreateModelMixin, RetrieveModelMixin, UpdateModelMixin, \
     DestroyModelMixin
@@ -7,7 +6,6 @@ from rest_framework.mixins import ListModelMixin, CreateModelMixin, RetrieveMode
 from .serializers import CategorySerializer, FabricatorSerializer, ProductSerializer, SellerSerializer, \
     DescrPointSerializer, AddInfoPointSerializer, ReviewSerializer
 from .filters import CategoryFilter, ProductFilter
-
 from .models import Category, Fabricator, Product, Seller, DescrPoint, AddInfoPoint, Review
 
 
