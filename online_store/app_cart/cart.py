@@ -1,11 +1,32 @@
-class Cart(object):
-    def __init__(self, request):
-        """ Инициализация объекта корзины. """
-        pass
+from decimal import Decimal
+from typing import Iterable
+from django.conf import settings
 
-    def __iter__(self):
-        """ Проходим по товарам корзины. """
-        pass
+from app_catalog.models import Product
+
+
+class Cart(object):
+    def __init__(self, request) -> None:
+        """ Инициализация объекта корзины. """
+        self.__session = request.session
+        cart = self.__session.get(settings.CART_SESSION_ID)
+        if not cart:
+            # Сохраняем сессии в пустую корзину.
+            cart = self.__session[settings.CART_SESSION_ID] = dict()
+        self.__cart = cart
+
+    def __iter__(self) -> Iterable:
+        """ Проходим по товарам корзины и получаем соответствующие объекты Product. """
+        product_ids = self.__cart.keys()
+        # Получаем объекты модели Product и передаем их в корзину.
+        products = Product.objects.filter(id__in=product_ids)
+        cart = self.__cart.copy()
+        for product in products:
+            cart[str(product.id)]['product'] = product
+        for item in cart.values():
+            item['price'] = Decimal(item['price'])
+            item['total_price'] = item['price'] * item['quantity']
+            yield item
 
     def __len__(self) -> int:
         """
@@ -13,15 +34,22 @@ class Cart(object):
         :return: количество товаров в корзине
         :rtype: int
         """
-        return 3
+        return sum(item['quantity'] for item in self.__cart.values())
 
-    def add(self, product):
-        """ Добавление товара в корзину. """
-        pass
+    def add(self, product, quantity=1):
+        """ Добавление товара в корзину или обновление его количества. """
+        product_id = str(product.id)
+        if product_id not in self.__cart:
+            self.__cart[product_id] = {'quantity': 0, 'price': str(product.price)}
+        self.__cart[product_id]['quantity'] = quantity
+        self.save()
 
     def remove(self, product):
         """ Удаление товара из корзины. """
-        pass
+        product_id = str(product.id)
+        if product_id in self.__cart:
+            del self.__cart[product_id]
+            self.save()
 
     def get_total_price(self) -> float:
         """
@@ -29,12 +57,14 @@ class Cart(object):
         :return: общая стоимость товаров
         :rtype: float
         """
-        return 200.99
+        return sum(Decimal(item['price']) * item['quantity'] for item in self.__cart.values())
 
     def clear(self):
         """ Очистка корзины. """
-        pass
+        del self.__session[settings.CART_SESSION_ID]
+        self.save()
 
     def save(self):
         """ Сохоанение корзины. """
-        pass
+        # Помечаем сессию как измененную.
+        self.__session.modified = True

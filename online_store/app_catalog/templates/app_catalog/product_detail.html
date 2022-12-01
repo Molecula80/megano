@@ -70,7 +70,7 @@
                   </div>
                 </div>
                 <div class="ProductCard-cartElement">
-                    <a class="btn btn_primary" href="{% url 'app_cart:cart_add'  %}">
+                    <a class="btn btn_primary" href="{% url 'app_cart:cart_add' product.id  %}">
                       {% if product.image %}
                         <img class="btn-icon" src="{% static 'assets/img/icons/card/cart_white.svg' %}" alt="cart_white.svg"/>
                       {% endif %}

@@ -61,12 +61,6 @@ class AddInfoPointInline(admin.TabularInline):
     extra = 0
 
 
-class ReviewInline(admin.TabularInline):
-    """ Инлайн класс для редактирования отзывов к товарам. """
-    model = Review
-    extra = 0
-
-
 class ProductAdmin(admin.ModelAdmin):
     """ Административная модель товара. """
     list_display = ['id', 'title', 'fabricator', 'seller', 'price', 'num_purchases', 'sort_index', 'active',
@@ -74,7 +68,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = ['fabricator', 'seller', 'sort_index', 'active', 'in_stock', 'free_delivery', 'limited_edition']
     search_fields = ['title']
     prepopulated_fields = {'slug': ('title',)}
-    inlines = [DescrPointInline, AddInfoPointInline, ReviewInline]
+    inlines = [DescrPointInline, AddInfoPointInline]
     actions = ['mark_as_active', 'mark_as_inactive', 'mark_as_in_stock', 'mark_as_out_of_stock',
                'mark_as_free_delivery', 'mark_as_no_free_delivery', 'mark_as_limited_edition',
                'mark_as_unlimited_edition']

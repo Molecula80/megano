@@ -169,3 +169,5 @@ LOGGING = {
         'level': 'DEBUG',
     },
 }
+
+CART_SESSION_ID = 'cart'
