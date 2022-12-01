@@ -1,16 +1,20 @@
-# from django.shortcuts import render
+from django.http import HttpResponse
+from django.shortcuts import render
+
+from .cart import Cart
 
 
-def cart_detail(cart):
+def cart_detail(request):
     """ Страница корзины. """
-    pass
+    cart = Cart(request)
+    return render(request, 'app_cart/cart_detail.html', {'cart': cart, 'page_title': 'Корзина'})
 
 
-def cart_add(request, product_id):
+def cart_add(request):
     """ Добавление товара в корзину. """
-    pass
+    return HttpResponse('Товар успешно добавлен в корзину.')
 
 
-def cart_remove(request, product_id):
+def cart_remove(request):
     """ Удаление товара из корзины. """
-    pass
+    return HttpResponse('Товар успешно удален из корзины.')

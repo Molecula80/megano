@@ -6,6 +6,12 @@ name = "pypi"
 [packages]
 django = "==2.2"
 psycopg2 = "==2.9.3"
+pillow = ">=9.2.0"
+djangorestframework = "==3.13.1"
+drf-yasg = ">=1.17.1"
+django-filter = ">=21.1"
+docutils = ">=0.19"
+django-debug-toolbar = ">=3.2.4"
 
 [dev-packages]
 

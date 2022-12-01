@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% extends "middle_base.html" %}
+    <meta charset="UTF-8">
+    <title>{% block title %}Авторизация{% endblock %}</title>
+</head>
+<body>
+  {% block mb_content %}
+    <div class="Section">
+      <div style="padding: 0 600px; max-width: 1630px; min-width: 320px; width: 100%; box-sizing: border-box;
+      margin: 0 auto; position: relative;">
+        <div class="Section-content">
+          <div class="Profile">
+            <form class="form Profile-form" action="#" method="post">
+              {% csrf_token %}
+              <div class="row">
+                <div class="row-block">
+                  <div class="form-group">
+                    <label class="form-label" for="mail">E-mail
+                    </label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                      {{ form.email.errors }}
+                    {% endif %}
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="password">Пароль
+                    </label>
+                    {{ form.password }}
+                    {% if form.password.errors %}
+                      {{ form.password.errors }}
+                    {% endif %}
+                  </div>
+                  <div class="form-group">
+                    <div class="Profile-btn">
+                      <button class="btn btn_success" type="submit">Войти
+                      </button>
+                    </div>
+                    {% if error %}
+                      <div style="color: #f26d7d; display: block; margin-top: 20px; text-align: right;">
+                        {{ error }}
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </form>
+            <p><a href="{% url 'password_reset' %}">Забыли пароль?</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endblock %}
+</body>
+</html>

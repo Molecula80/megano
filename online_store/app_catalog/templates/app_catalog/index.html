@@ -1,13 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    {% extends "base.html" %}
-    <meta charset="UTF-8">
-    <title>{% block title %}Megano{% endblock %}</title>
+  {% extends "base.html" %}
+  {% load static %}
+  <meta charset="UTF-8">
+  <title>{% block title %}Megano{% endblock %}</title>
 </head>
 <body>
     {% block content %}
-        <h2>Главная страница</h2>
+      <div class="Middle">
+        <div class="Section">
+          <div class="wrap">
+            <div class="BannersHome">
+              {% for category in three_categories %}
+                <a class="BannersHomeBlock" href="#">
+                  <div class="BannersHomeBlock-row">
+                    <div class="BannersHomeBlock-block">
+                      <strong class="BannersHomeBlock-title">{{ category.title }}</strong>
+                      <div class="BannersHomeBlock-content">
+                        {% if category.min_price %}
+                          от&#32;<span class="BannersHomeBlock-price">${{ category.min_price }}</span>
+                        {% else %}
+                          В данной категории нет товаров.
+                        {% endif %}
+                      </div>
+                    </div>
+                    <div class="BannersHomeBlock-block">
+                      <div class="BannersHomeBlock-img">
+                        {% if category.icon %}
+                          <img src="{{ category.icon.url }}" alt="videoca.png"/>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                </a>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        <div class="Section Section_column Section_columnDesktop"  >
+          <div class="wrap">
+            <div class="Section-content">
+              <header class="Section-header">
+                <h2 class="Section-title">Популярные товары
+                </h2>
+              </header>
+              <div class="Cards">
+                {% if popular_products %}
+                  {% for product in popular_products %}
+                    {% include "app_catalog/product_link.html" %}
+                  {% endfor %}
+                {% else %}
+                  Нет товаров в наличии.
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="Section Section_column Section_columnRight">
+          <div class="wrap">
+            <div class="Section-column">
+              <div class="Section-columnSection Section-columnSection_mark">
+                <div class="media media_advantage">
+                  <div class="media-image">
+                    <img src="{% static 'assets/img/icons/advantages/shipping.svg' %}" alt="shipping.svg"/>
+                  </div>
+                  <div class="media-content">
+                    <strong class="media-title">Shipping & Returns
+                    </strong>
+                    <p class="media-text">World wide shipping
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="Section-columnSection Section-columnSection_mark">
+                <div class="media media_advantage">
+                  <div class="media-image">
+                    <img src="{% static 'assets/img/icons/advantages/moneyBack.svg' %}" alt="moneyBack.svg"/>
+                  </div>
+                  <div class="media-content">
+                    <strong class="media-title">Money Back
+                    </strong>
+                    <p class="media-text">Guaranted payments
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="Section-columnSection Section-columnSection_mark">
+                <div class="media media_advantage">
+                  <div class="media-image">
+                    <img src="{% static 'assets/img/icons/advantages/support.svg' %}" alt="support.svg"/>
+                  </div>
+                  <div class="media-content">
+                    <strong class="media-title">Support Policy
+                    </strong>
+                    <p class="media-text">Fast support team
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="Section-columnSection Section-columnSection_mark">
+                <div class="media media_advantage">
+                  <div class="media-image">
+                    <img src="{% static 'assets/img/icons/advantages/quality.svg' %}" alt="quality.svg"/>
+                  </div>
+                  <div class="media-content">
+                    <strong class="media-title">Quality Guarantee
+                    </strong>
+                    <p class="media-text">Best guaranted items
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="Section-content">
+              <div class="Slider Slider_carousel">
+                <header class="Section-header Section-header_close">
+                  <h2 class="Section-title">Ограниченный тираж
+                  </h2>
+                  <div class="Section-control">
+                    <div class="Slider-navigate">
+                    </div>
+                  </div>
+                </header>
+                <div class="Slider-box Cards">
+                  {% if limited_edition %}
+                    {% for product in limited_edition %}
+                      {% include "app_catalog/product_link.html" %}
+                    {% endfor %}
+                  {% else %}
+                    Нет товаров с ограниченным тиражом.
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     {% endblock %}
 </body>
 </html>

@@ -1,0 +1,24 @@
+{% load static %}
+<div class="Card"><a class="Card-picture" href="{{ product.get_absolute_url }}">
+  {% if product.image %}
+    <img src="{{ product.image.url }}" alt="card.jpg"/></a>
+  {% endif %}
+  <div class="Card-content">
+    <strong class="Card-title"><a href="{{ product.get_absolute_url }}">
+      {{ product.title }}</a></strong>
+    <a href="{{ product.get_absolute_url }}#tabs">Отзывы: 1</a>
+    <div class="Card-description">
+      <div class="Card-cost"><span class="Card-price">${{ product.price }}</span>
+      </div>
+      <div class="Card-category">
+        {% for category in product.categories.all %}
+          {{ category.title }} /
+        {% endfor %}
+      </div>
+      <div class="Card-hover">
+        <a class="Card-btn" href="{% url 'app_cart:cart_add'  %}">
+          <img src="{% static 'assets/img/icons/card/cart.svg' %}" alt="cart.svg"/></a>
+      </div>
+    </div>
+  </div>
+</div>
