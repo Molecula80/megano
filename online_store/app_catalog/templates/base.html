@@ -48,7 +48,7 @@
               <div class="row-block">
                 {% if request.user.is_authenticated %}
                   <p>
-                    <a class="ControlPanel-title" href="#">Личный кабинет</a> /
+                    <a class="ControlPanel-title" href="{% url 'account_detail' request.user.id %}">Личный кабинет</a> /
                     <a class="ControlPanel-title" href="{% url 'logout' %}">Выйти</a>
                   </p>
                 {% else %}
@@ -75,7 +75,9 @@
     </div>
     <div class="wrap">
       <div class="row Header-rowMain">
-        <div class="row-block Header-logo"><a class="logo" href="index.html"><img class="logo-image" src="{% static 'assets/img/logo.png' %}" alt="logo.png"/></a>
+        <div class="row-block Header-logo">
+          <a class="logo" href="{% url 'app_catalog:index' %}">
+            <img class="logo-image" src="{% static 'assets/img/logo.png' %}" alt="logo.png"/></a>
         </div>
         <nav class="row-block row-block_right Header-menu">
           <div class="menuModal" id="navigate">
@@ -114,77 +116,17 @@
           <div class="CategoriesButton">
             <div class="CategoriesButton-title">
               <div class="CategoriesButton-icon"><img src="{% static 'assets/img/icons/allDep.svg' %}" alt="allDep.svg"/>
-              </div><span class="CategoriesButton-text">All Departments</span>
+              </div><span class="CategoriesButton-text">Все Категории</span>
               <div class="CategoriesButton-arrow">
               </div>
             </div>
             <div class="CategoriesButton-content">
-              <div class="CategoriesButton-link"><a href="#">
-                  <div class="CategoriesButton-icon"><img src="{% static 'assets/img/icons/departments/1.svg' %}" alt="1.svg"/>
-                  </div><span class="CategoriesButton-text">Accessories</span></a>
-              </div>
-              <div class="CategoriesButton-link"><a href="#">
-                  <div class="CategoriesButton-icon"><img src="{% static 'assets/img/icons/departments/2.svg' %}" alt="2.svg"/>
-                  </div><span class="CategoriesButton-text">Bags</span></a>
-              </div>
-              <div class="CategoriesButton-link"><a href="#">
-                  <div class="CategoriesButton-icon"><img src="{% static 'assets/img/icons/departments/3.svg' %}" alt="3.svg"/>
-                  </div><span class="CategoriesButton-text">Cameras</span></a><a class="CategoriesButton-arrow" href="#"></a>
-                <div class="CategoriesButton-submenu"><a class="CategoriesButton-link" href="#">
-                    <div class="CategoriesButton-icon"><img src="{% static 'assets/img/icons/departments/1.svg' %}" alt="1.svg"/>
-                    </div><span class="CategoriesButton-text">Accessories</span></a><a class="CategoriesButton-link" href="#">
-                    <div class="CategoriesButton-icon"><img src="{% static 'assets/img/icons/departments/2.svg' %}" alt="2.svg"/>
-                    </div><span class="CategoriesButton-text">Bags</span></a>
+              {% for category in categories %}
+                <div class="CategoriesButton-link"><a href="#">
+                  <div class="CategoriesButton-icon"><img src="{{ category.icon.url }}" alt="1.svg"/>
+                  </div><span class="CategoriesButton-text">{{ category.title }}</span></a>
                 </div>
-              </div>
-              <div class="CategoriesButton-link"><a href="#">
-                  <div class="CategoriesButton-icon"><img src="{% static 'assets/img/icons/departments/4.svg' %}" alt="4.svg"/>
-                  </div><span class="CategoriesButton-text">Clothings</span></a>
-              </div>
-              <div class="CategoriesButton-link"><a href="#">
-                  <div class="CategoriesButton-icon"><img src="{% static 'assets/img/icons/departments/5.svg' %}" alt="5.svg"/>
-                  </div><span class="CategoriesButton-text">Electronics</span></a>
-              </div>
-              <div class="CategoriesButton-link"><a href="#">
-                  <div class="CategoriesButton-icon"><img src="{% static 'assets/img/icons/departments/6.svg' %}" alt="6.svg"/>
-                  </div><span class="CategoriesButton-text">Fashion</span></a>
-              </div>
-              <div class="CategoriesButton-link"><a href="#">
-                  <div class="CategoriesButton-icon"><img src="{% static 'assets/img/icons/departments/7.svg' %}" alt="7.svg"/>
-                  </div><span class="CategoriesButton-text">Furniture</span></a><a class="CategoriesButton-arrow" href="#"></a>
-                <div class="CategoriesButton-submenu"><a class="CategoriesButton-link" href="#">
-                    <div class="CategoriesButton-icon"><img src="{% static 'assets/img/icons/departments/1.svg' %}" alt="1.svg"/>
-                    </div><span class="CategoriesButton-text">Accessories</span></a><a class="CategoriesButton-link" href="#">
-                    <div class="CategoriesButton-icon"><img src="{% static 'assets/img/icons/departments/2.svg' %}" alt="2.svg"/>
-                    </div><span class="CategoriesButton-text">Bags</span></a>
-                </div>
-              </div>
-              <div class="CategoriesButton-link"><a href="#">
-                  <div class="CategoriesButton-icon"><img src="{% static 'assets/img/icons/departments/8.svg' %}" alt="8.svg"/>
-                  </div><span class="CategoriesButton-text">Lightings</span></a>
-              </div>
-              <div class="CategoriesButton-link"><a href="#">
-                  <div class="CategoriesButton-icon"><img src="{% static 'assets/img/icons/departments/9.svg' %}" alt="9.svg"/>
-                  </div><span class="CategoriesButton-text">Mobiles</span></a>
-              </div>
-              <div class="CategoriesButton-link"><a href="#">
-                  <div class="CategoriesButton-icon"><img src="{% static 'assets/img/icons/departments/10.svg' %}" alt="10.svg"/>
-                  </div><span class="CategoriesButton-text">Trends</span></a>
-              </div>
-              <div class="CategoriesButton-link"><a href="#">
-                  <div class="CategoriesButton-icon"><img src="{% static 'assets/img/icons/departments/11.svg' %}" alt="11.svg"/>
-                  </div><span class="CategoriesButton-text">More</span></a><a class="CategoriesButton-arrow" href="#"></a>
-                <div class="CategoriesButton-submenu"><a class="CategoriesButton-link" href="#">
-                    <div class="CategoriesButton-icon"><img src="{% static 'assets/img/icons/departments/1.svg' %}" alt="1.svg"/>
-                    </div><span class="CategoriesButton-text">Accessories</span></a><a class="CategoriesButton-link" href="#">
-                    <div class="CategoriesButton-icon"><img src="{% static 'assets/img/icons/departments/2.svg' %}" alt="2.svg"/>
-                    </div><span class="CategoriesButton-text">Bags</span></a>
-                </div>
-              </div>
-              <div class="CategoriesButton-link"><a href="#">
-                  <div class="CategoriesButton-icon"><img src="{% static 'assets/img/icons/departments/12.svg' %}" alt="12.svg"/>
-                  </div><span class="CategoriesButton-text">Lightings</span></a>
-              </div>
+              {% endfor %}
             </div>
           </div>
         </div>
@@ -202,98 +144,110 @@
       </div>
     </div>
   </header>
-  <div>
-      {% block content %}{% endblock %}
-  </div>
-    <footer class="Footer">
-      <div class="wrap">
-        <div class="row Footer-main">
-          <div class="row-block"><a class="logo Footer-logo" href="index.html"><img class="logo-image" src="{% static 'assets/img/logo_footer.png' %}" alt="logo_footer.png"/></a>
-            <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincid  unt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad
-            </p>
-            <ul class="menu menu_img menu_smallImg Footer-menuSoc">
-              <li class="menu-item"><a class="menu-link" href="#"><img src="{% static 'assets/img/icons/socialFooter/fb.svg' %}" alt="fb.svg"/></a>
-              </li>
-              <li class="menu-item"><a class="menu-link" href="#"><img src="{% static 'assets/img/icons/socialFooter/tw.svg' %}" alt="tw.svg"/></a>
-              </li>
-              <li class="menu-item"><a class="menu-link" href="#"><img src="{% static 'assets/img/icons/socialFooter/in.svg' %}" alt="in.svg"/></a>
-              </li>
-              <li class="menu-item"><a class="menu-link" href="#"><img src="{% static 'assets/img/icons/socialFooter/pt.svg' %}" alt="pt.svg"/></a>
-              </li>
-              <li class="menu-item"><a class="menu-link" href="#"><img src="{% static 'assets/img/icons/socialFooter/mail.svg' %}" alt="mail.svg"/></a>
-              </li>
-            </ul>
-          </div>
-          <div class="row-block">
-            <strong class="Footer-title">Useful Links
-            </strong>
-            <ul class="menu menu_vt Footer-menu">
-              <li class="menu-item"><a class="menu-link" href="#">Checkout</a>
-              </li>
-              <li class="menu-item"><a class="menu-link" href="#">My Cart</a>
-              </li>
-              <li class="menu-item"><a class="menu-link" href="#">Delivery</a>
-              </li>
-              <li class="menu-item"><a class="menu-link" href="#">Order Info</a>
-              </li>
-              <li class="menu-item"><a class="menu-link" href="#">Terms</a>
-              </li>
-              <li class="menu-item"><a class="menu-link" href="#">Conditions</a>
-              </li>
-            </ul>
-          </div>
-          <div class="row-block">
-            <strong class="Footer-title">Мой аккаунт</strong>
-            <ul class="menu menu_vt Footer-menu">
-              {% for category in six_categories %}
-                <li class="menu-item"><a class="menu-link" href="#">{{ category.title }}</a></li>
-              {% endfor %}
-            </ul>
-          </div>
-          <div class="row-block">
-            <strong class="Footer-title">Contacts
-            </strong>
-            <p>Phone: 8.800.200.600<br>Email: Support@ninzio.com<br>Skype: techno<br>Address: New York, north<br>Avenue 26/7<br>0057
-            </p>
-          </div>
+  {% block content %}{% endblock %}
+  <footer class="Footer">
+    <div class="wrap">
+      <div class="row Footer-main">
+        <div class="row-block">
+          <a class="logo Footer-logo" href="{% url 'app_catalog:index' %}">
+            <img class="logo-image" src="{% static 'assets/img/logo_footer.png' %}" alt="logo_footer.png"/></a>
+          <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincid
+            unt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad
+          </p>
+          <ul class="menu menu_img menu_smallImg Footer-menuSoc">
+            <li class="menu-item"><a class="menu-link" href="#"><img src="{% static 'assets/img/icons/socialFooter/fb.svg' %}" alt="fb.svg"/></a>
+            </li>
+            <li class="menu-item"><a class="menu-link" href="#"><img src="{% static 'assets/img/icons/socialFooter/tw.svg' %}" alt="tw.svg"/></a>
+            </li>
+            <li class="menu-item"><a class="menu-link" href="#"><img src="{% static 'assets/img/icons/socialFooter/in.svg' %}" alt="in.svg"/></a>
+            </li>
+            <li class="menu-item"><a class="menu-link" href="#"><img src="{% static 'assets/img/icons/socialFooter/pt.svg' %}" alt="pt.svg"/></a>
+            </li>
+            <li class="menu-item"><a class="menu-link" href="#"><img src="{% static 'assets/img/icons/socialFooter/mail.svg' %}" alt="mail.svg"/></a>
+            </li>
+          </ul>
+        </div>
+        <div class="row-block">
+          <strong class="Footer-title">Useful Links
+          </strong>
+          <ul class="menu menu_vt Footer-menu">
+            <li class="menu-item"><a class="menu-link" href="#">Checkout</a>
+            </li>
+            <li class="menu-item"><a class="menu-link" href="#">My Cart</a>
+            </li>
+            <li class="menu-item"><a class="menu-link" href="#">Delivery</a>
+            </li>
+            <li class="menu-item"><a class="menu-link" href="#">Order Info</a>
+            </li>
+            <li class="menu-item"><a class="menu-link" href="#">Terms</a>
+            </li>
+            <li class="menu-item"><a class="menu-link" href="#">Conditions</a>
+            </li>
+          </ul>
+        </div>
+        <div class="row-block">
+          <strong class="Footer-title">Мой аккаунт</strong>
+          <ul class="menu menu_vt Footer-menu">
+            {% for category in categories|slice:":6" %}
+              <li class="menu-item"><a class="menu-link" href="#">{{ category.title }}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div class="row-block">
+          <strong class="Footer-title">Contacts
+          </strong>
+          <p>Phone: 8.800.200.600<br>Email: Support@ninzio.com<br>Skype: techno<br>Address: New York, north<br>Avenue 26/7<br>0057
+          </p>
         </div>
       </div>
-  <div class="Footer-copy">
-    <div class="wrap">
-      <div class="row row_space">
-        <div class="row-block">© Copyright&#32;<a href="#">Megano Store.</a>&#32;All rights reserved.
-        </div>
-        <div class="row-block"><span>Accepted Payments</span>
-          <div class="Footer-payments">
-            <div><img src="{% static 'assets/img/payments/visa.png' %}" alt="visa.png"/>
-            </div>
-            <div><img src="{% static 'assets/img/payments/mastercard.png' %}" alt="mastercard.png"/>
-            </div>
-            <div><img src="{% static 'assets/img/payments/paypal.png' %}" alt="paypal.png"/>
-            </div>
-            <div><img src="{% static 'assets/img/payments/american.png' %}" alt="american.png"/>
-            </div>
-            <div><img src="{% static 'assets/img/payments/electron.png' %}" alt="electron.png"/>
-            </div>
-            <div><img src="{% static 'assets/img/payments/maestro.png' %}" alt="maestro.png"/>
-            </div>
-            <div><img src="{% static 'assets/img/payments/delta.png' %}" alt="delta.png"/>
-            </div>
-            <div><img src="{% static 'assets/img/payments/e.png' %}" alt="e.png"/>
-            </div>
-            <div><img src="{% static 'assets/img/payments/dk.png' %}" alt="dk.png"/>
+    </div>
+    <div class="Footer-copy">
+      <div class="wrap">
+        <div class="row row_space">
+          <div class="row-block">
+            © Copyright&#32;<a href="{% url 'app_catalog:index' %}">Megano Store.</a>&#32;All rights reserved.
+          </div>
+          <div class="row-block"><span>Accepted Payments</span>
+            <div class="Footer-payments">
+              <div><img src="{% static 'assets/img/payments/visa.png' %}" alt="visa.png"/>
+              </div>
+              <div><img src="{% static 'assets/img/payments/mastercard.png' %}" alt="mastercard.png"/>
+              </div>
+              <div><img src="{% static 'assets/img/payments/paypal.png' %}" alt="paypal.png"/>
+              </div>
+              <div><img src="{% static 'assets/img/payments/american.png' %}" alt="american.png"/>
+              </div>
+              <div><img src="{% static 'assets/img/payments/electron.png' %}" alt="electron.png"/>
+              </div>
+              <div><img src="{% static 'assets/img/payments/maestro.png' %}" alt="maestro.png"/>
+              </div>
+              <div><img src="{% static 'assets/img/payments/delta.png' %}" alt="delta.png"/>
+              </div>
+              <div><img src="{% static 'assets/img/payments/e.png' %}" alt="e.png"/>
+              </div>
+              <div><img src="{% static 'assets/img/payments/dk.png' %}" alt="dk.png"/>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</footer>
-<script src="{% static 'assets/plg/jQuery/jquery-3.5.0.slim.min.js' %}"></script>
-<script src="{% static 'assets/plg/form/jquery.form.js' %}"></script>
-<script src="{% static 'assets/plg/form/jquery.maskedinput.min.js' %}"></script>
-<script src="{% static 'assets/plg/range/ion.rangeSlider.min.js' %}"></script>
-<script src="{% static 'assets/plg/Slider/slick.min.js' %}"></script>
-<script src="{% static 'assets/js/scripts.js' %}"></script>
+  </footer>
+  <script src="{% static 'assets/plg/jQuery/jquery-3.5.0.slim.min.js' %}"></script>
+  <script src="{% static 'assets/plg/form/jquery.form.js' %}"></script>
+  <script src="{% static 'assets/plg/form/jquery.maskedinput.min.js' %}"></script>
+  <script src="{% static 'assets/plg/range/ion.rangeSlider.min.js' %}"></script>
+  <script src="{% static 'assets/plg/Slider/slick.min.js' %}"></script>
+  <script src="{% static 'assets/js/scripts.js' %}"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+  <script>
+    {% include "app_catalog/js/csrf_safe_method.js" %}
+    $(document).ready(function(){
+      {% block domready %}{% endblock %}
+    });
+  </script>
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.10/jquery.mask.js"></script>
 </body>
 </html>

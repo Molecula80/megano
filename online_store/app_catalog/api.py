@@ -1,14 +1,12 @@
 from django.contrib.auth.mixins import PermissionRequiredMixin
-
 from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import ListModelMixin, CreateModelMixin, RetrieveModelMixin, UpdateModelMixin, \
     DestroyModelMixin
 
-from .serializers import CategorySerializer, FabricatorSerializer, ProductSerializer, DescrPointSerializer, \
-    AddInfoPointSerializer
+from .serializers import CategorySerializer, FabricatorSerializer, ProductSerializer, SellerSerializer, \
+    DescrPointSerializer, AddInfoPointSerializer, ReviewSerializer
 from .filters import CategoryFilter, ProductFilter
-
-from .models import Category, Fabricator, Product, DescrPoint, AddInfoPoint
+from .models import Category, Fabricator, Product, Seller, DescrPoint, AddInfoPoint, Review
 
 
 class ModelListApi(PermissionRequiredMixin, ListModelMixin, CreateModelMixin, GenericAPIView):
@@ -59,6 +57,21 @@ class CategoryDetailApi(ModelDetailApi):
     serializer_class = CategorySerializer
 
 
+class SellerListApi(ModelListApi):
+    """ Представление для получения списка продавцов и создания нового продавца. """
+    permission_required = ('app_catalog.view_seller', 'app_catalog.add_seller')
+    queryset = Seller.objects.all()
+    serializer_class = SellerSerializer
+    filterset_fields = ['name']
+
+
+class SellerDetailApi(ModelDetailApi):
+    """ Представление для получения детальной информации о продавце, а также его редактирования и удаления. """
+    permission_required = ('app_catalog.view_seller', 'app_catalog.change_seller', 'app_catalog.delete_seller')
+    queryset = Seller.objects.all()
+    serializer_class = SellerSerializer
+
+
 class FabricatorListApi(ModelListApi):
     """ Представление для получения списка производителей и создания нового производителя. """
     permission_required = ('app_catalog.view_fabricator', 'app_catalog.add_fabricator')
@@ -107,7 +120,7 @@ class DescrPointDetailApi(ModelDetailApi):
 
 
 class AddInfoPointListApi(ModelListApi):
-    """ Представление для получения списка пункта доп. информации и создания нового пункта. """
+    """ Представление для получения списка пунктов доп. информации и создания нового пункта. """
     permission_required = ('app_catalog.view_add_info_point', 'app_catalog.add_add_info_point')
     queryset = AddInfoPoint.objects.select_related('product').all()
     serializer_class = AddInfoPointSerializer
@@ -122,3 +135,20 @@ class AddInfoPointDetailApi(ModelDetailApi):
                            'app_catalog.delete_add_info_point')
     queryset = AddInfoPoint.objects.select_related('product').all()
     serializer_class = AddInfoPointSerializer
+
+
+class ReviewListApi(ModelListApi):
+    """ Представление для получения списка отзывов о товарах и создания нового отзыва. """
+    permission_required = ('app_catalog.view_review', 'app_catalog.add_review')
+    queryset = Review.objects.select_related('product', 'user').all()
+    serializer_class = ReviewSerializer
+    filterset_fields = ['product', 'user', 'name', 'email', 'active']
+
+
+class ReviewDetailApi(ModelDetailApi):
+    """
+    Представление для получения детальной информации об отзыве о товаре, а также его редактирования и удаления.
+    """
+    permission_required = ('app_catalog.view_review', 'app_catalog.change_review', 'app_catalog.delete_review')
+    queryset = Review.objects.select_related('product', 'user').all()
+    serializer_class = ReviewSerializer

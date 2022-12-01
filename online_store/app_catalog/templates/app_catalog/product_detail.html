@@ -14,7 +14,9 @@
           <div class="ProductCard">
             <div class="ProductCard-look">
               <div class="ProductCard-photo">
-                <img src="{{ product.image.url }}" alt="bigGoods.png"/>
+                {% if product.image %}
+                  <img src="{{ product.image.url }}" alt="bigGoods.png"/>
+                {% endif %}
               </div>
               <div class="ProductCard-picts">
                 {% if product.image %}
@@ -29,7 +31,8 @@
             </div>
             <div class="ProductCard-desc">
               <div class="ProductCard-header">
-                <h2 class="ProductCard-title">{{ product.title }}
+                <h2 class="ProductCard-title">
+                  {{ product.title }}
                 </h2>
                 <div class="ProductCard-info">
                   <div class="ProductCard-cost">
@@ -40,9 +43,20 @@
               </div>
               <div class="ProductCard-text">
                 <ul>
-                  {% for point in descr_points %}
-                    <li>{{ point.content }}</li>
-                  {% endfor %}
+                  <li>Производитель: {{ product.fabricator.title }}</li>
+                  <li>Продавец: {{ product.seller.name }}</li>
+                  {% if product.in_stock %}
+                    <li>Товар есть в магазине</li>
+                  {% else %}
+                    <li style="color: red">Товара нет в магазние</li>
+                  {% endif %}
+                  {% if product.free_delivery %}
+                    <li>Бесплатная доставка</li>
+                  {% else %}
+                    <li>Платная доставка</li>
+                  {% endif %}
+                  <li>Дата публикации: {{ product.added_at }}</li>
+                  <li>Количество покупок: {{ product.num_purchases }}</li>
                 </ul>
               </div>
               <div class="ProductCard-cart">
@@ -73,10 +87,11 @@
               </div>
             </div>
           </div>
-          <div class="Tabs Tabs_default" id="tabs">
-            <div class="Tabs-links"><a class="Tabs-link_ACTIVE Tabs-link" href="#description"><span>Описание</span></a>
-                <a class="Tabs-link" href="#addit"><span>Доп. информация</span></a>
-                <a class="Tabs-link" href="#reviews"><span>Отзывы ({{ reviews_count }})</span></a>
+          <div class="Tabs Tabs_default">
+            <div class="Tabs-links">
+              <a class="Tabs-link_ACTIVE Tabs-link" href="#description"><span>Описание</span></a>
+              <a class="Tabs-link" href="#addit"><span>Доп. информация</span></a>
+              <a class="Tabs-link" href="#reviews"><span>Отзывы ({{ num_reviews }})</span></a>
             </div>
             <div class="Tabs-wrap">
               <div class="Tabs-block" id="description">
@@ -131,38 +146,36 @@
                   <h3 class="Section-title">Отзывы: {{ reviews_count }}
                   </h3>
                 </header>
-                <div class="Comments">
-                  <div class="Comment">
-                    <div class="Comment-column Comment-column_pict">
-                      <div class="Comment-avatar">
-                      </div>
-                    </div>
-                    <div class="Comment-column">
-                      <header class="Comment-header">
-                        <div>
-                          <strong class="Comment-title">Alexandra Brownie
-                          </strong><span class="Comment-date">December 25&#32;&#32;/&#32;&#32;2017&#32;&#32;/&#32;&#32;22:50</span>
-                        </div>
-                      </header>
-                      <div class="Comment-content">
-                        Lorem ipsum dolor sit amet, consectetuer adipiscing elit doli. Aenean commodo ligula eget
-                        dolor. Aenean massa. Cumtipsu sociis natoque penatibus et magnis dis parturient montesti,
-                        nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eutu, pretiumem.
-                        Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate
-                        eget, arcu. In enim justotuio, rhoncus ut loret, imperdiet a, venenatis vitae, justo.
-                        Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus element
-                        semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat
-                        vitae.
-                      </div>
-                    </div>
-                  </div>
+                <div class="Comments" id="comments">
+                  {% include "app_catalog/reviews_ajax.html" %}
                 </div>
+                <div id="pre_loader"></div>
+                {% if num_reviews > r_per_page %}
+                  <div style="margin-top: 25px;">
+                    <button class="btn btn_muted" id="lazy_more">Показать Ещё</button>
+                  </div>
+                {% endif %}
                 <header class="Section-header Section-header_product">
-                  <h3 class="Section-title">Add Review
+                  <h3 class="Section-title">Добавить отзыв
                   </h3>
                 </header>
                 <div class="Tabs-addComment">
-                  <form class="form" action="#" method="post">
+                  {% if auth_error %}
+                    <div style="color: #f26d7d; display: block; margin-top: 20px;">
+                      Вам ннжно <a href="{% url 'login' %}">авторизироваться</a>, чтобы оставить отзыв. Если у вас
+                      нет аккаунта <a href="{% url 'register' %}">зарегистрируйтесь</a>.
+                    </div>
+                  {% endif %}
+                  {% if form.text.errors %}
+                    <div style="color: #f26d7d; display: block; margin-top: 20px;">{{ form.text.errors }}</div>
+                  {% endif %}
+                  {% if form.name.errors %}
+                    <div style="color: #f26d7d; display: block; margin-top: 20px;">{{ form.name.errors }}</div>
+                  {% endif %}
+                  {% if form.email.errors %}
+                    <div style="color: #f26d7d; display: block; margin-top: 20px;">{{ form.email.errors }}</div>
+                  {% endif %}
+                  <form class="form" method="post">
                     {% csrf_token %}
                     <div class="form-group">
                       {{ form.text }}
@@ -178,8 +191,7 @@
                       </div>
                     </div>
                     <div class="form-group">
-                      <button class="btn btn_muted" type="submit">Добавить Отзыв
-                      </button>
+                      <button class="btn btn_muted" type="submit">Добавить Отзыв</button>
                     </div>
                   </form>
                 </div>
@@ -189,6 +201,9 @@
         </div>
       </div>
     </div>
+  {% endblock %}
+  {% block domready %}
+    {% include "app_catalog/js/reviews_ajax.js" %}
   {% endblock %}
 </body>
 </html>

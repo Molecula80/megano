@@ -14,38 +14,47 @@
         <div class="Section-column">
           <div class="Section-columnSection">
             <header class="Section-header">
-              <strong class="Section-title">Filter
-              </strong>
+              <strong class="Section-title">Фильтр</strong>
             </header>
             <div class="Section-columnContent">
-              <form class="form" action="#" method="post">
+              <form class="form" method="get">
+                {% csrf_token %}
                 <div class="form-group">
                   <div class="range Section-columnRange">
-                    <input class="range-line" id="price" name="price" type="text" data-type="double" data-min="7" data-max="50" data-from="7" data-to="27"/>
-                    <div class="range-price">Price:&#32;
+                    {{ form.price_range }}
+                    <div class="range-price">Цена:&#32;
                       <div class="rangePrice">
                       </div>
                     </div>
                   </div>
                 </div>
                 <div class="form-group">
-                  <input class="form-input form-input_full" id="title" name="title" type="text" placeholder="Название"/>
+                  {{ form.title }}
                 </div>
                 <div class="form-group">
-                  <!-- - var options = setOptions(items, ['value', 'selected', 'disabled']);-->
+                  <h4 style="color: #878a91">Производители:</h4>
+                  {{ form.fabricators }}
+                </div>
+                <div class="form-group">
+                  <h4 style="color: #878a91;">Продавцы:</h4>
+                  {{ form.sellers }}
                 </div>
                 <div class="form-group">
                   <label class="toggle">
-                    <input type="checkbox"/><span class="toggle-box"></span><span class="toggle-text">Только товары в наличии</span>
+                    <span class="toggle-text">Товары в наличии</span>
+                    {{ form.in_stock }}
                   </label>
                 </div>
                 <div class="form-group">
                   <label class="toggle">
-                    <input type="checkbox"/><span class="toggle-box"></span><span class="toggle-text">С бесплатной доставкой</span>
+                    <span class="toggle-text">С бесплатной доставкой</span>
+                    {{ form.free_delivery }}
                   </label>
                 </div>
                 <div class="form-group">
-                  <div class="buttons"><a class="btn btn_square btn_dark btn_narrow" href="{% url 'app_catalog:product_detail' 1 %}">Filter</a>
+                  <div class="buttons">
+                    <button class="btn btn_square btn_dark btn_narrow" type="submit">
+                      Применить</button>
                   </div>
                 </div>
               </form>
@@ -53,17 +62,14 @@
           </div>
           <div class="Section-columnSection">
             <header class="Section-header">
-              <strong class="Section-title">Popular tags
+              <strong class="Section-title">Популярные тэги
               </strong>
             </header>
             <div class="Section-columnContent">
               <div class="buttons">
-                <a class="btn btn_default btn_sm" href="#">Video</a>
-                <a class="btn btn_default btn_sm" href="#">Development</a>
-                <a class="btn btn_default btn_sm" href="#">Gaming</a>
-                <a class="btn btn_default btn_sm" href="#">Asus</a>
-                <a class="btn btn_default btn_sm" href="#">Development</a>
-                <a class="btn btn_default btn_sm" href="#">Video</a>
+                {% for category in categories|slice:":6" %}
+                  <a class="btn btn_default btn_sm" href="#">{{ category.title }}</a>
+                {% endfor %}
               </div>
             </div>
           </div>
@@ -72,7 +78,35 @@
           <div class="Sort">
             <div class="Sort-title">Сортировать по:
             </div>
-            <div class="Sort-variants"><a class="Sort-sortBy Sort-sortBy_dec" href="#">Популярности</a><a class="Sort-sortBy" href="#">Цене</a><a class="Sort-sortBy" href="#">Отзывам</a><a class="Sort-sortBy Sort-sortBy_inc" href="#">Новизне</a>
+            <div class="Sort-variants">
+              {% if sort_order == 'num_purchases' %}
+                <a class="Sort-sortBy Sort-sortBy_dec" href="{% url 'app_catalog:sorted_catalog' '-num_purchases' %}">Популярности</a>
+              {% elif sort_order == '-num_purchases' %}
+                <a class="Sort-sortBy Sort-sortBy_inc" href="{% url 'app_catalog:sorted_catalog' 'num_purchases' %}">Популярности</a>
+              {% else %}
+                <a class="Sort-sortBy" href="{% url 'app_catalog:sorted_catalog' '-num_purchases' %}">Популярности</a>
+              {% endif %}
+              {% if sort_order == 'price' %}
+                <a class="Sort-sortBy Sort-sortBy_dec" href="{% url 'app_catalog:sorted_catalog' '-price' %}">Цене</a>
+              {% elif sort_order == '-price' %}
+                <a class="Sort-sortBy Sort-sortBy_inc" href="{% url 'app_catalog:sorted_catalog' 'price' %}">Цене</a>
+              {% else %}
+                <a class="Sort-sortBy" href="{% url 'app_catalog:sorted_catalog' '-price' %}">Цене</a>
+              {% endif %}
+              {% if sort_order == 'num_reviews' %}
+                <a class="Sort-sortBy Sort-sortBy_dec" href="{% url 'app_catalog:sorted_catalog' '-num_reviews' %}">Отзывам</a>
+              {% elif sort_order == '-num_reviews' %}
+                <a class="Sort-sortBy Sort-sortBy_inc" href="{% url 'app_catalog:sorted_catalog' 'num_reviews' %}">Отзывам</a>
+              {% else %}
+                <a class="Sort-sortBy" href="{% url 'app_catalog:sorted_catalog' '-num_reviews' %}">Отзывам</a>
+              {% endif %}
+              {% if sort_order == 'added_at' %}
+                <a class="Sort-sortBy Sort-sortBy_dec" href="{% url 'app_catalog:sorted_catalog' '-added_at' %}">Новизне</a>
+              {% elif sort_order == '-added_at' %}
+                <a class="Sort-sortBy Sort-sortBy_inc" href="{% url 'app_catalog:sorted_catalog' 'added_at' %}">Новизне</a>
+              {% else %}
+                <a class="Sort-sortBy" href="{% url 'app_catalog:sorted_catalog' '-added_at' %}">Новизне</a>
+              {% endif %}
             </div>
           </div>
           <div class="Cards">

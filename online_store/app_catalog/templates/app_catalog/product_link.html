@@ -6,7 +6,13 @@
   <div class="Card-content">
     <strong class="Card-title"><a href="{{ product.get_absolute_url }}">
       {{ product.title }}</a></strong>
-    <a href="{{ product.get_absolute_url }}#tabs">Отзывы: 1</a>
+    <div style="font-size: 16px; color: red">
+      {% if not product.in_stock %}Нет в наличии{% endif %}
+    </div>
+    <div style="font-size: 16px; color: green">
+      {% if product.free_delivery %}Бесплатная доставка{% endif %}
+    </div>
+    <a href="{{ product.get_absolute_url }}#reviews">Отзывы: {{ product.num_reviews }}</a>
     <div class="Card-description">
       <div class="Card-cost"><span class="Card-price">${{ product.price }}</span>
       </div>

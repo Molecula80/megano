@@ -1,5 +1,13 @@
+import logging
 from django.db import models
 from django.urls import reverse
+from django.db.models.signals import post_save
+from django.core.cache import cache
+
+from app_users.models import User
+
+
+logger = logging.getLogger(__name__)
 
 
 class Category(models.Model):
@@ -8,7 +16,8 @@ class Category(models.Model):
                                verbose_name='родитель')
     title = models.CharField(max_length=255, verbose_name='название')
     sort_index = models.PositiveIntegerField(verbose_name='индекс сортировки')
-    icon = models.ImageField(upload_to='images/categories/', blank=True, null=True, verbose_name='иконка')
+    image = models.ImageField(upload_to='images/categories/', blank=True, null=True, verbose_name='изображение')
+    icon = models.FileField(upload_to='images/icons/', blank=True, null=True, verbose_name='иконка')
     active = models.BooleanField(default=False, verbose_name='активно')
 
     class Meta:
@@ -22,6 +31,23 @@ class Category(models.Model):
         :rtype: str
         """
         return str(self.title)
+
+
+class Seller(models.Model):
+    """ Модель продавца."""
+    name = models.CharField(max_length=255, verbose_name='имя')
+
+    class Meta:
+        verbose_name = 'продавец'
+        verbose_name_plural = 'продавцы'
+
+    def __str__(self) -> str:
+        """
+        Возвращает имя продавца.
+        :return: имя продавца
+        :rtype: str
+        """
+        return str(self.name)
 
 
 class Fabricator(models.Model):
@@ -43,6 +69,8 @@ class Fabricator(models.Model):
 
 class Product(models.Model):
     """ Модель товара. """
+    seller = models.ForeignKey(Seller, blank=True, null=True, on_delete=models.SET_NULL, related_name='products',
+                               verbose_name='продавец')
     fabricator = models.ForeignKey(Fabricator, blank=True, null=True, on_delete=models.SET_NULL,
                                    related_name='products', verbose_name='производитель')
     categories = models.ManyToManyField(Category, related_name='products', verbose_name='категории')
@@ -54,14 +82,15 @@ class Product(models.Model):
     added_at = models.DateTimeField(verbose_name='дата публикации')
     num_purchases = models.PositiveIntegerField(default=0, verbose_name='количество покупок')
     sort_index = models.PositiveIntegerField(verbose_name='индекс сортировки')
+    active = models.BooleanField(default=False, verbose_name='активно')
     in_stock = models.BooleanField(default=False, verbose_name='в наличии')
     free_delivery = models.BooleanField(default=False, verbose_name='с бесплатной доставкой')
     limited_edition = models.BooleanField(default=False, verbose_name='ограниченный тираж')
 
     class Meta:
+        ordering = ['id']
         verbose_name = 'товар'
         verbose_name_plural = 'товары'
-        ordering = ['id']
 
     def __str__(self) -> str:
         """
@@ -115,3 +144,37 @@ class AddInfoPoint(models.Model):
         :rtype: str
         """
         return '{characteristic}: {value}'.format(characteristic=self.characteristic, value=self.value)
+
+
+class Review(models.Model):
+    """ Модель отзыва о товаре. """
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews', verbose_name='товар')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews', verbose_name='пользователь')
+    name = models.CharField(max_length=255, verbose_name='имя')
+    email = models.EmailField()
+    text = models.TextField(verbose_name='текст')
+    added_at = models.DateTimeField(auto_now_add=True, verbose_name='дата написания')
+    active = models.BooleanField(default=True, verbose_name='активно')
+
+    class Meta:
+        verbose_name = 'отзыв'
+        verbose_name_plural = 'отзывы'
+
+    def __str__(self) -> str:
+        """
+        Возаращает название товара, имя автора и дату написания отзыва.
+        :return: название товара, имя автора и дату написания отзыва
+        :rtype: str
+        """
+        return '{product} {name} {added_at}'.format(product=self.product, name=self.name, added_at=self.added_at)
+
+
+def clear_cache(instance, *args, **kwargs):
+    """ Сбрасывает кеш при изменении товара. """
+    context_keys = ['page_title', 'categories', 'descr_points', 'add_info_points', 'num_reviews']
+    cache_keys = ['{key}{id}'.format(key=key, id=instance.id) for key in context_keys]
+    logger.debug('Данные товара {} изменены.'.format(instance.title))
+    cache.delete_many(cache_keys)
+
+
+post_save.connect(clear_cache, sender=Product)

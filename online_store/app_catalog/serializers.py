@@ -1,4 +1,4 @@
-from .models import Category, Fabricator, Product, DescrPoint, AddInfoPoint
+from .models import Category, Fabricator, Product, Seller, DescrPoint, AddInfoPoint, Review
 from rest_framework import serializers
 
 
@@ -6,6 +6,13 @@ class CategorySerializer(serializers.ModelSerializer):
     """ Сериализатор для категорий товаров. """
     class Meta:
         model = Category
+        fields = ['id', 'parent', 'title', 'sort_index', 'active']
+
+
+class SellerSerializer(serializers.ModelSerializer):
+    """ Сериализатор для продавцов. """
+    class Meta:
+        model = Seller
         fields = '__all__'
 
 
@@ -20,7 +27,8 @@ class ProductSerializer(serializers.ModelSerializer):
     """ Сериализатор для товаров. """
     class Meta:
         model = Product
-        fields = '__all__'
+        fields = ['id', 'seller', 'fabricator', 'categories', 'title', 'slug', 'description', 'price', 'added_at',
+                  'num_purchases', 'sort_index', 'active', 'in_stock', 'free_delivery', 'limited_edition']
 
 
 class DescrPointSerializer(serializers.ModelSerializer):
@@ -34,4 +42,11 @@ class AddInfoPointSerializer(serializers.ModelSerializer):
     """ Сериализатор для пунктов дополнительной информации о товаре. """
     class Meta:
         model = AddInfoPoint
+        fields = '__all__'
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    """ Сериализатор для отзывов о товаре. """
+    class Meta:
+        model = Review
         fields = '__all__'
