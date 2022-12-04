@@ -27,7 +27,7 @@
                       <div class="Cart-desc">{{ product.description|slice:50 }}...</div>
                     </div>
                     <div class="Cart-block Cart-block_price">
-                      <div class="Cart-price">{{ product.price }}$</div>
+                      <div class="Cart-price" id="item-price">{{ item.total_price }}$</div>
                     </div>
                   </div>
                   <div class="Cart-block Cart-block_row">
@@ -38,11 +38,9 @@
                     <div class="Cart-block Cart-block_amount">
                       <div class="Cart-amount">
                         <div class="Amount">
-                          <button class="Amount-remove" type="button">
-                          </button>
-                          <input class="Amount-input form-input" name="amount" type="text" value="1"/>
-                          <button class="Amount-add" type="button">
-                          </button>
+                          <button class="Amount-remove" type="button" id="remove-button"></button>
+                          {% include "app_cart/item_quantity_ajax.html" %}
+                          <button class="Amount-add" type="button" id="add-button"></button>
                         </div>
                       </div>
                     </div>
@@ -56,8 +54,8 @@
             {% endfor %}
             <div class="Cart-total">
               <div class="Cart-block Cart-block_total">
-                <strong class="Cart-title">Итого:
-                </strong><span class="Cart-price">{{ cart.get_total_price }}$</span>
+                <strong class="Cart-title">Итого:</strong>
+                <span class="Cart-price" id="cart-price">{{ cart.get_total_price }}$</span>
               </div>
               <div class="Cart-block">
                 <a class="btn btn_success btn_lg" href="{% url 'app_ordering:order_create' %}">Оформить заказ</a>
@@ -73,6 +71,9 @@
         {% endif %}
       </div>
     </div>
+  {% endblock %}
+  {% block domready %}
+    {% include "app_catalog/js/reviews_ajax.js" %}
   {% endblock %}
 </body>
 </html>

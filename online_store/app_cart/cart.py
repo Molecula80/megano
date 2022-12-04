@@ -36,12 +36,15 @@ class Cart(object):
         """
         return sum(item['quantity'] for item in self.__cart.values())
 
-    def add(self, product, quantity=1):
+    def add(self, product, quantity=1, update_quantity=False):
         """ Добавление товара в корзину или обновление его количества. """
         product_id = str(product.id)
         if product_id not in self.__cart:
             self.__cart[product_id] = {'quantity': 0, 'price': str(product.price)}
-        self.__cart[product_id]['quantity'] = quantity
+        if update_quantity:
+            self.__cart[product_id]['quantity'] = quantity
+        else:
+            self.__cart[product_id]['quantity'] = quantity
         self.save()
 
     def remove(self, product):
