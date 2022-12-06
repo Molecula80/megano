@@ -12,12 +12,15 @@ logger = logging.getLogger(__name__)
 def cart_detail(request):
     """ Страница корзины. """
     cart = Cart(request)
+    prices = list()
     for item in cart:
         item['update_quantity_form'] = CartAddProductForm(initial={'quantity': item['quantity'], 'update': True})
-        if request.is_ajax():
-            return render(request, 'app_cart/item_quantity_ajax.html', {'cart': cart, 'page_title': 'Корзина'})
+        prices.append(item['price'])
+    if request.is_ajax():
+        return render(request, 'app_cart/item_quantity_ajax.html', {'cart': cart, 'page_title': 'Корзина',
+                                                                    'prices': prices})
     logger.debug('Запрошена страница корзины.')
-    return render(request, 'app_cart/cart_detail.html', {'cart': cart, 'page_title': 'Корзина'})
+    return render(request, 'app_cart/cart_detail.html', {'cart': cart, 'page_title': 'Корзина', 'prices': prices})
 
 
 def cart_add(request, product_id: int):
