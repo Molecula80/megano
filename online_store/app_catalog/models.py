@@ -171,7 +171,7 @@ class Review(models.Model):
 
 def clear_cache(instance, *args, **kwargs):
     """ Сбрасывает кеш при изменении товара. """
-    context_keys = ['page_title', 'categories', 'descr_points', 'add_info_points', 'num_reviews']
+    context_keys = ['page_title', 'categories', 'descr_points', 'add_info_points']
     cache_keys = ['{key}{id}'.format(key=key, id=instance.id) for key in context_keys]
     logger.debug('Данные товара {} изменены.'.format(instance.title))
     cache.delete_many(cache_keys)

@@ -142,7 +142,7 @@ def product_detail_view(request, slug: str):
     context['add_info_points'] = cache.get_or_set('add_info_points{}'.format(product.id),
                                                   product.add_info_points.all(), day)
     reviews = product.reviews.filter(active=True).order_by('-added_at')
-    context['num_reviews'] = cache.get_or_set('num_reviews{}'.format(product.id), reviews.count(), day)
+    context['num_reviews'] = reviews.count()
     context['auth_error'] = False
     # Если пользователь аутентифицирован, подставляем в форму его имя и email.
     initial = get_initial_values(user=request.user)
