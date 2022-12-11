@@ -36,7 +36,7 @@ class Cart(object):
         """
         return sum(item['quantity'] for item in self.__cart.values())
 
-    def add(self, product, quantity=1, update_quantity=False):
+    def add(self, product: Product, quantity: int = 1, update_quantity: bool = False) -> None:
         """ Добавление товара в корзину или обновление его количества. """
         product_id = str(product.id)
         if product_id not in self.__cart:
@@ -47,12 +47,17 @@ class Cart(object):
             self.__cart[product_id]['quantity'] += quantity
         self.save()
 
-    def remove(self, product):
+    def remove(self, product: Product) -> None:
         """ Удаление товара из корзины. """
         product_id = str(product.id)
         if product_id in self.__cart:
             del self.__cart[product_id]
             self.save()
+
+    def update(self, product_id: int, quantity: int) -> None:
+        """ Изменение количества товара в корзине. """
+        self.__cart[str(product_id)]['quantity'] += quantity
+        self.save()
 
     def get_total_price(self) -> float:
         """
@@ -62,12 +67,12 @@ class Cart(object):
         """
         return sum(Decimal(item['price']) * item['quantity'] for item in self.__cart.values())
 
-    def clear(self):
+    def clear(self) -> None:
         """ Очистка корзины. """
         del self.__session[settings.CART_SESSION_ID]
         self.save()
 
-    def save(self):
+    def save(self) -> None:
         """ Сохоанение корзины. """
         # Помечаем сессию как измененную.
         self.__session.modified = True

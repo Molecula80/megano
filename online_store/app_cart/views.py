@@ -1,7 +1,9 @@
 import logging
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
 
 from app_catalog.models import Product
+from common.decorators import ajax_required
 from .cart import Cart
 from .forms import CartAddProductForm
 
@@ -14,8 +16,6 @@ def cart_detail(request):
     cart = Cart(request)
     for item in cart:
         item['update_quantity_form'] = CartAddProductForm(initial={'quantity': item['quantity'], 'update': True})
-    if request.is_ajax():
-        return render(request, 'app_cart/item_quantity_ajax.html', {'cart': cart, 'page_title': 'Корзина'})
     logger.debug('Запрошена страница корзины.')
     return render(request, 'app_cart/cart_detail.html', {'cart': cart, 'page_title': 'Корзина'})
 
@@ -36,3 +36,21 @@ def cart_remove(request, product_id: int):
     cart.remove(product)
     logger.debug('Товар {} удален из корзины.'.format(product.title))
     return redirect('app_cart:cart_detail')
+
+
+@ajax_required
+def cart_update(request):
+    """ Изменение количества товара в корзине. """
+    cart = Cart(request)
+    action = request.GET.get('action')
+    product_id = request.GET.get('id')
+    if action:
+        try:
+            if action == 'remove':
+                cart.update(product_id=product_id, quantity=-1)
+            else:
+                cart.update(product_id=product_id, quantity=1)
+            return JsonResponse({'status': 'ok'})
+        except:
+            pass
+    return JsonResponse({'status': 'ok'})
