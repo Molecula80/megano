@@ -1,4 +1,4 @@
-var csrftoken = Cookies.get('csrftoken')
+var csrftoken = Cookies.get('csrftoken');
 
 function csrfSafeMethod(method) {
   // Для этих методов токен не будет подставляться в заголовок.

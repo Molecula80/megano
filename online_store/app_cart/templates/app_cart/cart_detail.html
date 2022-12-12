@@ -27,7 +27,7 @@
                       <div class="Cart-desc">{{ product.description|slice:50 }}...</div>
                     </div>
                     <div class="Cart-block Cart-block_price">
-                      <div class="Cart-price"><span id="item-price">{{ item.total_price }}</span>$</div>
+                      <div class="Cart-price" id="item-price">{{ item.total_price }}$</div>
                     </div>
                   </div>
                   <div class="Cart-block Cart-block_row">
@@ -38,11 +38,9 @@
                     <div class="Cart-block Cart-block_amount">
                       <div class="Cart-amount">
                         <div class="Amount">
-                          <button class="Amount-remove" type="button" data-action="remove"
-                                  data-id="{{ product.id }}" data-item_price="{{ item.total_price }}"></button>
+                          <button class="Amount-remove" type="button" data-action="remove" data-id="{{ product.id }}"></button>
                           <input class="Amount-input form-input" name="amount" type="text" value="{{ item.quantity }}"/>
-                          <button class="Amount-add" type="button" data-action="add"
-                                  data-id="{{ product.id }}" data-item_price="{{ item.total_price }}"></button>
+                          <button class="Amount-add" type="button" data-action="add" data-id="{{ product.id }}"></button>
                         </div>
                       </div>
                     </div>
@@ -57,7 +55,7 @@
             <div class="Cart-total">
               <div class="Cart-block Cart-block_total">
                 <strong class="Cart-title">Итого:</strong>
-                <span class="Cart-price"><span id="cart-price">{{ cart.get_total_price }}</span>$</span>
+                <span class="Cart-price" id="cart-price">{{ cart.get_total_price }}$</span>
               </div>
               <div class="Cart-block">
                 <a class="btn btn_success btn_lg" href="{% url 'app_ordering:order_create' %}">Оформить заказ</a>

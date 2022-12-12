@@ -1,9 +1,11 @@
 import logging
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
+from django.views.decorators.http import require_POST
 
 from app_catalog.models import Product
 from common.decorators import ajax_required
+
 from .cart import Cart
 from .forms import CartAddProductForm
 
@@ -39,11 +41,12 @@ def cart_remove(request, product_id: int):
 
 
 @ajax_required
+@require_POST
 def cart_update(request):
     """ Изменение количества товара в корзине. """
     cart = Cart(request)
-    action = request.GET.get('action')
-    product_id = request.GET.get('id')
+    action = request.POST.get('action')
+    product_id = request.POST.get('id')
     if action:
         try:
             if action == 'remove':
