@@ -47,12 +47,18 @@ def cart_update(request):
     cart = Cart(request)
     action = request.POST.get('action')
     product_id = request.POST.get('id')
+    try:
+        quantity = int(request.POST.get('quantity'))
+    except ValueError:
+        quantity = 1
+    logger.debug('ID: {id}\nQuantity: {quantity}\nAction: {action}'.format(id=product_id, quantity=quantity,
+                                                                           action=action))
     if action:
         try:
             if action == 'remove':
-                cart.update(product_id=product_id, quantity=-1)
+                cart.update(product_id=product_id, quantity=quantity)
             else:
-                cart.update(product_id=product_id, quantity=1)
+                cart.update(product_id=product_id, quantity=quantity)
             return JsonResponse({'status': 'ok'})
         except:
             pass
