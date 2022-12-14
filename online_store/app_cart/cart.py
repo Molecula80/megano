@@ -58,8 +58,6 @@ class Cart(object):
         """ Изменение количества товара в корзине. """
         product_id = str(product_id)
         self.__cart[product_id]['quantity'] = quantity
-        if self.__cart[product_id]['quantity'] < 0:
-            self.__cart[product_id]['quantity'] = 0
         self.save()
 
     def get_total_price(self) -> float:

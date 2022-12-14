@@ -10,6 +10,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from .models import Category, Product
 from .forms import ReviewForm, ProductFilterForm
+from app_cart.forms import CartAddProductForm
 
 
 logger = logging.getLogger(__name__)
