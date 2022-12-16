@@ -148,13 +148,13 @@ def product_detail_view(request, slug: str):
     # Если пользователь аутентифицирован, подставляем в форму его имя и email.
     initial = get_initial_values(user=request.user)
     if request.method == 'POST':
-        form = ReviewForm(request.POST, initial=initial)
-        if form.is_valid():
+        review_form = ReviewForm(request.POST, initial=initial)
+        if review_form.is_valid():
             # Если пользователь не аутентифицирован, выводим сообщение об ошибке.
             if request.user.is_anonymous:
                 context['auth_error'] = True
             else:
-                review = form.save(commit=False)
+                review = review_form.save(commit=False)
                 review.product = product
                 review.user = request.user
                 logger.debug('Пользователь {email} оставил отзыв о товаре {product}'.format(
@@ -163,8 +163,9 @@ def product_detail_view(request, slug: str):
                 ))
                 review.save()
     else:
-        form = ReviewForm(initial=initial)
-    context['form'] = form
+        review_form = ReviewForm(initial=initial)
+    context['cart_product_form'] = CartAddProductForm
+    context['review_form'] = review_form
     return product_paginator(request=request, reviews=reviews, context=context)
 
 

@@ -41,10 +41,7 @@ class Cart(object):
         product_id = str(product.id)
         if product_id not in self.__cart:
             self.__cart[product_id] = {'quantity': 0, 'price': str(product.price)}
-        if update_quantity:
-            self.__cart[product_id]['quantity'] = quantity
-        else:
-            self.__cart[product_id]['quantity'] += quantity
+        self.__cart[product_id]['quantity'] += quantity
         self.save()
 
     def remove(self, product: Product) -> None:

@@ -14,7 +14,7 @@
     </div>
     <a href="{{ product.get_absolute_url }}#reviews">Отзывы: {{ product.num_reviews }}</a>
     <div class="Card-description">
-      <div class="Card-cost"><span class="Card-price">${{ item.total_price }}</span>
+      <div class="Card-cost"><span class="Card-price">${{ product.price }}</span>
       </div>
       <div class="Card-category">
         {% for category in product.categories.all %}

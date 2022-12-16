@@ -59,24 +59,26 @@
                   <li>Количество покупок: {{ product.num_purchases }}</li>
                 </ul>
               </div>
-              <div class="ProductCard-cart">
-                <div class="ProductCard-cartElement ProductCard-cartElement_amount">
-                  <div class="Amount Amount_product">
-                    <button class="Amount-remove" type="button">
-                    </button>
-                    <input class="Amount-input form-input" name="amount" type="text" value="1"/>
-                    <button class="Amount-add" type="button">
-                    </button>
+              <form action="{% url 'app_cart:cart_add' product.id %}" method="post">
+                {% csrf_token %}
+                <div class="ProductCard-cart">
+                  <div class="ProductCard-cartElement ProductCard-cartElement_amount">
+                    <div class="Amount Amount_product">
+                      <button class="Amount-remove" type="button">
+                      </button>
+                      {{ cart_product_form.quantity }}
+                      <button class="Amount-add" type="button">
+                      </button>
+                    </div>
+                  </div>
+                  <div class="ProductCard-cartElement">
+                      <button class="btn btn_primary" type="submit">
+                        <img class="btn-icon" src="{% static 'assets/img/icons/card/cart_white.svg' %}" alt="cart_white.svg"/>
+                        <span class="btn-content">Добавить в корзину</span>
+                      </button>
                   </div>
                 </div>
-                <div class="ProductCard-cartElement">
-                    <a class="btn btn_primary" href="{% url 'app_cart:cart_add' product.id  %}">
-                      {% if product.image %}
-                        <img class="btn-icon" src="{% static 'assets/img/icons/card/cart_white.svg' %}" alt="cart_white.svg"/>
-                      {% endif %}
-                        <span class="btn-content">Добавить в корзину</span></a>
-                </div>
-              </div>
+              </form>
               <div class="ProductCard-footer">
                 <div class="ProductCard-tags">
                   <strong class="ProductCard-tagsTitle">Тэги:</strong>
@@ -164,27 +166,27 @@
                       нет аккаунта <a href="{% url 'register' %}">зарегистрируйтесь</a>.
                     </div>
                   {% endif %}
-                  {% if form.text.errors %}
-                    <div style="color: #f26d7d; display: block; margin-top: 20px;">{{ form.text.errors }}</div>
+                  {% if review_form.text.errors %}
+                    <div style="color: #f26d7d; display: block; margin-top: 20px;">{{ review_form.text.errors }}</div>
                   {% endif %}
-                  {% if form.name.errors %}
-                    <div style="color: #f26d7d; display: block; margin-top: 20px;">{{ form.name.errors }}</div>
+                  {% if review_form.name.errors %}
+                    <div style="color: #f26d7d; display: block; margin-top: 20px;">{{ review_form.name.errors }}</div>
                   {% endif %}
-                  {% if form.email.errors %}
-                    <div style="color: #f26d7d; display: block; margin-top: 20px;">{{ form.email.errors }}</div>
+                  {% if review_form.email.errors %}
+                    <div style="color: #f26d7d; display: block; margin-top: 20px;">{{ review_form.email.errors }}</div>
                   {% endif %}
                   <form class="form" method="post">
                     {% csrf_token %}
                     <div class="form-group">
-                      {{ form.text }}
+                      {{ review_form.text }}
                     </div>
                     <div class="form-group">
                       <div class="row">
                         <div class="row-block">
-                          {{ form.name }}
+                          {{ review_form.name }}
                         </div>
                         <div class="row-block">
-                          {{ form.email }}
+                          {{ review_form.email }}
                         </div>
                       </div>
                     </div>

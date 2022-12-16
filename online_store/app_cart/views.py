@@ -41,15 +41,6 @@ class CartAdd(View):
         return redirect('app_cart:cart_detail')
 
 
-def cart_add(request, product_id: int):
-    """ Добавление товара в корзину. """
-    cart = Cart(request)
-    product = get_object_or_404(Product, id=product_id)
-    cart.add(product=product, quantity=1)
-    logger.debug('Товар {} добавлен в корзину.'.format(product.title))
-    return redirect('app_cart:cart_detail')
-
-
 def cart_remove(request, product_id: int):
     """ Удаление товара из корзины. """
     cart = Cart(request)
