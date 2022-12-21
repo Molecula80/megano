@@ -36,7 +36,7 @@ class Cart(object):
         """
         return sum(item['quantity'] for item in self.__cart.values())
 
-    def add(self, product: Product, quantity: int = 1, update_quantity: bool = False) -> None:
+    def add(self, product: Product, quantity: int = 1) -> None:
         """ Добавление товара в корзину или обновление его количества. """
         product_id = str(product.id)
         if product_id not in self.__cart:
@@ -55,6 +55,9 @@ class Cart(object):
         """ Изменение количества товара в корзине. """
         product_id = str(product_id)
         self.__cart[product_id]['quantity'] = quantity
+        if quantity == 0:
+            product = Product.objects.get(id=product_id)
+            return self.remove(product)
         self.save()
 
     def get_total_price(self) -> float:

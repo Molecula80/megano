@@ -11,8 +11,7 @@
     <div class="Section">
       <div class="wrap">
         {% if cart %}
-          <form class="form Cart" action="#" method="post">
-            {% csrf_token %}
+          <div class="form Cart">
             {% for item in cart %}
               {% with product=item.product %}
                 <div class="Cart-product">
@@ -62,7 +61,7 @@
                 <a class="btn btn_success btn_lg" href="{% url 'app_ordering:order_create' %}">Оформить заказ</a>
               </div>
             </div>
-          </form>
+          </div>
         {% else %}
           <div class="Cart-total">
             <div class="Cart-block Cart-block_total">
