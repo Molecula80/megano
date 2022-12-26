@@ -1,16 +1,16 @@
 import logging
 
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404
-from django.contrib.auth.views import LogoutView
 from django.urls import reverse
 from django.views.generic import DetailView, ListView
 
 from .forms import RegisterForm, AuthForm, ProfileForm
 from .models import User
+from app_cart.cart import Cart
 
 
 logger = logging.getLogger(__name__)
@@ -65,6 +65,7 @@ def register_view(request):
 def login_view(request):
     """ Страница входа. """
     error = str()
+    cart = Cart(request)
     if request.method == 'POST':
         form = AuthForm(request.POST)
         if form.is_valid():
@@ -74,6 +75,8 @@ def login_view(request):
             if user:
                 if user.is_active:
                     login(request, user)
+                    delete_cookie_file(request)
+                    cart.merge_carts(request, user)
                     logger.debug('Пользователь {} вошел в систему.'.format(email))
                     return HttpResponseRedirect(reverse('app_catalog:index'))
                 else:
@@ -88,6 +91,17 @@ def login_view(request):
         'error': error
     }
     return render(request, 'app_users/login.html', context=context)
+
+
+def delete_cookie_file(request):
+    if request.COOKIES.get('cart_1'):
+        response = HttpResponse('cart')
+        response.delete_cookie("cart_1")
+        logger.debug('Куки успешно удалены.')
+    else:
+        response = HttpResponse('You need to create cookie before deleting')
+        logger.debug('Куки не найдены.')
+    return response
 
 
 @login_required
@@ -134,9 +148,12 @@ def profile_view(request, pk):
                                                            'success': success})
 
 
-class UserLogoutView(LogoutView):
+def logout_view(request):
     """ Представление для выхода из под учетной записи. """
-    next_page = '/'
+    cart = Cart(request)
+    cart.cart_cookie(request)
+    logout(request)
+    return HttpResponseRedirect(reverse('app_catalog:index'))
 
 
 class OrderHistoryListView(ListView):

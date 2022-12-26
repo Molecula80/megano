@@ -2,13 +2,13 @@ from django.urls import path
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView
 from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetCompleteView
 
-from .views import register_view, UserLogoutView, login_view, AccountDetailView, profile_view
+from .views import register_view, logout_view, login_view, AccountDetailView, profile_view
 from .api import UserListApi, UserDetailApi
 
 urlpatterns = [
     path('register/', register_view, name='register'),
     path('login/', login_view, name='login'),
-    path('logout/', UserLogoutView.as_view(), name='logout'),
+    path('logout/', logout_view, name='logout'),
     path('accounts/<int:pk>/', AccountDetailView.as_view(), name='account_detail'),
     path('accounts/<int:pk>/profile', profile_view, name='profile'),
     # Обработчики восстановления пароля.

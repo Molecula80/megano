@@ -3,6 +3,7 @@ from typing import Iterable
 from django.conf import settings
 
 from app_catalog.models import Product
+from django.http import HttpResponse
 
 
 class Cart(object):
@@ -35,6 +36,23 @@ class Cart(object):
         :rtype: int
         """
         return sum(item['quantity'] for item in self.__cart.values())
+
+    def merge_carts(self, request, user):
+        """
+        Слияние корзин анонимного и аутентифицированного пользователя, после того как последний вошел в систему.
+        """
+        cookie_name = 'cart_{}'.format(user.id)
+        auth_cart = request.COOKIES.get(cookie_name)
+        if not auth_cart:
+            auth_cart = str()
+        try:
+            for str_product in auth_cart.split(', '):
+                product_id = int(str_product.split(', ')[0])
+                product = Product.objects.get(id=product_id)
+                quantity = int(str_product.split(', ')[1])
+                self.add(product=product, quantity=quantity)
+        except ValueError:
+            pass
 
     def add(self, product: Product, quantity: int = 1) -> None:
         """ Добавление товара в корзину или обновление его количества. """
@@ -77,3 +95,18 @@ class Cart(object):
         """ Сохоанение корзины. """
         # Помечаем сессию как измененную.
         self.__session.modified = True
+
+    def cart_cookie(self, request):
+        """ Сохранение корзины в файле cookie при выходе пользователя из системы. """
+        response = HttpResponse('cart')
+        name = 'cart_{}'.format(request.user.id)
+        value = ', '.join(list(self.get_cookie_value()))
+        two_weeks = 14 * 24 * 60 * 60
+        response.set_cookie(name, value, two_weeks)
+        return response
+
+    def get_cookie_value(self) -> Iterable:
+        """ Возвращает итератор, содержащий id и количество всех продуктов в корзине. """
+        for key, value in self.__cart.items():
+            quantity = value['quantity']
+            yield '{id} {quantity}'.format(id=key, quantity=quantity)

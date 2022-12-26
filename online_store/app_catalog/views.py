@@ -37,6 +37,7 @@ class IndexView(TemplateView):
         context['popular_products'] = cache.get_or_set(pp_cache_key, popular_products, 30)
         context['limited_edition'] = cache.get_or_set(le_cache_key, limited_edition, 30)
         logger.debug('Запрошена главная страница.')
+        logger.debug('Cookies: {}'.format(self.request.COOKIES.get('cart_1')))
         return context
 
 
