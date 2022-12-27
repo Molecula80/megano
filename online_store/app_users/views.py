@@ -75,8 +75,7 @@ def login_view(request):
             if user:
                 if user.is_active:
                     login(request, user)
-                    delete_cookie_file(request)
-                    cart.merge_carts(request, user)
+                    cart.merge_carts(user)
                     logger.debug('Пользователь {} вошел в систему.'.format(email))
                     return HttpResponseRedirect(reverse('app_catalog:index'))
                 else:
@@ -91,17 +90,6 @@ def login_view(request):
         'error': error
     }
     return render(request, 'app_users/login.html', context=context)
-
-
-def delete_cookie_file(request):
-    if request.COOKIES.get('cart_1'):
-        response = HttpResponse('cart')
-        response.delete_cookie("cart_1")
-        logger.debug('Куки успешно удалены.')
-    else:
-        response = HttpResponse('You need to create cookie before deleting')
-        logger.debug('Куки не найдены.')
-    return response
 
 
 @login_required
@@ -151,7 +139,7 @@ def profile_view(request, pk):
 def logout_view(request):
     """ Представление для выхода из под учетной записи. """
     cart = Cart(request)
-    cart.cart_cookie(request)
+    cart.save_cart_in_database(user=request.user)
     logout(request)
     return HttpResponseRedirect(reverse('app_catalog:index'))
 
