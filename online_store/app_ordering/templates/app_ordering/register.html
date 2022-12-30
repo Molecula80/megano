@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% extends "middle_base.html" %}
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>{% block title %}Оформление заказа{% endblock %}</title>
+</head>
+<body>
+  {% block mb_content %}
+    <div class="Section Section_column Section_columnRight Section_columnWide Order">
+      <div class="wrap">
+        <div class="Section-column">
+          <div class="Section-columnSection">
+            <header class="Section-header">
+              <strong class="Section-title">Прогресс заполнения
+              </strong>
+            </header>
+            <div class="Section-columnContent">
+              <ul class="menu menu_vt Order-navigate">
+                <li class="menu-item_ACTIVE menu-item">
+                    <a class="menu-link" href="#step1">Шаг 1. Параметры пользователя</a>
+                </li>
+                <li class="menu-item"><a class="menu-link" href="{% url 'app_ordering:order_create' %}#step2">Шаг 2. Способ доставки</a>
+                </li>
+                <li class="menu-item"><a class="menu-link" href="{% url 'app_ordering:order_create' %}#step3">Шаг 3. Способ оплаты</a>
+                </li>
+                <li class="menu-item"><a class="menu-link" href="{% url 'app_ordering:order_create' %}#step4">Шаг 4. Подтверждение заказа</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="Section-content">
+          <form class="form" action="#" method="post">
+            {% csrf_token %}
+            <div class="Order-block Order-block_OPEN" id="step1">
+              <header class="Section-header Section-header_sm">
+                <h2 class="Section-title">Шаг 1. Параметры пользователя
+                </h2>
+              </header>
+              <div class="row">
+                <div class="row-block">
+                  <div class="form-group">
+                    <label class="form-label" for="name">ФИО
+                    </label>
+                    {{ form.full_name }}
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="phone">Телефон
+                    </label>
+                    {{ form.telephone }}
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="mail">E-mail
+                    </label>
+                    {{ form.email }}
+                  </div>
+                </div>
+                <div class="row-block">
+                  <div class="form-group">
+                    <label class="form-label" for="password">Пароль
+                    </label>
+                    {{ form.password1 }}
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="passwordReply">Подтверждение пароля
+                    </label>
+                    {{ form.password2 }}
+                  </div>
+                  <div class="form-group"><a class="btn btn_muted Order-btnReg" href="#">Я уже зарегистрирован</a>
+                </div>
+              </div>
+              </div>
+              <div class="Order-footer">
+                <button class="btn btn_success" type="submit">Дальше</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  {% endblock %}
+</body>
+</html>

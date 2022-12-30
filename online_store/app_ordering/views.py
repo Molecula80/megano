@@ -1,62 +1,43 @@
 import logging
 
-from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import reverse
 from django.views import View
 
 from .forms import OrderCreateForm
-from app_users.forms import RegisterForm
-from app_users.models import User
-
+from common.functions import register
 
 logger = logging.getLogger(__name__)
 
 
-class OrderCreateView(View):
+class OrderCreateView(LoginRequiredMixin, View):
     """ Страница ввода параметров пользователя. """
     def get(self, request):
         """ Метод для GET запроса к странице. """
         user = request.user
-        if user.is_authenticated:
-            initial = {'full_name': user.full_name, 'telephone': user.telephone, 'email': user.email}
-            form = OrderCreateForm(initial=initial)
-        else:
-            form = RegisterForm()
+        initial = {'full_name': user.full_name, 'telephone': user.telephone, 'email': user.email}
+        form = OrderCreateForm(initial=initial)
         logger.debug('Запрошена страница оформления заказа.')
         return render(request, 'app_ordering/order_create.html', {'form': form, 'page_title': 'Оформление заказа'})
 
     def post(self, request):
         """ Метод для POST запроса к странице. """
-        if request.user.is_authenticated:
-            form = OrderCreateForm(request.POST)
-            if form.is_valid():
-                logger.debug('Заказ успешно оформлен.')
-                return HttpResponseRedirect('app_ordering:payment')
-        else:
-            form = RegisterForm(request.POST)
-            if form.is_valid():
-                user = form.save(commit=False)
-                telephone_str = form.cleaned_data.get('telephone')
-                # Оставляем все цифры, кроме семёрки.
-                telephone = ''.join(sym for sym in telephone_str[3:] if sym.isdigit())
-                if telephone and len(telephone) < 10:
-                    form.add_error('telephone', 'Это значение недопустимо.')
-                # Если был введен номер телефона, и пользователь с указанным номером телефона уже есть,
-                # выводим сообщение об ошибке.
-                elif telephone and User.objects.only('telephone').filter(telephone=telephone).exists():
-                    form.add_error('telephone', 'Пользователь с таким номером телефона уже есть.')
-                else:
-                    user.telephone = telephone
-                    user.save()
-                    email = form.cleaned_data.get('email')
-                    raw_password = form.cleaned_data.get('password1')
-                    user = authenticate(email=email, password=raw_password)
-                    login(request, user)
-                    logger.debug('Пользователь {} зарегистрировался на сайте.'.format(email))
-                    return HttpResponseRedirect('app_ordering:order_create#step2')
+        form = OrderCreateForm(request.POST)
+        if form.is_valid():
+            logger.debug('Заказ успешно оформлен.')
+            return HttpResponseRedirect(reverse('app_ordering:payment'))
+        return render(request, 'app_ordering/order_create.html', {'form': form, 'page_title': 'Оформление заказа'})
+
+
+def register_view(request):
+    """ Страница регистрации. """
+    next_page = 'app_ordering:order_create'
+    template = 'app_ordering/register.html'
+    page_title = 'Оформление заказа'
+    return register(request=request, next_page=next_page, template=template, page_title=page_title)
 
 
 class PaymentView(LoginRequiredMixin, View):
