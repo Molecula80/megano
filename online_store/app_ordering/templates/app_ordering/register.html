@@ -92,6 +92,16 @@
               </div>
             </div>
           </form>
+          {% if email_exists %}
+            <div>
+              Пользователь с указанным email существует, вы можете авторизоваться.
+              <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button class="btn btn_success" type="submit">Зарегистрироваться</button>
+              </form>
+            </div>
+          {% endif %}
         </div>
       </div>
     </div>
