@@ -14,11 +14,8 @@ logger = logging.getLogger(__name__)
 
 def register(request, next_page: str, template: str, page_title: str):
     """ Страница регистрации. """
-    email_exists = False
     if request.method == 'POST':
         form = RegisterForm(request.POST, request.FILES)
-        if form.has_error(field='email', code='unique'):
-            email_exists = True
         if form.is_valid():
             user = form.save(commit=False)
             telephone_str = form.cleaned_data.get('telephone')
@@ -41,4 +38,4 @@ def register(request, next_page: str, template: str, page_title: str):
                 return HttpResponseRedirect(reverse(next_page))
     else:
         form = RegisterForm()
-    return render(request, template, {'form': form, 'page_title': page_title, 'email_exists': email_exists})
+    return render(request, template, {'form': form, 'page_title': page_title})

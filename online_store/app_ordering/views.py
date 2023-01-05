@@ -35,7 +35,10 @@ class OrderCreateView(LoginRequiredMixin, View):
 def register_view(request):
     """ Страница регистрации. """
     next_page = 'app_ordering:order_create'
-    template = 'app_ordering/register.html'
+    if request.is_ajax():
+        template = 'app_ordering/popups.html'
+    else:
+        template = 'app_ordering/register.html'
     page_title = 'Оформление заказа'
     return register(request=request, next_page=next_page, template=template, page_title=page_title)
 
