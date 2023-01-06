@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.views import View
 
 from .forms import OrderCreateForm
+from app_users.forms import RegisterForm, AuthForm
 from common.functions import register
 
 logger = logging.getLogger(__name__)
@@ -35,12 +36,19 @@ class OrderCreateView(LoginRequiredMixin, View):
 def register_view(request):
     """ Страница регистрации. """
     next_page = 'app_ordering:order_create'
-    if request.is_ajax():
-        template = 'app_ordering/popups.html'
+    if request.method == 'POST':
+        register_form = RegisterForm(request.POST, request.FILES)
+        auth_form = AuthForm(request.POST)
+        if register_form.is_valid():
+            return register(request=request, next_page=next_page, form=register_form)
     else:
-        template = 'app_ordering/register.html'
-    page_title = 'Оформление заказа'
-    return register(request=request, next_page=next_page, template=template, page_title=page_title)
+        register_form = RegisterForm()
+        auth_form = AuthForm()
+    if request.is_ajax():
+        return render(request, 'app_ordering/popups.html', {'register_form': register_form, 'auth_form': auth_form,
+                                                            'page_title': 'Оформление заказа'})
+    return render(request, 'app_ordering/register.html', {'register_form': register_form, 'auth_form': auth_form,
+                                                          'page_title': 'Оформление заказа'})
 
 
 class PaymentView(LoginRequiredMixin, View):

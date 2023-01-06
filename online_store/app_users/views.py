@@ -8,7 +8,7 @@ from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.views.generic import DetailView, ListView
 
-from .forms import AuthForm, ProfileForm
+from .forms import AuthForm, ProfileForm, RegisterForm
 from .models import User
 from app_cart.cart import Cart
 from common.functions import register
@@ -36,9 +36,13 @@ class AccountDetailView(LoginRequiredMixin, DetailView):
 def register_view(request):
     """ Страница регистрации. """
     next_page = 'app_catalog:index'
-    template = 'app_users/register.html'
-    page_title = 'регистрация'
-    return register(request=request, next_page=next_page, template=template, page_title=page_title)
+    if request.method == 'POST':
+        form = RegisterForm(request.POST, request.FILES)
+        if form.is_valid():
+            return register(request=request, next_page=next_page, form=form)
+    else:
+        form = RegisterForm()
+    return render(request, 'app_users/register.html', {'form': form, 'page_title': 'регистрация'})
 
 
 def login_view(request):
