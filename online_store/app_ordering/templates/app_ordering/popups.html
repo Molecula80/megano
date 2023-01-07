@@ -41,3 +41,15 @@ position: fixed; top: 0px;">
     <div style="text-align: right; margin-top: 10px;"><a href="{% url 'password_reset' %}">Забыли пароль?</a></div>
   </div>
 </div>
+{% if email_exists %}
+  <div id="register-popup" style="width: 100%; min-height: 100%; background-color: rgba(0,0,0,0.5); overflow: hidden;
+  position: fixed; top: 0px;">
+    <div style="margin: 40px auto 0px auto; width: 25%; height: 100%; padding: 10px; background-color: #fff;
+    border-radius:5px; box-shadow: 0px 0px 10px #000;">
+      <div style="text-align: right;"><button class="login-button">X</button></div>
+      <h2 style="margin-top: 10px;">Пользователь с указанным email уже существует, вы можете авторизоваться.</h2>
+      {% include "app_users/profile.html" %}
+      <div style="text-align: right; margin-top: 10px;"><a href="{% url 'password_reset' %}">Забыли пароль?</a></div>
+    </div>
+  </div>
+{% endif %}

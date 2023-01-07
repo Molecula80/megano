@@ -12,6 +12,6 @@ class OrderCreateForm(forms.Form):
                                                               "type": "text", "data-mask": "+7(999)999-99-99"}))
     email = forms.EmailField(required=True, error_messages={'required': 'Это поле обязательно для заполнения.',
                                                             'invalid': 'Это значение недопустимо.',
-                                                            'unique': 'Пользователь с таким email уже есть.'},
+                                                            'unique': 'Пользователь с указанным email уже существует.'},
                              widget=forms.EmailInput(attrs={"class": "form-input", "id": "mail", "name": "mail",
                                                             "type": "text", "value": "", "data-validate": "require"}))

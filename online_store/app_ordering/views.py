@@ -1,5 +1,6 @@
 import logging
 
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
@@ -10,6 +11,8 @@ from django.views import View
 from .forms import OrderCreateForm
 from app_users.forms import RegisterForm, AuthForm
 from common.functions import register
+from app_cart.cart import Cart
+from app_cart.models import CartItem
 
 logger = logging.getLogger(__name__)
 
@@ -35,20 +38,47 @@ class OrderCreateView(LoginRequiredMixin, View):
 
 def register_view(request):
     """ Страница регистрации. """
+    cart = Cart(request)
     next_page = 'app_ordering:order_create'
+    template = 'app_ordering/register.html'
+    error = str()
+    email_exists = False
     if request.method == 'POST':
         register_form = RegisterForm(request.POST, request.FILES)
+        # Если пользователь с указанным email уже существует, выводим всплывающее окно.
+        if register_form.has_error(field='email', code='unique'):
+            email_exists = True
         auth_form = AuthForm(request.POST)
+        context = {'register_form': register_form, 'auth_form': auth_form, 'page_title': 'Оформление заказа'}
         if register_form.is_valid():
-            return register(request=request, next_page=next_page, form=register_form)
+            return register(request=request, next_page=next_page, form=register_form, template=template,
+                            context=context)
+        elif auth_form.is_valid():
+            email = auth_form.cleaned_data['email']
+            password = auth_form.cleaned_data['password']
+            user = authenticate(username=email, password=password)
+            if user:
+                if user.is_active:
+                    login(request, user)
+                    # Удаляем корзину пользователя из базы данных.
+                    auth_cart = CartItem.objects.filter(user=user)
+                    cart.delete_cart_from_database(auth_cart)
+                    logger.debug('Пользователь {} вошел в систему.'.format(email))
+                    return HttpResponseRedirect(reverse('app_ordering:order_create'))
+                else:
+                    error = 'Ошибка! Аккаунт пользователя неактивен.'
+            else:
+                error = 'Ошибка! Проверьте правильность написания email и пароля.'
     else:
         register_form = RegisterForm()
         auth_form = AuthForm()
     if request.is_ajax():
         return render(request, 'app_ordering/popups.html', {'register_form': register_form, 'auth_form': auth_form,
-                                                            'page_title': 'Оформление заказа'})
+                                                            'page_title': 'Оформление заказа', 'error': error,
+                                                            'email_exists': email_exists})
     return render(request, 'app_ordering/register.html', {'register_form': register_form, 'auth_form': auth_form,
-                                                          'page_title': 'Оформление заказа'})
+                                                          'page_title': 'Оформление заказа', 'error': error,
+                                                          'email_exists': email_exists})
 
 
 class PaymentView(LoginRequiredMixin, View):

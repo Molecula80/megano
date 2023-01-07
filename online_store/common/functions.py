@@ -2,6 +2,7 @@ import logging
 
 from django.contrib.auth import authenticate, login
 from django.http import HttpResponseRedirect
+from django.shortcuts import render
 from django.urls import reverse
 
 from app_users.models import User
@@ -10,7 +11,7 @@ from app_users.models import User
 logger = logging.getLogger(__name__)
 
 
-def register(request, next_page: str, form):
+def register(request, next_page: str, form, template: str, context: dict):
     """ Регистрация пользователя. """
     user = form.save(commit=False)
     telephone_str = form.cleaned_data.get('telephone')
@@ -31,3 +32,4 @@ def register(request, next_page: str, form):
         login(request, user)
         logger.debug('Пользователь {} зарегистрировался на сайте.'.format(email))
         return HttpResponseRedirect(reverse(next_page))
+    return render(request, template, context)

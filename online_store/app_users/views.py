@@ -11,6 +11,7 @@ from django.views.generic import DetailView, ListView
 from .forms import AuthForm, ProfileForm, RegisterForm
 from .models import User
 from app_cart.cart import Cart
+from app_cart.models import CartItem
 from common.functions import register
 
 
@@ -36,13 +37,15 @@ class AccountDetailView(LoginRequiredMixin, DetailView):
 def register_view(request):
     """ Страница регистрации. """
     next_page = 'app_catalog:index'
+    template = 'app_users/register.html'
     if request.method == 'POST':
         form = RegisterForm(request.POST, request.FILES)
+        context = {'form': form, 'page_title': 'регистрация'}
         if form.is_valid():
-            return register(request=request, next_page=next_page, form=form)
+            return register(request=request, next_page=next_page, form=form, template=template, context=context)
     else:
         form = RegisterForm()
-    return render(request, 'app_users/register.html', {'form': form, 'page_title': 'регистрация'})
+    return render(request, template, {'form': form, 'page_title': 'регистрация'})
 
 
 def login_view(request):
@@ -58,7 +61,9 @@ def login_view(request):
             if user:
                 if user.is_active:
                     login(request, user)
-                    cart.merge_carts(user)
+                    auth_cart = CartItem.objects.filter(user=user)
+                    cart.merge_carts(auth_cart)
+                    cart.delete_cart_from_database(auth_cart)
                     logger.debug('Пользователь {} вошел в систему.'.format(email))
                     return HttpResponseRedirect(reverse('app_catalog:index'))
                 else:

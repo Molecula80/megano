@@ -38,17 +38,19 @@ class Cart(object):
         """
         return sum(item['quantity'] for item in self.__cart.values())
 
-    def merge_carts(self, user: User) -> None:
+    def merge_carts(self, auth_cart) -> None:
         """
         Слияние корзин анонимного и аутентифицированного пользователя, после того как последний вошел в систему.
         """
         # Добавляем в корзину продукты из базы данных.
-        auth_cart = CartItem.objects.filter(user=user)
         for item in auth_cart:
             product = item.product
             quantity = item.quantity
             self.add(product=product, quantity=quantity)
-        # Удаляем корзину из базы данных.
+
+    @classmethod
+    def delete_cart_from_database(cls, auth_cart) -> None:
+        """ Удаление корзины из базы данных, после того как пользователь вошел в систему. """
         auth_cart.delete()
 
     def add(self, product: Product, quantity: int = 1) -> None:
