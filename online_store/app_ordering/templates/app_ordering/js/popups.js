@@ -15,7 +15,7 @@ $('.login-button').click(function(e) {
   }
 });
 
-$('#register-popup').click(function(e) {
+$('#register-button').click(function(e) {
   e.preventDefault();
   $('#register-popup').hide();
 });

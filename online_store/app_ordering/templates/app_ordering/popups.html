@@ -1,5 +1,5 @@
 <div id="login-popup" style="width: 100%; min-height: 100%; background-color: rgba(0,0,0,0.5); overflow: hidden;
-position: fixed; top: 0px;">
+position: fixed; top: 0px; z-index: 5;">
   <div style="margin: 40px auto 0px auto; width: 25%; height: 100%; padding: 10px; background-color: #fff;
   border-radius:5px; box-shadow: 0px 0px 10px #000;">
     <div style="text-align: right;"><button class="login-button">X</button></div>
@@ -43,13 +43,63 @@ position: fixed; top: 0px;">
 </div>
 {% if email_exists %}
   <div id="register-popup" style="width: 100%; min-height: 100%; background-color: rgba(0,0,0,0.5); overflow: hidden;
-  position: fixed; top: 0px;">
-    <div style="margin: 40px auto 0px auto; width: 25%; height: 100%; padding: 10px; background-color: #fff;
+  position: fixed; top: 0px; z-index: 5;">
+    <div style="margin: 40px auto 0px auto; width: 60%; height: 100%; padding: 10px; background-color: #fff;
     border-radius:5px; box-shadow: 0px 0px 10px #000;">
-      <div style="text-align: right;"><button class="login-button">X</button></div>
+      <div style="text-align: right;"><button id="register-button">X</button></div>
       <h2 style="margin-top: 10px;">Пользователь с указанным email уже существует, вы можете авторизоваться.</h2>
-      {% include "app_users/profile.html" %}
-      <div style="text-align: right; margin-top: 10px;"><a href="{% url 'password_reset' %}">Забыли пароль?</a></div>
+      <form class="form" action="#" method="post">
+        {% csrf_token %}
+        <div class="row" style="overflow: scroll; overflow-x: hidden; height: 300px;">
+          <div class="row-block">
+            <div class="form-group">
+              <label class="form-label" for="name">ФИО
+              </label>
+              {{ register_form.full_name }}
+              {% if register_form.full_name.errors %}
+                <div style="font-size: 14px; color: #f26d7d;">{{ register_form.full_name.errors }}</div>
+              {% endif %}
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="phone">Телефон
+              </label>
+              {{ register_form.telephone }}
+              {% if register_form.telephone.errors %}
+                <div style="font-size: 14px; color: #f26d7d;">{{ register_form.telephone.errors }}</div>
+              {% endif %}
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="mail">E-mail
+              </label>
+              {{ register_form.email }}
+              {% if register_form.email.errors %}
+                <div style="font-size: 14px; color: #f26d7d;">{{ register_form.email.errors }}</div>
+              {% endif %}
+            </div>
+          </div>
+          <div class="row-block">
+            <div class="form-group">
+              <label class="form-label" for="password">Пароль
+              </label>
+              {{ register_form.password1 }}
+              {% if register_form.password1.errors %}
+                <div style="font-size: 14px; color: #f26d7d;">{{ register_form.password1.errors }}</div>
+              {% endif %}
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="passwordReply">Подтверждение пароля
+              </label>
+              {{ register_form.password2 }}
+              {% if register_form.password2.errors %}
+                <div style="font-size: 14px; color: #f26d7d;">{{ register_form.password2.errors }}</div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        <div class="Order-footer">
+          <button class="btn btn_success" type="submit">Зарегистрироваться</button>
+        </div>
+      </form>
     </div>
   </div>
 {% endif %}
