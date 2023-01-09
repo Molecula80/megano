@@ -1,4 +1,5 @@
 from django import forms
+from .models import DeliveryMethod
 
 
 class OrderCreateForm(forms.Form):
@@ -15,3 +16,4 @@ class OrderCreateForm(forms.Form):
                                                             'unique': 'Пользователь с указанным email уже существует.'},
                              widget=forms.EmailInput(attrs={"class": "form-input", "id": "mail", "name": "mail",
                                                             "type": "text", "value": "", "data-validate": "require"}))
+    delivery_method = forms.ModelChoiceField(queryset=DeliveryMethod.objects.all(), widget=forms.RadioSelect)

@@ -68,18 +68,7 @@
                 </h2>
               </header>
               <div class="form-group">
-                <div>
-                  <label class="toggle">
-                    <input type="radio" name="delivery" value="ordinary" checked="checked"/>
-                      <span class="toggle-box"></span><span class="toggle-text">Обычная доставка</span>
-                  </label>
-                </div>
-                <div>
-                  <label class="toggle">
-                    <input type="radio" name="delivery" value="express"/><span class="toggle-box"></span>
-                      <span class="toggle-text">Экспресс доставка</span>
-                  </label>
-                </div>
+                {{ form.delivery_method }}
               </div>
               <div class="form-group">
                 <label class="form-label" for="city">Город
