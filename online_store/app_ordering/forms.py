@@ -8,7 +8,7 @@ class OrderCreateForm(forms.Form):
                                 error_messages={'required': 'Это поле обязательно для заполнения.'},
                                 widget=forms.TextInput(attrs={"class": "form-input", "id": "name", "name": "name",
                                                               "type": "text"}))
-    telephone = forms.CharField(max_length=255, required=False,
+    telephone = forms.CharField(max_length=255, required=True,
                                 widget=forms.TextInput(attrs={"class": "form-input", "id": "phone", "name": "phone",
                                                               "type": "text", "data-mask": "+7(999)999-99-99"}))
     email = forms.EmailField(required=True, error_messages={'required': 'Это поле обязательно для заполнения.',
