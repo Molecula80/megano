@@ -60,7 +60,10 @@ def login_view(request):
             user = authenticate(username=email, password=password)
             if user:
                 if user.is_active:
-                    login_and_merge_carts(request=request, user=user, cart=cart)
+                    login(request, user)
+                    auth_cart = CartItem.objects.filter(user=user)
+                    cart.merge_carts(auth_cart)
+                    cart.delete_cart_from_database(auth_cart)
                     logger.debug('Пользователь {} вошел в систему.'.format(email))
                     return HttpResponseRedirect(reverse('app_catalog:index'))
                 else:
@@ -104,12 +107,11 @@ def profile_view(request, pk):
                 form.add_error('telephone', 'Пользователь с таким номером телефона уже есть.')
             else:
                 user.telephone = telephone
-                cart = Cart(request)
-                cart.save_cart_in_database(user=request.user)
                 user.set_password(form.cleaned_data['password1'])
                 user.save()
+                cart = Cart(request)
+                cart.save_cart_in_database(user=user)
                 success = True
-                login_and_merge_carts(request=request, user=user, cart=cart)
                 logger.debug('Пользователь {email} изменил свой профиль.\nОбновленные данные:'
                              '\nФИО: {name}\nТелефон: {telephone}\nEmail: {email}'.format(email=user.email,
                                                                                           name=user.full_name,
@@ -145,13 +147,3 @@ class OrderDetailView(DetailView):
 
     def post(self, request, profile_id, order_id):
         pass
-
-
-def login_and_merge_carts(request, user, cart) -> None:
-    """ Вход в систему и слияние корзин аутентифицрованного и анонимного пользователей. """
-    login(request, user)
-    auth_cart = CartItem.objects.filter(user=user)
-    for item in auth_cart:
-        logger.debug(item)
-    cart.merge_carts(auth_cart)
-    cart.delete_cart_from_database(auth_cart)
