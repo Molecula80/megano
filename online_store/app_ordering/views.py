@@ -33,6 +33,8 @@ class OrderCreateView(LoginRequiredMixin, View):
         if form.is_valid():
             logger.debug('Заказ успешно оформлен.')
             return HttpResponseRedirect(reverse('app_ordering:payment'))
+        if request.is_ajax():
+            return render(request, 'app_ordering/order_ajax.html', {'form': form, 'page_title': 'Оформление заказа'})
         return render(request, 'app_ordering/order_create.html', {'form': form, 'page_title': 'Оформление заказа'})
 
 

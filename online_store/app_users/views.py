@@ -109,6 +109,7 @@ def profile_view(request, pk):
                 user.telephone = telephone
                 user.set_password(form.cleaned_data['password1'])
                 user.save()
+                # Сохраняем корзину в юазе данных.
                 cart = Cart(request)
                 cart.save_cart_in_database(user=user)
                 success = True
