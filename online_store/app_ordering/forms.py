@@ -25,5 +25,5 @@ class OrderCreateForm(forms.Form):
     address = forms.CharField(error_messages={'required': 'Это поле обязательно для заполнения.'},
                               widget=forms.Textarea(attrs={"class": "form-textarea", "name": "address",
                                                            "id": "address"}))
-    payment_method = forms.ChoiceField(choices=[(0, 'Онлайн картой'), (1, 'Онлайн со случайного чужого счета')],
+    payment_method = forms.ChoiceField(choices=[(1, 'Онлайн картой'), (2, 'Онлайн со случайного чужого счета')],
                                        widget=forms.RadioSelect(attrs={"id": "payment-method"}))
