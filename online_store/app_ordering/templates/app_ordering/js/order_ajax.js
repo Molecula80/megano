@@ -12,8 +12,8 @@ $("#step4-link").click(function(e) {
       element.innerHTML = '<span style="color: red;">Обязательно для заполнения!</span>';
     } else if ((formIds[i] === "phone") && (field_val.includes("x"))) {
       element.innerHTML = '<span style="color: red;">Неправильный номер телефона!</span>';
-    } else if ((formIds[i] === "payment-method")) {
-      element.innerHTML = document.getElementById("payment-method_0").value;
+    } else if ((formIds[i] === "delivery-method")) {
+      element.innerHTML = document.querySelector('input[name="delivery_method"]:checked').value;
     } else {
       // Присваиваем элементу вывода значение введенное пользователем.
       element.innerHTML = field_val;
