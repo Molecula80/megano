@@ -9,6 +9,7 @@ from django.urls import reverse
 from django.views import View
 
 from .forms import OrderCreateForm
+from .models import DeliveryMethod
 from app_users.forms import RegisterForm, AuthForm
 from common.functions import register
 from app_cart.cart import Cart
@@ -24,8 +25,11 @@ class OrderCreateView(LoginRequiredMixin, View):
         user = request.user
         initial = {'full_name': user.full_name, 'telephone': user.telephone, 'email': user.email}
         form = OrderCreateForm(initial=initial)
+        # Строка, содержащте все способы доставки.
+        delivery_str = '|'.join(dm.title for dm in DeliveryMethod.objects.all())
         logger.debug('Запрошена страница оформления заказа.')
-        return render(request, 'app_ordering/order_create.html', {'form': form, 'page_title': 'Оформление заказа'})
+        return render(request, 'app_ordering/order_create.html', {'form': form, 'page_title': 'Оформление заказа',
+                                                                  'delivery_str': delivery_str})
 
     def post(self, request):
         """ Метод для POST запроса к странице. """
