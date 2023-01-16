@@ -55,6 +55,9 @@
                     <label class="form-label" for="mail">E-mail
                     </label>
                     {{ form.email }}
+                    {% if form.email.errors %}
+                      <div style="font-size: 14px; color: #f26d7d;">{{ form.email.errors }}</div>
+                    {% endif %}
                   </div>
                 </div>
               </div>
@@ -103,79 +106,42 @@
               <div class="Order-infoBlock">
                 {% include "app_ordering/order_ajax.html" %}
                 <div class="Cart Cart_order">
-                  <div class="Cart-product">
-                    <div class="Cart-block Cart-block_row">
-                      <div class="Cart-block Cart-block_pict">
-                        <a class="Cart-pict" href="#">
-                          <img class="Cart-img" src="{% static 'assets/img/content/home/card.jpg' %}" alt="card.jpg"/>
-                        </a>
-                      </div>
-                      <div class="Cart-block Cart-block_info"><a class="Cart-title" href="#">Ноутбук</a>
-                        <div class="Cart-desc">Это супер ноутбук, 3 гб. 4 ядра
+                  {% for item in cart %}
+                    {% with product=item.product %}
+                      <div class="Cart-product">
+                        <div class="Cart-block Cart-block_row">
+                          <div class="Cart-block Cart-block_pict">
+                            <a class="Cart-pict" href="#">
+                              <img class="Cart-img" src="{% if product.image %}{{ product.image.url }}{% endif %}" alt="card.jpg"/>
+                            </a>
+                          </div>
+                          <div class="Cart-block Cart-block_info"><a class="Cart-title" href="#">{{ product.title }}</a>
+                            <div class="Cart-desc">{{ product.description|slice:50 }}...
+                            </div>
+                          </div>
+                          <div class="Cart-block Cart-block_price">
+                            <div class="Cart-price">{{ item.total_price }}$
+                            </div>
+                          </div>
+                        </div>
+                        <div class="Cart-block Cart-block_row">
+                          <div class="Cart-block Cart-block_amount">{{ item.quantity }} шт.
+                          </div>
                         </div>
                       </div>
-                      <div class="Cart-block Cart-block_price">
-                        <div class="Cart-price">80.00$
-                        </div>
-                      </div>
-                    </div>
-                    <div class="Cart-block Cart-block_row">
-                      <div class="Cart-block Cart-block_amount">1 шт.
-                      </div>
-                    </div>
-                  </div>
-                  <div class="Cart-product">
-                    <div class="Cart-block Cart-block_row">
-                      <div class="Cart-block Cart-block_pict">
-                        <a class="Cart-pict" href="#">
-                          <img class="Cart-img" src="{% static 'assets/img/content/sale/product.png' %}" alt="product.png"/>
-                        </a>
-                      </div>
-                      <div class="Cart-block Cart-block_info"><a class="Cart-title" href="#">Планшет</a>
-                        <div class="Cart-desc">Это планшет с современным железом. Процессор последнего поколения
-                        </div>
-                      </div>
-                      <div class="Cart-block Cart-block_price">
-                        <div class="Cart-price">40.99$
-                        </div>
-                      </div>
-                    </div>
-                    <div class="Cart-block Cart-block_row">
-                      <div class="Cart-block Cart-block_amount">1 шт.
-                      </div>
-                    </div>
-                  </div>
-                  <div class="Cart-product">
-                    <div class="Cart-block Cart-block_row">
-                      <div class="Cart-block Cart-block_pict">
-                        <a class="Cart-pict" href="#">
-                          <img class="Cart-img" src="{% static 'assets/img/content/home/card.jpg' %}" alt="card.jpg"/>
-                        </a>
-                      </div>
-                      <div class="Cart-block Cart-block_info"><a class="Cart-title" href="#">Ноутбук</a>
-                        <div class="Cart-desc">Это супер ноутбук, 3 гб. 4 ядра
-                        </div>
-                      </div>
-                      <div class="Cart-block Cart-block_price">
-                        <div class="Cart-price">80.00$
-                        </div>
-                      </div>
-                    </div>
-                    <div class="Cart-block Cart-block_row">
-                      <div class="Cart-block Cart-block_amount">1 шт.
-                      </div>
-                    </div>
-                  </div>
+                    {% endwith %}
+                  {% endfor %}
                   <div class="Cart-total">
                     <div class="Cart-block Cart-block_total">
                       <strong class="Cart-title">Итого:
-                      </strong><span class="Cart-price">200.99$</span>
+                      </strong><span class="Cart-price">{{ cart.get_total_price }}$</span>
                     </div>
                     <div class="Cart-block">
                       <button class="btn btn_primary btn_lg" type="submit">Оплатить
                       </button>
                     </div>
                   </div>
+                  <div style="color: #f26d7d; display: block; margin-top: 20px; text-align: right;" id="order-error"></div>
                 </div>
               </div>
             </div>

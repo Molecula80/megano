@@ -9,6 +9,7 @@ var outputIds = ["name-output", "phone-output", "mail-output", "city-output", "a
 
 $("#step4-link").click(function(e) {
   e.preventDefault();
+  errors = false;
   deliveryVal = document.querySelector('input[name="delivery_method"]:checked').value;
   document.getElementById("delivery-output").innerHTML = deliveryMethods[deliveryVal - 1];
   paymentVal = document.querySelector('input[name="payment_method"]:checked').value;
@@ -18,11 +19,18 @@ $("#step4-link").click(function(e) {
     inputVal = document.getElementById(formIds[i]).value;
     if (inputVal === "") {
       outputEl.innerHTML = '<span style="color: red;">Обязательно для заполнения!</span>';
+      errors = true;
     } else if ((formIds[i] === "phone") && (inputVal.includes("x"))) {
       outputEl.innerHTML = '<span style="color: red;">Неправильный номер телефона!</span>';
+      errors = true;
     } else {
       // Присваиваем элементу вывода значение введенное пользователем.
       outputEl.innerHTML = inputVal;
     }
+  }
+  if (errors === true) {
+    document.getElementById("order-error").innerHTML = 'Форма содержит ошибки. Проверьте коректность введенных данных.'
+  } else {
+    document.getElementById("order-error").innerHTML = ''
   }
 });

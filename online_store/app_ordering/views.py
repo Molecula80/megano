@@ -27,19 +27,23 @@ class OrderCreateView(LoginRequiredMixin, View):
         form = OrderCreateForm(initial=initial)
         # Строка, содержащте все способы доставки.
         delivery_str = '|'.join(dm.title for dm in DeliveryMethod.objects.all())
+        cart = Cart(request)
         logger.debug('Запрошена страница оформления заказа.')
         return render(request, 'app_ordering/order_create.html', {'form': form, 'page_title': 'Оформление заказа',
-                                                                  'delivery_str': delivery_str})
+                                                                  'delivery_str': delivery_str, 'cart': cart})
 
     def post(self, request):
         """ Метод для POST запроса к странице. """
         form = OrderCreateForm(request.POST)
+        cart = Cart(request)
         if form.is_valid():
             logger.debug('Заказ успешно оформлен.')
             return HttpResponseRedirect(reverse('app_ordering:payment'))
         if request.is_ajax():
-            return render(request, 'app_ordering/order_ajax.html', {'form': form, 'page_title': 'Оформление заказа'})
-        return render(request, 'app_ordering/order_create.html', {'form': form, 'page_title': 'Оформление заказа'})
+            return render(request, 'app_ordering/order_ajax.html', {'form': form, 'page_title': 'Оформление заказа',
+                                                                    'cart': cart})
+        return render(request, 'app_ordering/order_create.html', {'form': form, 'page_title': 'Оформление заказа',
+                                                                  'cart': cart})
 
 
 def register_view(request):
