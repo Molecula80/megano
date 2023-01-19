@@ -41,3 +41,47 @@
     </div>
   </div>
 </div>
+<div class="Cart Cart_order">
+  {% for item in cart %}
+    {% with product=item.product %}
+      <div class="Cart-product">
+        <div class="Cart-block Cart-block_row">
+          <div class="Cart-block Cart-block_pict">
+            <a class="Cart-pict" href="#">
+              <img class="Cart-img" src="{% if product.image %}{{ product.image.url }}{% endif %}" alt="card.jpg"/>
+            </a>
+          </div>
+          <div class="Cart-block Cart-block_info"><a class="Cart-title" href="#">{{ product.title }}</a>
+            <div class="Cart-desc">{{ product.description|slice:50 }}...
+            </div>
+          </div>
+          <div class="Cart-block Cart-block_price">
+            <div class="Cart-price">{{ item.total_price }}$
+            </div>
+          </div>
+        </div>
+        <div class="Cart-block Cart-block_row">
+          <div class="Cart-block Cart-block_amount">{{ item.quantity }} шт.
+          </div>
+        </div>
+      </div>
+    {% endwith %}
+  {% endfor %}
+  <div class="Cart-total">
+    <div class="Cart-block Cart-block_total">
+      <strong class="Cart-title">Доставка:
+      </strong><span class="Cart-price" id="delivery-price"></span>
+    </div>
+  </div>
+  <div class="Cart-total">
+    <div class="Cart-block Cart-block_total">
+      <strong class="Cart-title">Итого:
+      </strong><span class="Cart-price">{{ cart.total_price }}$</span>
+    </div>
+    <div class="Cart-block">
+      <button class="btn btn_primary btn_lg" type="submit">Оплатить
+      </button>
+    </div>
+  </div>
+  <div style="color: #f26d7d; display: block; margin-top: 20px; text-align: right;" id="order-error"></div>
+</div>

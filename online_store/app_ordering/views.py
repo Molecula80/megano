@@ -3,15 +3,17 @@ import logging
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.views import View
+from django.views.decorators.http import require_POST
 
 from .forms import OrderCreateForm
 from .models import DeliveryMethod
 from app_users.forms import RegisterForm, AuthForm
 from common.functions import register
+from common.decorators import ajax_required
 from app_cart.cart import Cart
 from app_cart.models import CartItem
 
@@ -25,12 +27,10 @@ class OrderCreateView(LoginRequiredMixin, View):
         user = request.user
         initial = {'full_name': user.full_name, 'telephone': user.telephone, 'email': user.email}
         form = OrderCreateForm(initial=initial)
-        # Строка, содержащте все способы доставки.
-        delivery_str = '|'.join(dm.title for dm in DeliveryMethod.objects.all())
         cart = Cart(request)
         logger.debug('Запрошена страница оформления заказа.')
         return render(request, 'app_ordering/order_create.html', {'form': form, 'page_title': 'Оформление заказа',
-                                                                  'delivery_str': delivery_str, 'cart': cart})
+                                                                  'cart': cart})
 
     def post(self, request):
         """ Метод для POST запроса к странице. """
@@ -44,6 +44,30 @@ class OrderCreateView(LoginRequiredMixin, View):
                                                                     'cart': cart})
         return render(request, 'app_ordering/order_create.html', {'form': form, 'page_title': 'Оформление заказа',
                                                                   'cart': cart})
+
+
+@ajax_required
+@require_POST
+def get_delivery_method(request):
+    """ Получение способа доставки. """
+    cart = Cart(request)
+    delivery_val = request.POST.get('delivery_val')
+    try:
+        delivery_method = DeliveryMethod.objects.all()[int(delivery_val) - 1]
+        delivery_price = get_delivery_price(method=delivery_method, cart=cart)
+        cart.set_delivery_price(delivery_price=delivery_price)
+        return JsonResponse({'delivery_method': delivery_method.title, 'delivery_price': delivery_price})
+    except:
+        pass
+    return JsonResponse({'status': 'ok'})
+
+
+def get_delivery_price(method, cart):
+    """ Получение стоимости доставки. """
+    free_delivery_cost = method.free_delivery_cost
+    if free_delivery_cost and cart.total_price >= free_delivery_cost:
+        return 0
+    return method.price
 
 
 def register_view(request):

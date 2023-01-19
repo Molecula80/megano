@@ -55,14 +55,12 @@ def cart_remove(request, product_id: int):
 def cart_update(request):
     """ Изменение количества товара в корзине. """
     cart = Cart(request)
-    action = request.POST.get('action')
     product_id = request.POST.get('id')
     quantity = request.POST.get('quantity')
-    if action:
-        try:
-            quantity = int(quantity)
-            cart.update(product_id=product_id, quantity=quantity)
-            return JsonResponse({'status': 'ok'})
-        except:
-            pass
+    try:
+        quantity = int(quantity)
+        cart.update(product_id=product_id, quantity=quantity)
+        return JsonResponse({'status': 'ok'})
+    except:
+        pass
     return JsonResponse({'status': 'ok'})

@@ -37,10 +37,10 @@
                     <div class="Cart-block Cart-block_amount">
                       <div class="Cart-amount">
                         <div class="Amount">
-                          <button class="Amount-remove Amount-update" type="button" data-action="update" data-id="{{ product.id }}"></button>
+                          <button class="Amount-remove Amount-update" type="button" data-id="{{ product.id }}"></button>
                           <input class="Amount-input form-input" id="form-input{{ product.id }}" name="amount" type="text"
                                  value="{{ item.quantity }}"/>
-                          <button class="Amount-add Amount-update" type="button" data-action="update" data-id="{{ product.id }}"></button>
+                          <button class="Amount-add Amount-update" type="button" data-id="{{ product.id }}"></button>
                         </div>
                       </div>
                     </div>
@@ -55,7 +55,7 @@
             <div class="Cart-total">
               <div class="Cart-block Cart-block_total">
                 <strong class="Cart-title">Итого:</strong>
-                <span class="Cart-price" id="cart-price">{{ cart.get_total_price }}$</span>
+                <span class="Cart-price" id="cart-price">{{ cart.total_price }}$</span>
               </div>
               <div class="Cart-block">
                 <a class="btn btn_success btn_lg" href="{% if request.user.is_authenticated %}
