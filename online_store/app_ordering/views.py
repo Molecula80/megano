@@ -37,8 +37,11 @@ class OrderCreateView(LoginRequiredMixin, View):
         form = OrderCreateForm(request.POST)
         cart = Cart(request)
         if form.is_valid():
-            logger.debug('Заказ успешно оформлен.')
-            return HttpResponseRedirect(reverse('app_ordering:payment'))
+            payment_method = form.cleaned_data.get('payment_method')
+            logger.debug('Способ оплаты: {}'.format(payment_method))
+            if payment_method == '1':
+                return HttpResponseRedirect(reverse('app_ordering:payment'))
+            return HttpResponseRedirect(reverse('app_ordering:payment_someone'))
         if request.is_ajax():
             return render(request, 'app_ordering/order_ajax.html', {'form': form, 'page_title': 'Оформление заказа',
                                                                     'cart': cart})
@@ -54,20 +57,13 @@ def get_delivery_method(request):
     delivery_val = request.POST.get('delivery_val')
     try:
         delivery_method = DeliveryMethod.objects.all()[int(delivery_val) - 1]
-        delivery_price = get_delivery_price(method=delivery_method, cart=cart)
-        cart.set_delivery_price(delivery_price=delivery_price)
-        return JsonResponse({'delivery_method': delivery_method.title, 'delivery_price': delivery_price})
+        delivery_price = delivery_method.get_delivery_price(total_price=cart.total_price)
+        order_price = cart.total_price + delivery_price
+        return JsonResponse({'delivery_method': delivery_method.title, 'delivery_price': delivery_price,
+                             'order_price': order_price})
     except:
         pass
     return JsonResponse({'status': 'ok'})
-
-
-def get_delivery_price(method, cart):
-    """ Получение стоимости доставки. """
-    free_delivery_cost = method.free_delivery_cost
-    if free_delivery_cost and cart.total_price >= free_delivery_cost:
-        return 0
-    return method.price
 
 
 def register_view(request):
@@ -119,13 +115,26 @@ class PaymentView(LoginRequiredMixin, View):
     """ Страница оплаты заказа. """
     def get(self, request):
         """ Метод для GET запроса к странице. """
-        logger.debug('Запрошена страница оплаты заказа.')
+        logger.debug('Запрошена страница оплаты заказа онлайн картой.')
         return render(request, 'app_ordering/payment.html', {'page_title': 'Оплата'})
 
     def post(self, request):
         """ Метод для POST запроса к странице. """
         logger.debug('Оплата заказа успешно оформлена.')
         return render(request, 'app_ordering/payment.html', {'page_title': 'Оплата'})
+
+
+class PaymentSomeoneView(LoginRequiredMixin, View):
+    """ Страница оплаты заказа. """
+    def get(self, request):
+        """ Метод для GET запроса к странице. """
+        logger.debug('Запрошена страница оплаты заказа онлайн со случайного чужого счета.')
+        return render(request, 'app_ordering/payment_someone.html', {'page_title': 'Оплата'})
+
+    def post(self, request):
+        """ Метод для POST запроса к странице. """
+        logger.debug('Оплата заказа успешно оформлена.')
+        return render(request, 'app_ordering/payment_someone.html', {'page_title': 'Оплата'})
 
 
 @login_required

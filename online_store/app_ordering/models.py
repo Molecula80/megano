@@ -16,3 +16,9 @@ class DeliveryMethod(models.Model):
     def __str__(self) -> str:
         """ Возвращает название способа доставки. """
         return '{}'.format(self.title)
+
+    def get_delivery_price(self, total_price):
+        """ Получение стоимости доставки. """
+        if self.free_delivery_cost and total_price >= self.free_delivery_cost:
+            return 0
+        return self.price

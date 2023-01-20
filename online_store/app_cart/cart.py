@@ -16,7 +16,6 @@ class Cart(object):
             # Сохраняем сессии в пустую корзину.
             cart = self.__session[settings.CART_SESSION_ID] = dict()
         self.__cart = cart
-        self.__delivery_price = 0
 
     def __iter__(self) -> Iterable:
         """ Проходим по товарам корзины и получаем соответствующие объекты Product. """
@@ -81,15 +80,11 @@ class Cart(object):
     @property
     def total_price(self) -> float:
         """
-        Возвращает общую стоимость всех товаров вкорзине.
+        Геттер. Возвращает общую стоимость всех товаров вкорзине.
         :return: общая стоимость товаров
         :rtype: float
         """
         return sum(Decimal(item['price']) * item['quantity'] for item in self.__cart.values())
-
-    def set_delivery_price(self, delivery_price) -> None:
-        """ Назначает стоимость доставки. """
-        self.__delivery_price = delivery_price
 
     def clear(self) -> None:
         """ Очистка корзины. """

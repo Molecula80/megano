@@ -40,6 +40,7 @@ $("#step4-link").click(function(e) {
       } else {
         document.getElementById("delivery-price").innerHTML = 'бесплатно';
       }
+      document.getElementById("order-price").innerHTML = response.order_price + "$";
     }
   );
 });
