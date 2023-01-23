@@ -116,25 +116,20 @@ class PaymentView(LoginRequiredMixin, View):
     def get(self, request):
         """ Метод для GET запроса к странице. """
         logger.debug('Запрошена страница оплаты заказа онлайн картой.')
-        return render(request, 'app_ordering/payment.html', {'page_title': 'Оплата'})
+        return render(request, 'app_ordering/payment.html', {'page_title': 'Оплата', 'label': 'Номер карты'})
 
     def post(self, request):
         """ Метод для POST запроса к странице. """
         logger.debug('Оплата заказа успешно оформлена.')
-        return render(request, 'app_ordering/payment.html', {'page_title': 'Оплата'})
+        return render(request, 'app_ordering/payment.html', {'page_title': 'Оплата', 'label': 'Номер карты'})
 
 
-class PaymentSomeoneView(LoginRequiredMixin, View):
+class PaymentSomeoneView(PaymentView):
     """ Страница оплаты заказа. """
     def get(self, request):
         """ Метод для GET запроса к странице. """
-        logger.debug('Запрошена страница оплаты заказа онлайн со случайного чужого счета.')
-        return render(request, 'app_ordering/payment_someone.html', {'page_title': 'Оплата'})
-
-    def post(self, request):
-        """ Метод для POST запроса к странице. """
-        logger.debug('Оплата заказа успешно оформлена.')
-        return render(request, 'app_ordering/payment_someone.html', {'page_title': 'Оплата'})
+        return render(request, 'app_ordering/payment.html', {'page_title': 'Оплата', 'label': 'Номер счета',
+                                                             'p_someone': True})
 
 
 @login_required

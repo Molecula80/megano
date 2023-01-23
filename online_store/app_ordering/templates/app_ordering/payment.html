@@ -13,10 +13,16 @@
           {% csrf_token %}
           <div class="Payment-card">
             <div class="form-group">
-              <label class="form-label">Номер карты
+              <label class="form-label">{{ label }}
               </label>
-              <input class="form-input Payment-bill" id="numero1" name="numero1" type="text" placeholder="9999 9999" data-mask="9999 9999" data-validate="require pay"/>
+              <input class="form-input Payment-bill" id="numero1" name="numero1" type="text" placeholder="9999 9999"
+                     data-mask="9999 9999" data-validate="require pay"/>
             </div>
+            {% if p_someone %}
+              <div class="form-group">
+                <a class="btn btn_success Payment-generate" href="#">Сгенирировать случайный счет</a>
+              </div>
+            {% endif %}
           </div>
           <div class="Payment-pay">
             <a class="btn btn_primary" href="{% url 'app_ordering:progress_payment' %}">Оплатить</a>
