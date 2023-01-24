@@ -8,8 +8,8 @@ app_name = 'app_ordering'
 urlpatterns = [
     path('', OrderCreateView.as_view(), name='order_create'),
     path('register/', register_view, name='register'),
-    path('payment/', PaymentView.as_view(), name='payment'),
-    path('payment/someone/', PaymentSomeoneView.as_view(), name='payment_someone'),
+    path('payment/<int:order_id>/', PaymentView.as_view(), name='payment'),
+    path('payment/<int:order_id>/someone/', PaymentSomeoneView.as_view(), name='payment_someone'),
     path('progress_payment/', progress_payment, name='progress_payment'),
     path('get_delivery_method/', get_delivery_method, name='get_delivery_method'),
 ]

@@ -29,3 +29,10 @@ class OrderCreateForm(forms.Form):
     payment_method = forms.ChoiceField(initial=1,
                                        choices=[(1, 'Онлайн картой'), (2, 'Онлайн со случайного чужого счета')],
                                        widget=forms.RadioSelect(attrs={"id": "payment-method"}))
+
+
+class PaymentForm(forms.Form):
+    """ Форма оплаты заказа. """
+    card_num = forms.CharField(widget=forms.TextInput(attrs={"class": "form-input Payment-bill", "id": "numero1",
+                                                             "name": "numero1", "type": "text",
+                                                             "placeholder": "9999 9999", "data-mask": "9999 9999"}))

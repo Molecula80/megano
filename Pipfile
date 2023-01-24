@@ -12,6 +12,7 @@ drf-yasg = ">=1.17.1"
 django-filter = ">=21.1"
 docutils = ">=0.19"
 django-debug-toolbar = ">=3.2.4"
+celery = ">=5.2.7"
 
 [dev-packages]
 

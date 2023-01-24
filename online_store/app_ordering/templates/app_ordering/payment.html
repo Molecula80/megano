@@ -15,8 +15,10 @@
             <div class="form-group">
               <label class="form-label">{{ label }}
               </label>
-              <input class="form-input Payment-bill" id="numero1" name="numero1" type="text" placeholder="9999 9999"
-                     data-mask="9999 9999" data-validate="require pay"/>
+              {{ form.card_num }}
+              {% if form.card_num.errors %}
+                <div style="font-size: 14px; color: #f26d7d;">{{ form.card_num.errors }}</div>
+              {% endif %}
             </div>
             {% if p_someone %}
               <div class="form-group">
@@ -25,7 +27,7 @@
             {% endif %}
           </div>
           <div class="Payment-pay">
-            <a class="btn btn_primary" href="{% url 'app_ordering:progress_payment' %}">Оплатить</a>
+            <button class="btn btn_primary">Оплатить</button>
           </div>
         </form>
       </div>
