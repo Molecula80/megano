@@ -1,7 +1,6 @@
 from django.urls import path
 
-from .views import OrderCreateView, register_view, PaymentView, PaymentSomeoneView, progress_payment, \
-    get_delivery_method
+from .views import OrderCreateView, register_view, PaymentView, progress_payment, get_delivery_method
 
 app_name = 'app_ordering'
 
@@ -9,7 +8,7 @@ urlpatterns = [
     path('', OrderCreateView.as_view(), name='order_create'),
     path('register/', register_view, name='register'),
     path('payment/<int:order_id>/', PaymentView.as_view(), name='payment'),
-    path('payment/<int:order_id>/someone/', PaymentSomeoneView.as_view(), name='payment_someone'),
-    path('progress_payment/', progress_payment, name='progress_payment'),
+    path('payment/<int:order_id>/<str:someone>/', PaymentView.as_view(), name='payment_someone'),
+    path('progress_payment/<int:order_id>/', progress_payment, name='progress_payment'),
     path('get_delivery_method/', get_delivery_method, name='get_delivery_method'),
 ]

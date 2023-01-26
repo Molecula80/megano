@@ -11,8 +11,5 @@ class PaymentService(GenericAPIView):
     def order_payment(cls, order_id, card_num, order_sum):
         """ Оплата заказа. """
         last_digits = ['2', '4', '6', '8']
-        if card_num[8] not in last_digits:
+        if (card_num[8] not in last_digits) or ('x' in card_num):
             raise PaymentError()
-        logger.debug('Заказ № {id} успешно оплачен. Сумма заказа: {summ}$'.format(id=order_id, summ=order_sum))
-
-

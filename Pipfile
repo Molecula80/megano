@@ -13,6 +13,7 @@ django-filter = ">=21.1"
 docutils = ">=0.19"
 django-debug-toolbar = ">=3.2.4"
 celery = ">=5.2.7"
+redis = ">=4.4.2"
 
 [dev-packages]
 

@@ -11,8 +11,7 @@ from django.views.decorators.http import require_POST
 
 from .forms import OrderCreateForm, PaymentForm
 from .models import DeliveryMethod
-from .services import PaymentService
-from .errors import PaymentError
+from .tasks import job
 from app_users.forms import RegisterForm, AuthForm
 from common.functions import register
 from common.decorators import ajax_required
@@ -43,7 +42,7 @@ class OrderCreateView(LoginRequiredMixin, View):
             logger.debug('Способ оплаты: {}'.format(payment_method))
             if payment_method == '1':
                 return HttpResponseRedirect(reverse('app_ordering:payment', args=[1]))
-            return HttpResponseRedirect(reverse('app_ordering:payment_someone', args=[1]))
+            return HttpResponseRedirect(reverse('app_ordering:payment_someone', args=[1, 'someone']))
         if request.is_ajax():
             return render(request, 'app_ordering/order_ajax.html', {'form': form, 'page_title': 'Оформление заказа',
                                                                     'cart': cart})
@@ -115,49 +114,37 @@ def register_view(request):
 
 class PaymentView(LoginRequiredMixin, View):
     """ Страница оплаты заказа. """
-    def get(self, request, order_id):
+    def get(self, request, order_id, someone=None):
         """ Метод для GET запроса к странице. """
         logger.debug('Запрошена страница оплаты заказа онлайн картой.')
         form = PaymentForm()
         return render(request, 'app_ordering/payment.html', {'page_title': 'Оплата', 'form': form,
-                                                             'label': 'Номер карты'})
+                                                             'label': 'Номер карты', 'someone': someone})
 
-    def post(self, request, order_id):
+    def post(self, request, order_id, someone=None):
         """ Метод для POST запроса к странице. """
-        logger.debug('Оплата заказа успешно оформлена.')
         form = PaymentForm(request.POST)
         if form.is_valid():
             card_num = form.cleaned_data.get('card_num')
             order_sum = 2000
-            try:
-                self.order_payment(order_id=order_id, card_num=card_num, order_sum=order_sum)
-                return HttpResponseRedirect(reverse('app_ordering:progress_payment'))
-            except PaymentError:
-                form.add_error('card_num', 'Номер карты должен быть чётным и не заканчиваться на ноль.')
+            self.order_payment(order_id=order_id, card_num=card_num, order_sum=order_sum)
+            logger.debug(someone)
+            return HttpResponseRedirect(reverse('app_ordering:progress_payment', args=[order_id]))
         return render(request, 'app_ordering/payment.html', {'page_title': 'Оплата', 'form': form,
-                                                             'label': 'Номер карты'})
+                                                             'label': 'Номер карты', 'someone': someone})
 
     @classmethod
     def order_payment(cls, order_id, card_num, order_sum):
         """ Оплата заказа. """
-        PaymentService.order_payment(order_id=order_id, card_num=card_num, order_sum=order_sum)
+        job.delay(order_id=order_id, card_num=card_num, order_sum=order_sum)
 
     def get_payment_status(self):
         """ Получение статуса оплаты заказа. """
         pass
 
 
-class PaymentSomeoneView(PaymentView):
-    """ Страница оплаты заказа. """
-    def get(self, request, order_id):
-        """ Метод для GET запроса к странице. """
-        form = PaymentForm()
-        return render(request, 'app_ordering/payment.html', {'page_title': 'Оплата', 'form': form,
-                                                             'label': 'Номер счета', 'p_someone': True})
-
-
 @login_required
-def progress_payment(request):
+def progress_payment(request, order_id):
     """ Страница ожидания оплаты заказа. """
     logger.debug('Запрошена страница ожидания оплаты заказа.')
     return render(request, 'app_ordering/progress_payment.html', {'page_title': 'Ожидание оплаты'})
