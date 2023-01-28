@@ -50,6 +50,9 @@
                     <label class="form-label" for="phone">Телефон
                     </label>
                     {{ form.telephone }}
+                    {% if form.telephone.errors %}
+                      <div style="font-size: 14px; color: #f26d7d;">{{ form.telephone.errors }}</div>
+                    {% endif %}
                   </div>
                   <div class="form-group">
                     <label class="form-label" for="mail">E-mail

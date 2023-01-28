@@ -38,11 +38,17 @@ class OrderCreateView(LoginRequiredMixin, View):
         form = OrderCreateForm(request.POST)
         cart = Cart(request)
         if form.is_valid():
-            payment_method = form.cleaned_data.get('payment_method')
-            logger.debug('Способ оплаты: {}'.format(payment_method))
-            if payment_method == '1':
-                return HttpResponseRedirect(reverse('app_ordering:payment', args=[1]))
-            return HttpResponseRedirect(reverse('app_ordering:payment_someone', args=[1, 'someone']))
+            telephone_str = form.cleaned_data.get('telephone')
+            # Оставляем все цифры, кроме семёрки.
+            telephone = ''.join(sym for sym in telephone_str[3:] if sym.isdigit())
+            if telephone and len(telephone) < 10:
+                form.add_error('telephone', 'Это значение недопустимо.')
+            else:
+                payment_method = form.cleaned_data.get('payment_method')
+                logger.debug('Способ оплаты: {}'.format(payment_method))
+                if payment_method == '1':
+                    return HttpResponseRedirect(reverse('app_ordering:payment', args=[1]))
+                return HttpResponseRedirect(reverse('app_ordering:payment_someone', args=[1, 'someone']))
         if request.is_ajax():
             return render(request, 'app_ordering/order_ajax.html', {'form': form, 'page_title': 'Оформление заказа',
                                                                     'cart': cart})
@@ -126,10 +132,13 @@ class PaymentView(LoginRequiredMixin, View):
         form = PaymentForm(request.POST)
         if form.is_valid():
             card_num = form.cleaned_data.get('card_num')
-            order_sum = 2000
-            self.order_payment(order_id=order_id, card_num=card_num, order_sum=order_sum)
-            logger.debug(someone)
+            logger.debug('Номер карты: {}'.format(card_num))
+            # order_sum = 2000
+            # self.order_payment(order_id=order_id, card_num=card_num, order_sum=order_sum)
             return HttpResponseRedirect(reverse('app_ordering:progress_payment', args=[order_id]))
+        if request.is_ajax():
+            return render(request, 'app_ordering/payment_ajax.html', {'page_title': 'Оплата', 'form': form,
+                                                                      'label': 'Номер карты', 'someone': someone})
         return render(request, 'app_ordering/payment.html', {'page_title': 'Оплата', 'form': form,
                                                              'label': 'Номер карты', 'someone': someone})
 

@@ -17,7 +17,7 @@ $("#step4-link").click(function(e) {
       outputEl.innerHTML = '<span style="color: red;">Обязательно для заполнения!</span>';
       errors = true;
     } else if ((formIds[i] === "phone") && (inputVal.includes("x"))) {
-      outputEl.innerHTML = '<span style="color: red;">Неправильный номер телефона!</span>';
+      outputEl.innerHTML = '<span style="color: red;">Недопустимый номер телефона!</span>';
       errors = true;
     } else {
       // Присваиваем элементу вывода значение введенное пользователем.
@@ -36,11 +36,11 @@ $("#step4-link").click(function(e) {
     function (response) {
       document.getElementById("delivery-output").innerHTML = response.delivery_method;
       if (response.delivery_price > 0) {
-        document.getElementById("delivery-price").innerHTML = response.delivery_price + "$";
+        document.getElementById("delivery-price").innerHTML = [response.delivery_price, "$"].join("");
       } else {
         document.getElementById("delivery-price").innerHTML = 'бесплатно';
       }
-      document.getElementById("order-price").innerHTML = response.order_price + "$";
+      document.getElementById("order-price").innerHTML = [response.order_price, "$"].join("");
     }
   );
 });

@@ -15,14 +15,14 @@
             <div class="form-group">
               <label class="form-label">{{ label }}
               </label>
-              {{ form.card_num }}
+              {% include "app_ordering/payment_ajax.html" %}
               {% if form.card_num.errors %}
                 <div style="font-size: 14px; color: #f26d7d;">{{ form.card_num.errors }}</div>
               {% endif %}
             </div>
             {% if someone %}
               <div class="form-group">
-                <a class="btn btn_success Payment-generate" href="#">Сгенирировать случайный счет</a>
+                <a class="btn btn_success" id="generate-number" href="#">Сгенирировать случайный счет</a>
               </div>
             {% endif %}
           </div>
@@ -32,6 +32,9 @@
         </form>
       </div>
     </div>
+  {% endblock %}
+  {% block domready %}
+    {% include "app_ordering/js/payment_ajax.js" %}
   {% endblock %}
 </body>
 </html>
