@@ -29,6 +29,8 @@ class OrderCreateForm(forms.Form):
     payment_method = forms.ChoiceField(initial=1,
                                        choices=[(1, 'Онлайн картой'), (2, 'Онлайн со случайного чужого счета')],
                                        widget=forms.RadioSelect(attrs={"id": "payment-method"}))
+    comment = forms.CharField(required=False, widget=forms.Textarea(attrs={"class": "form-textarea", "name": "comment",
+                                                                           "id": "comment"}))
 
 
 class PaymentForm(forms.Form):

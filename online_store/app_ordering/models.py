@@ -1,8 +1,10 @@
 from django.db import models
+from app_users.models import User
 
 
 class Order(models.Model):
     """ Модель заказа. """
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders', verbose_name='пользователь')
     date = models.DateField(auto_now_add=True, verbose_name='дата заказа')
     full_name = models.CharField(max_length=255, verbose_name='ФИО')
     telephone = models.CharField(max_length=16, blank=True, null=True, verbose_name='телефон')
@@ -11,6 +13,10 @@ class Order(models.Model):
                                         verbose_name='способ доставки')
     city = models.CharField(max_length=255, verbose_name='город')
     address = models.TextField(verbose_name='адрес')
+    PAYMENT_METHOD_CHOICES = [(1, 'Онлайн картой'), (2, 'Онлайн со случайного чужого счета')]
+    payment_method = models.CharField(max_length=1, choices=PAYMENT_METHOD_CHOICES, default=1,
+                                      verbose_name='способ оплаты')
+    comment = models.TextField(verbose_name='коментарий')
 
 
 class DeliveryMethod(models.Model):
