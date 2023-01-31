@@ -10,15 +10,21 @@
     <div class="Section">
       <div class="wrap">
         <div class="ProgressPayment">
-          <div class="ProgressPayment-title">Ждем подтверждения оплаты платежной системой</div>
-          <div class="ProgressPayment-icon">
-            <div class="cssload-thecube">
-              <div class="cssload-cube cssload-c1"></div>
-              <div class="cssload-cube cssload-c2"></div>
-              <div class="cssload-cube cssload-c4"></div>
-              <div class="cssload-cube cssload-c3"></div>
+          {% if order.paid == True %}
+            <div class="ProgressPayment-title" style="color: green;">Заказ №{{ ordr.id }} успешно оплачен.</div>
+          {% elif order.paid == False %}
+            <div class="ProgressPayment-title" style="color: red;">{{ order.error_message }}</div>
+          {% else %}
+            <div class="ProgressPayment-title">Ждем подтверждения оплаты платежной системой</div>
+            <div class="ProgressPayment-icon">
+              <div class="cssload-thecube">
+                <div class="cssload-cube cssload-c1"></div>
+                <div class="cssload-cube cssload-c2"></div>
+                <div class="cssload-cube cssload-c4"></div>
+                <div class="cssload-cube cssload-c3"></div>
+              </div>
             </div>
-          </div>
+          {% endif %}
         </div>
       </div>
     </div>

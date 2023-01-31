@@ -1,8 +1,8 @@
 from django import forms
-from .models import DeliveryMethod
+from .models import Order, DeliveryMethod
 
 
-class OrderCreateForm(forms.Form):
+class OrderCreateForm(forms.ModelForm):
     """ Форма для оформления заказа. """
     full_name = forms.CharField(max_length=255,
                                 error_messages={'required': 'Это поле обязательно для заполнения.'},
@@ -27,10 +27,14 @@ class OrderCreateForm(forms.Form):
                               widget=forms.Textarea(attrs={"class": "form-textarea", "name": "address",
                                                            "id": "address"}))
     payment_method = forms.ChoiceField(initial=1,
-                                       choices=[(1, 'Онлайн картой'), (2, 'Онлайн со случайного чужого счета')],
+                                       choices=[('1', 'Онлайн картой'), ('2', 'Онлайн со случайного чужого счета')],
                                        widget=forms.RadioSelect(attrs={"id": "payment-method"}))
     comment = forms.CharField(required=False, widget=forms.Textarea(attrs={"class": "form-textarea", "name": "comment",
                                                                            "id": "comment"}))
+
+    class Meta:
+        model = Order
+        fields = ('full_name', 'telephone', 'email', 'delivery_method', 'city', 'address', 'payment_method', 'comment')
 
 
 class PaymentForm(forms.Form):

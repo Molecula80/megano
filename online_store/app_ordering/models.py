@@ -6,14 +6,14 @@ from app_catalog.models import Product
 
 class Order(models.Model):
     """ Модель заказа. """
-    PAYMENT_METHOD_CHOICES = [(1, 'Онлайн картой'), (2, 'Онлайн со случайного чужого счета')]
+    PAYMENT_METHOD_CHOICES = [('1', 'Онлайн картой'), ('2', 'Онлайн со случайного чужого счета')]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders', verbose_name='пользователь')
     created = models.DateField(auto_now_add=True, verbose_name='дата заказа')
     full_name = models.CharField(max_length=255, verbose_name='ФИО')
     telephone = models.CharField(max_length=16, verbose_name='телефон')
     email = models.EmailField()
-    delivery_method = models.ForeignKey('DeliveryMethod', null=True, on_delete=models.SET_NULL, related_name='orders',
+    delivery_method = models.ForeignKey('DeliveryMethod', on_delete=models.CASCADE, related_name='orders',
                                         verbose_name='способ доставки')
     city = models.CharField(max_length=255, verbose_name='город')
     address = models.TextField(verbose_name='адрес')
@@ -21,7 +21,8 @@ class Order(models.Model):
                                       verbose_name='способ оплаты')
     comment = models.TextField(blank=True, null=True, verbose_name='коментарий')
     paid = models.NullBooleanField(default=None, verbose_name='оплачено')
-    error_message = models.TextField(blank=True, null=True, default=None, verbose_name='сообщение об ошибке')
+    error_message = models.TextField(blank=True, null=True, default=str(), verbose_name='сообщение об ошибке')
+    total_cost = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='итоговая стоимость')
 
     class Meta:
         verbose_name = 'заказ'

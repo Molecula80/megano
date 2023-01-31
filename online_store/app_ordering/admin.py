@@ -11,7 +11,7 @@ class OrderItemInline(admin.TabularInline):
 class OrderAdmin(admin.ModelAdmin):
     """ Административная модель товара. """
     list_display = ['id', 'user', 'full_name', 'telephone', 'email', 'delivery_method', 'city', 'payment_method',
-                    'paid', 'created']
+                    'total_cost', 'paid', 'created']
     list_filter = ['delivery_method', 'payment_method', 'paid']
     search_fields = ['id', 'full_name', 'email']
     inlines = [OrderItemInline]
@@ -25,7 +25,7 @@ class OrderAdmin(admin.ModelAdmin):
             'classes': ['collapse']
         }),
         ('Статус заказа', {
-            'fields': ('paid', 'error_message'),
+            'fields': ('total_cost', 'paid', 'error_message'),
             'classes': ['collapse']
         })
     )

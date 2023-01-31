@@ -10,7 +10,7 @@ from django.views import View
 from django.views.decorators.http import require_POST
 
 from .forms import OrderCreateForm, PaymentForm
-from .models import DeliveryMethod
+from .models import Order, OrderItem, DeliveryMethod
 from .tasks import job
 from app_users.forms import RegisterForm, AuthForm
 from common.functions import register
@@ -44,16 +44,33 @@ class OrderCreateView(LoginRequiredMixin, View):
             if telephone and len(telephone) < 10:
                 form.add_error('telephone', 'Это значение недопустимо.')
             else:
-                payment_method = form.cleaned_data.get('payment_method')
-                logger.debug('Способ оплаты: {}'.format(payment_method))
-                if payment_method == '1':
-                    return HttpResponseRedirect(reverse('app_ordering:payment', args=[1]))
-                return HttpResponseRedirect(reverse('app_ordering:payment_someone', args=[1, 'someone']))
+                order = form.save(commit=False)
+                order.user = request.user
+                order.telephone = telephone
+                delivery_method = form.cleaned_data.get('delivery_method')
+                delivery_price = delivery_method.get_delivery_price(cart.total_price)
+                order.total_cost = cart.total_price + delivery_price
+                order.save()
+                self.create_order_items(cart=cart, order=order)
+                cart.clear()
+                if order.payment_method == '1':
+                    return HttpResponseRedirect(reverse('app_ordering:payment', args=[order.id]))
+                return HttpResponseRedirect(reverse('app_ordering:payment_someone', args=[order.id, 'someone']))
         if request.is_ajax():
             return render(request, 'app_ordering/order_ajax.html', {'form': form, 'page_title': 'Оформление заказа',
                                                                     'cart': cart})
+        logger.debug('Форма содержит ошибки: {}'.format(form.errors))
         return render(request, 'app_ordering/order_create.html', {'form': form, 'page_title': 'Оформление заказа',
                                                                   'cart': cart})
+
+    @classmethod
+    def create_order_items(cls, cart, order):
+        """ Создает единицы заказа. """
+        item_list = list()
+        for item in cart:
+            item_list.append(OrderItem(order=order, product=item['product'], price=item['total_price'],
+                                       quantity=item['quantity']))
+        OrderItem.objects.bulk_create(item_list)
 
 
 @ajax_required
@@ -133,8 +150,7 @@ class PaymentView(LoginRequiredMixin, View):
         if form.is_valid():
             card_num = form.cleaned_data.get('card_num')
             logger.debug('Номер карты: {}'.format(card_num))
-            # order_sum = 2000
-            # self.order_payment(order_id=order_id, card_num=card_num, order_sum=order_sum)
+            self.order_payment(order_id=order_id, card_num=card_num)
             return HttpResponseRedirect(reverse('app_ordering:progress_payment', args=[order_id]))
         if request.is_ajax():
             return render(request, 'app_ordering/payment_ajax.html', {'page_title': 'Оплата', 'form': form,
@@ -143,9 +159,9 @@ class PaymentView(LoginRequiredMixin, View):
                                                              'label': 'Номер карты', 'someone': someone})
 
     @classmethod
-    def order_payment(cls, order_id, card_num, order_sum):
+    def order_payment(cls, order_id, card_num):
         """ Оплата заказа. """
-        job.delay(order_id=order_id, card_num=card_num, order_sum=order_sum)
+        job.delay(order_id=order_id, card_num=card_num)
 
     def get_payment_status(self):
         """ Получение статуса оплаты заказа. """
@@ -156,4 +172,5 @@ class PaymentView(LoginRequiredMixin, View):
 def progress_payment(request, order_id):
     """ Страница ожидания оплаты заказа. """
     logger.debug('Запрошена страница ожидания оплаты заказа.')
-    return render(request, 'app_ordering/progress_payment.html', {'page_title': 'Ожидание оплаты'})
+    order = Order.objects.get(id=order_id)
+    return render(request, 'app_ordering/progress_payment.html', {'page_title': 'Ожидание оплаты', 'order': order})
