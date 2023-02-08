@@ -12,6 +12,8 @@ from django.views.decorators.http import require_POST
 from .forms import OrderCreateForm, PaymentForm
 from .models import Order, OrderItem, DeliveryMethod
 from .tasks import job
+from .api import PaymentService
+
 from app_users.forms import RegisterForm, AuthForm
 from common.functions import register
 from common.decorators import ajax_required
@@ -47,9 +49,7 @@ class OrderCreateView(LoginRequiredMixin, View):
                 order = form.save(commit=False)
                 order.user = request.user
                 order.telephone = telephone
-                delivery_method = form.cleaned_data.get('delivery_method')
-                delivery_price = delivery_method.get_delivery_price(cart.total_price)
-                order.total_cost = cart.total_price + delivery_price
+                order.total_cost = request.session.get('order_price')
                 order.save()
                 self.create_order_items(cart=cart, order=order)
                 cart.clear()
@@ -83,6 +83,7 @@ def get_delivery_method(request):
         delivery_method = DeliveryMethod.objects.all()[int(delivery_val) - 1]
         delivery_price = delivery_method.get_delivery_price(total_price=cart.total_price)
         order_price = cart.total_price + delivery_price
+        request.session['order_price'] = str(order_price)
         return JsonResponse({'delivery_method': delivery_method.title, 'delivery_price': delivery_price,
                              'order_price': order_price})
     except:
@@ -159,9 +160,11 @@ class PaymentView(LoginRequiredMixin, View):
                                                              'label': 'Номер карты', 'someone': someone})
 
     @classmethod
-    def order_payment(cls, order_id, card_num):
+    def order_payment(self, order_id, card_num):
         """ Оплата заказа. """
-        job.delay(order_id=order_id, card_num=card_num)
+        order = Order.objects.get(id=order_id)
+        order_cost = order.total_cost
+        job.delay(order_id=order_id, card_num=card_num, order_cost=order_cost)
 
     def get_payment_status(self):
         """ Получение статуса оплаты заказа. """
