@@ -21,10 +21,12 @@
           {{ category.title }} /
         {% endfor %}
       </div>
-      <div class="Card-hover">
-        <a class="Card-btn" href="{% url 'app_cart:cart_add' product.id %}">
-          <img src="{% static 'assets/img/icons/card/cart.svg' %}" alt="cart.svg"/></a>
-      </div>
+      {% if product.in_stock %}
+        <div class="Card-hover">
+          <a class="Card-btn" href="{% url 'app_cart:cart_add' product.id %}">
+            <img src="{% static 'assets/img/icons/card/cart.svg' %}" alt="cart.svg"/></a>
+        </div>
+      {% endif %}
     </div>
   </div>
 </div>

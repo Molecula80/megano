@@ -11,9 +11,9 @@
       <div class="wrap">
         <div class="ProgressPayment">
           {% if order.paid == True %}
-            <div class="ProgressPayment-title" style="color: green;">Заказ №{{ ordr.id }} успешно оплачен.</div>
+            <div class="ProgressPayment-title" style="color: #3cb878;">Заказ №{{ order.id }} успешно оплачен.</div>
           {% elif order.paid == False %}
-            <div class="ProgressPayment-title" style="color: red;">{{ order.error_message }}</div>
+            <div class="ProgressPayment-title" style="color: #f26d7d;">{{ order.error_message }}</div>
           {% else %}
             <div class="ProgressPayment-title">Ждем подтверждения оплаты платежной системой</div>
             <div class="ProgressPayment-icon">

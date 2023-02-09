@@ -1,8 +1,4 @@
 from celery import shared_task
-import logging
-
-from .models import Order
-from .api import PaymentService
 
 
 @shared_task

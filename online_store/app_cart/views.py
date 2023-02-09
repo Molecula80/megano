@@ -1,6 +1,6 @@
 import logging
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.views import View
 from django.views.decorators.http import require_POST
 
@@ -24,21 +24,29 @@ def cart_detail(request):
 class CartAdd(View):
     """ Добавление товара в корзину. """
     def get(self, request, product_id: int):
-        cart = Cart(request)
         product = get_object_or_404(Product, id=product_id)
+        self.check_product_in_in_stock(product)
+        cart = Cart(request)
         cart.add(product=product, quantity=1)
         logger.debug('Товар {} добавлен в корзину методом GET.'.format(product.title))
         return redirect('app_cart:cart_detail')
 
     def post(self, request, product_id: int):
-        cart = Cart(request)
         product = get_object_or_404(Product, id=product_id)
+        self.check_product_in_in_stock(product)
+        cart = Cart(request)
         form = CartAddProductForm(request.POST)
         if form.is_valid():
             quantity = form.cleaned_data.get('quantity')
             cart.add(product=product, quantity=quantity)
             logger.debug('Товар {} добавлен в корзину методом POST.'.format(product.title))
         return redirect('app_cart:cart_detail')
+
+    @classmethod
+    def check_product_in_in_stock(cls, product):
+        """ Вызывает Http404, если товара нет в наличии. """
+        if not product.in_stock:
+            raise Http404
 
 
 def cart_remove(request, product_id: int):

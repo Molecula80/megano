@@ -13,6 +13,7 @@ from .models import User
 from app_cart.cart import Cart
 from app_cart.models import CartItem
 from common.functions import register
+from app_ordering.models import Order
 
 
 logger = logging.getLogger(__name__)
@@ -30,6 +31,8 @@ class AccountDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context['page_title'] = 'Личный кабинет'
         context['section'] = 'account'
+        context['order'] = Order.objects.select_related('user', 'delivery_method').exclude(paid=None).\
+            order_by('-created', '-id').first()
         logger.debug('Пользователь {} запросил страницу личного кабинета.'.format(self.request.user.email))
         return context
 

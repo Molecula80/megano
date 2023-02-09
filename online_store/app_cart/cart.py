@@ -57,7 +57,8 @@ class Cart(object):
         """ Добавление товара в корзину или обновление его количества. """
         product_id = str(product.id)
         if product_id not in self.__cart:
-            self.__cart[product_id] = {'quantity': 0, 'price': str(product.price)}
+            self.__cart[product_id] = {'quantity': 0, 'price': str(product.price),
+                                       'free_delivery': product.free_delivery}
         self.__cart[product_id]['quantity'] += quantity
         self.save()
 
@@ -85,6 +86,16 @@ class Cart(object):
         :rtype: float
         """
         return sum(Decimal(item['price']) * item['quantity'] for item in self.__cart.values())
+
+    @property
+    def free_delivery(self) -> bool:
+        """
+        Геттер. Возвращает True, если у всех товаров в корзине свободная доставка. В противном случае возвращает False.
+        """
+        for item in self.__cart.values():
+            if not item['free_delivery']:
+                return False
+        return True
 
     def clear(self) -> None:
         """ Очистка корзины. """

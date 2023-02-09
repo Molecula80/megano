@@ -12,7 +12,8 @@ from django.views.decorators.http import require_POST
 from .forms import OrderCreateForm, PaymentForm
 from .models import Order, OrderItem, DeliveryMethod
 from .tasks import job
-from .api import PaymentService
+from .payment_service import PaymentService
+from .errors import PaymentError
 
 from app_users.forms import RegisterForm, AuthForm
 from common.functions import register
@@ -81,7 +82,8 @@ def get_delivery_method(request):
     delivery_val = request.POST.get('delivery_val')
     try:
         delivery_method = DeliveryMethod.objects.all()[int(delivery_val) - 1]
-        delivery_price = delivery_method.get_delivery_price(total_price=cart.total_price)
+        delivery_price = delivery_method.get_delivery_price(total_price=cart.total_price,
+                                                            free_delivery=cart.free_delivery)
         order_price = cart.total_price + delivery_price
         request.session['order_price'] = str(order_price)
         return JsonResponse({'delivery_method': delivery_method.title, 'delivery_price': delivery_price,
@@ -151,7 +153,8 @@ class PaymentView(LoginRequiredMixin, View):
         if form.is_valid():
             card_num = form.cleaned_data.get('card_num')
             logger.debug('Номер карты: {}'.format(card_num))
-            self.order_payment(order_id=order_id, card_num=card_num)
+            order = Order.objects.get(id=order_id)
+            self.order_payment(order=order, card_num=card_num)
             return HttpResponseRedirect(reverse('app_ordering:progress_payment', args=[order_id]))
         if request.is_ajax():
             return render(request, 'app_ordering/payment_ajax.html', {'page_title': 'Оплата', 'form': form,
@@ -160,15 +163,19 @@ class PaymentView(LoginRequiredMixin, View):
                                                              'label': 'Номер карты', 'someone': someone})
 
     @classmethod
-    def order_payment(self, order_id, card_num):
+    def order_payment(cls, order, card_num):
         """ Оплата заказа. """
-        order = Order.objects.get(id=order_id)
-        order_cost = order.total_cost
-        job.delay(order_id=order_id, card_num=card_num, order_cost=order_cost)
+        # job.delay(order_id=order.id, card_num=card_num, order_cost=order.total_cost)
+        payment_service = PaymentService(order_id=order.id, card_num=card_num, order_cost=order.total_cost)
+        try:
+            payment_service.pay_order()
+        except PaymentError:
+            return
 
-    def get_payment_status(self):
+    @classmethod
+    def get_payment_status(cls, order):
         """ Получение статуса оплаты заказа. """
-        pass
+        return order.paid
 
 
 @login_required
