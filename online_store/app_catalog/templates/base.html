@@ -48,7 +48,7 @@
               <div class="row-block">
                 {% if request.user.is_authenticated %}
                   <p>
-                    <a class="ControlPanel-title" href="{% url 'account_detail' request.user.id %}">Личный кабинет</a> /
+                    <a class="ControlPanel-title" href="{% url 'account_detail' %}">Личный кабинет</a> /
                     <a class="ControlPanel-title" href="{% url 'logout' %}">Выйти</a>
                   </p>
                 {% else %}

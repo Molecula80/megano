@@ -47,12 +47,12 @@
       <div class="Cart-product">
         <div class="Cart-block Cart-block_row">
           <div class="Cart-block Cart-block_pict">
-            <a class="Cart-pict" href="#">
+            <a class="Cart-pict" href="{{ product.get_absolute_url }}">
               <img class="Cart-img" src="{% if product.image %}{{ product.image.url }}{% endif %}" alt="card.jpg"/>
             </a>
           </div>
           <div class="Cart-block Cart-block_info">
-            <a class="Cart-title" href="#">{{ product.title }}</a>
+            <a class="Cart-title" href="{{ product.get_absolute_url }}">{{ product.title }}</a>
             <div>
               {% if not product.in_stock %}
                 <span style="font-size: 16px; color: red">Нет в наличии</span>

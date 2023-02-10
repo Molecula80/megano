@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% extends "navigation.html" %}
+    <meta charset="UTF-8">
+    <title>{% block title %}История заказов{% endblock %}</title>
+</head>
+<body>
+  {% block account_content %}
+  <div class="Orders">
+    {% for order in orders %}
+    <div class="Order Order_anons">
+      <div class="Order-personal">
+        <div class="row">
+          <div class="row-block"><a class="Order-title" href="{% url 'orders_detail' order.id %}">Заказ&#32;
+              <span class="Order-numberOrder">№{{ order.id }}</span>&#32;от&#32;
+              <span class="Order-dateOrder">{{ order.created }}</span></a>
+          </div>
+          <div class="row-block">
+            <div class="Order-info Order-info_delivery">
+              <div class="Order-infoType">Тип доставки:
+              </div>
+              <div class="Order-infoContent">{{ order.delivery_method.title }}</div>
+            </div>
+            <div class="Order-info Order-info_pay">
+              <div class="Order-infoType">Оплата:
+              </div>
+              <div class="Order-infoContent">
+              {% if order.payment_method == '1' %}Онлайн картой{% else %}Онлайн со случайного чужого счета{% endif %}
+              </div>
+            </div>
+            <div class="Order-info">
+              <div class="Order-infoType">Общая стоимость:
+              </div>
+              <div class="Order-infoContent">
+                  <span class="Order-price">{{ order.total_cost }}$</span>
+              </div>
+            </div>
+            <div class="Order-info Order-info_status">
+              <div class="Order-infoType">Статус:
+              </div>
+              <div class="Order-infoContent">
+                {% if order.paid == None %}Ожидает оплаты{% elif order.paid %}Оплачен{% else %}Не оплачен{% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+      Вы еще не сделали ни одного заказа.
+    {% endfor %}
+  </div>
+  {% endblock %}
+</body>
+</html>

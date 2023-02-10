@@ -12,56 +12,58 @@
         <div class="Account-column">
           {% if user.avatar %}
             <div style="Account-avatar">
-              <img src="{{ user.avatar.url }}" alt="card.jpg" style="max-width: 200px; max-height: 200px;"/>
+              <img src="{{ request.user.avatar.url }}" alt="card.jpg" style="max-width: 200px; max-height: 200px;"/>
             </div>
           {% endif %}
         </div>
         <div class="Account-column">
           <div class="Account-name">{{ user.full_name }}
-          </div><a class="Account-editLink" href="{% url 'profile' request.user.id %}">Редактировать профиль</a>
+          </div><a class="Account-editLink" href="{% url 'profile' %}">Редактировать профиль</a>
         </div>
       </div>
-      <div class="Account-group">
-        <div class="Account-column Account-column_full">
-          <div class="Order Order_anons">
-            <div class="Order-personal">
-              <div class="row">
-                <div class="row-block">
-                  <a class="Order-title" href="oneorder.html">Заказ&#32;
-                    <span class="Order-numberOrder">№{{ order.id }}</span>&#32;от&#32;
-                    <span class="Order-dateOrder">{{ order.created }}</span></a>
-                  <div class="Account-editLink"><a href="historyorder.html">История заказов</a>
-                  </div>
-                </div>
-                <div class="row-block">
-                  <div class="Order-info Order-info_delivery">
-                    <div class="Order-infoType">Тип доставки:
-                    </div>
-                    <div class="Order-infoContent">{{ order.delivery_method.title }}
+      {% if order %}
+        <div class="Account-group">
+          <div class="Account-column Account-column_full">
+            <div class="Order Order_anons">
+              <div class="Order-personal">
+                <div class="row">
+                  <div class="row-block">
+                    <a class="Order-title" href="{% url 'orders_detail' order.id %}">Заказ&#32;
+                      <span class="Order-numberOrder">№{{ order.id }}</span>&#32;от&#32;
+                      <span class="Order-dateOrder">{{ order.created }}</span></a>
+                    <div class="Account-editLink"><a href="{% url 'orders_history' %}">История заказов</a>
                     </div>
                   </div>
-                  <div class="Order-info Order-info_pay">
-                    <div class="Order-infoType">Оплата:
+                  <div class="row-block">
+                    <div class="Order-info Order-info_delivery">
+                      <div class="Order-infoType">Тип доставки:
+                      </div>
+                      <div class="Order-infoContent">{{ order.delivery_method.title }}
+                      </div>
                     </div>
-                    <div class="Order-infoContent">
-                      {% if order.payment_method == '1' %}
-                        Онлайн картой
-                      {% else %}
-                        Онлайн со случайного чужого счета
-                      {% endif %}
+                    <div class="Order-info Order-info_pay">
+                      <div class="Order-infoType">Оплата:
+                      </div>
+                      <div class="Order-infoContent">
+                        {% if order.payment_method == '1' %}
+                          Онлайн картой
+                        {% else %}
+                          Онлайн со случайного чужого счета
+                        {% endif %}
+                      </div>
                     </div>
-                  </div>
-                  <div class="Order-info">
-                    <div class="Order-infoType">Общая стоимость:
+                    <div class="Order-info">
+                      <div class="Order-infoType">Общая стоимость:
+                      </div>
+                      <div class="Order-infoContent">{{ order.total_cost }}$
+                      </div>
                     </div>
-                    <div class="Order-infoContent">{{ order.total_cost }}$
-                    </div>
-                  </div>
-                  <div class="Order-info Order-info_status">
-                    <div class="Order-infoType">Статус:
-                    </div>
-                    <div class="Order-infoContent">
-                      {% if order.paid %}Оплачен{% else %}Не оплачен{% endif %}
+                    <div class="Order-info Order-info_status">
+                      <div class="Order-infoType">Статус:
+                      </div>
+                      <div class="Order-infoContent">
+                        {% if order.paid == None %}Ожидает оплаты{% elif order.paid %}Оплачен{% else %}Не оплачен{% endif %}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -69,7 +71,7 @@
             </div>
           </div>
         </div>
-      </div>
+      {% endif %}
     </div>
   {% endblock %}
 </body>

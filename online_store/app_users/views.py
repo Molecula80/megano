@@ -4,9 +4,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect, Http404
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 from django.urls import reverse
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView, ListView, TemplateView
 
 from .forms import AuthForm, ProfileForm, RegisterForm
 from .models import User
@@ -19,19 +19,15 @@ from app_ordering.models import Order
 logger = logging.getLogger(__name__)
 
 
-class AccountDetailView(LoginRequiredMixin, DetailView):
+class AccountDetailView(LoginRequiredMixin, TemplateView):
     """ Персональный аккаунт. """
-    model = User
     template_name = 'app_users/account_detail.html'
-    context_object_name = 'user'
 
     def get_context_data(self, **kwargs):
-        if self.object != self.request.user:
-            raise Http404
         context = super().get_context_data(**kwargs)
         context['page_title'] = 'Личный кабинет'
         context['section'] = 'account'
-        context['order'] = Order.objects.select_related('user', 'delivery_method').exclude(paid=None).\
+        context['order'] = Order.objects.select_related('user', 'delivery_method').filter(user=self.request.user).\
             order_by('-created', '-id').first()
         logger.debug('Пользователь {} запросил страницу личного кабинета.'.format(self.request.user.email))
         return context
@@ -84,17 +80,14 @@ def login_view(request):
 
 
 @login_required
-def profile_view(request, pk):
+def profile_view(request):
     """ Страница изменения профиля пользователя. """
     page_title = 'профиль'
     section = 'profile'
     success = False
-    user = get_object_or_404(User, id=pk)
-    if user != request.user:
-        raise Http404
-    old_number = str(user.telephone)  # Старый номер телефона.
+    old_number = str(request.user.telephone)  # Старый номер телефона.
     if request.method == 'POST':
-        form = ProfileForm(request.POST, request.FILES, instance=user)
+        form = ProfileForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
             user = form.save(commit=False)
             telephone_str = form.cleaned_data.get('telephone')
@@ -121,11 +114,11 @@ def profile_view(request, pk):
                                                                                           name=user.full_name,
                                                                                           telephone=user.telephone))
     else:
-        form = ProfileForm(instance=user)
+        form = ProfileForm(instance=request.user)
         logger.debug('Пользователь {email} запросил страницу профиля.\nДанные пользователя:'
-                     '\nФИО: {name}\nТелефон: {telephone}\nEmail: {email}'.format(email=user.email,
-                                                                                  name=user.full_name,
-                                                                                  telephone=user.telephone))
+                     '\nФИО: {name}\nТелефон: {telephone}\nEmail: {email}'.format(email=request.user.email,
+                                                                                  name=request.user.full_name,
+                                                                                  telephone=request.user.telephone))
     return render(request, 'app_users/edit_profile.html', {'form': form, 'page_title': page_title, 'section': section,
                                                            'success': success})
 
@@ -138,16 +131,36 @@ def logout_view(request):
     return HttpResponseRedirect(reverse('app_catalog:index'))
 
 
-class OrderHistoryListView(ListView):
+class OrdersHistoryListView(LoginRequiredMixin, ListView):
     """ История заказов пользователя. """
+    template_name = 'app_users/orders_history.html'
+    context_object_name = 'orders'
+
     def get_context_data(self, **kwargs):
-        pass
+        """ Возвращает словарь, содержащий названия страницы и секции. """
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'История заказов'
+        context['section'] = 'orders_history'
+        return context
+
+    def get_queryset(self):
+        """ Возвращает все заказы данного пользователя, кроме ожидающих оплаты. """
+        queryset = Order.objects.select_related('user', 'delivery_method').filter(user=self.request.user).\
+            order_by('-created', '-id')
+        return queryset
 
 
-class OrderDetailView(DetailView):
+class OrderDetailView(LoginRequiredMixin, DetailView):
     """ Детальная страница заказа. """
-    def get_context_data(self, **kwargs):
-        pass
+    model = Order
+    context_object_name = 'order'
+    template_name = 'app_users/order_detail.html'
 
-    def post(self, request, profile_id, order_id):
-        pass
+    def get_context_data(self, **kwargs):
+        """ Возвращает словарь, содержащий название страницы. """
+        if self.object.user != self.request.user:
+            raise Http404
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Заказ №{}'.format(self.object.id)
+        context['items'] = self.object.items.all()
+        return context
