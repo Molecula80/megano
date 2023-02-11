@@ -97,6 +97,12 @@ class Cart(object):
                 return False
         return True
 
+    def get_delivery_price(self, d_method):
+        """ Получение стоимости доставки. """
+        if d_method.free_delivery_cost and (self.total_price >= d_method.free_delivery_cost or self.free_delivery):
+            return 0
+        return d_method.price
+
     def clear(self) -> None:
         """ Очистка корзины. """
         del self.__session[settings.CART_SESSION_ID]

@@ -3,7 +3,7 @@ import logging
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.generic import DetailView, ListView, TemplateView
@@ -14,6 +14,7 @@ from app_cart.cart import Cart
 from app_cart.models import CartItem
 from common.functions import register
 from app_ordering.models import Order
+from app_ordering.forms import OrderCreateForm
 
 
 logger = logging.getLogger(__name__)
@@ -162,5 +163,16 @@ class OrderDetailView(LoginRequiredMixin, DetailView):
             raise Http404
         context = super().get_context_data(**kwargs)
         context['page_title'] = 'Заказ №{}'.format(self.object.id)
-        context['items'] = self.object.items.all()
+        context['items'] = self.object.items.select_related('order', 'product').all()
+        context['form'] = OrderCreateForm()
         return context
+
+    def post(self, request, pk):
+        form = OrderCreateForm(request.POST)
+        if form.is_valid():
+            payment_method = form.cleaned_data.get('payment_method')
+            self.object.payment_method = payment_method
+            if payment_method == '1':
+                return HttpResponseRedirect(reverse('app_ordering:payment', args=[pk]))
+            return HttpResponseRedirect(reverse('app_ordering:payment_someone', args=[pk, 'someone']))
+        return HttpResponseRedirect(reverse('order_detail', args=[pk]))

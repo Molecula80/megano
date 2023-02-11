@@ -13,7 +13,7 @@ urlpatterns = [
     path('', AccountDetailView.as_view(), name='account_detail'),
     path('profile/', profile_view, name='profile'),
     path('orders_history/', OrdersHistoryListView.as_view(), name='orders_history'),
-    path('orders_history/<int:pk>/', OrderDetailView.as_view(), name='orders_detail'),
+    path('orders_history/<int:pk>/', OrderDetailView.as_view(), name='order_detail'),
     # Обработчики восстановления пароля.
     path('password_reset/', PasswordResetView.as_view(), name='password_reset'),
     path('password_reset/done/', PasswordResetDoneView.as_view(), name='password_reset_done'),

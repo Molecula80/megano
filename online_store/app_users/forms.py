@@ -85,3 +85,7 @@ class ProfileForm(forms.ModelForm):
         if cd['password1'] != cd['password2']:
             raise forms.ValidationError('Пароли не совпадают.')
         return cd['password2']
+
+
+# class PaymentMethodForm(forms.ModelForm):
+#     """  """

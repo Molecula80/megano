@@ -19,9 +19,10 @@ class Order(models.Model):
     address = models.TextField(verbose_name='адрес')
     payment_method = models.CharField(max_length=1, choices=PAYMENT_METHOD_CHOICES, default=1,
                                       verbose_name='способ оплаты')
-    comment = models.TextField(blank=True, null=True, verbose_name='коментарий')
+    comment = models.TextField(blank=True, null=True, verbose_name='комментарий')
     paid = models.NullBooleanField(default=None, verbose_name='оплачено')
     error_message = models.TextField(blank=True, null=True, default=str(), verbose_name='сообщение об ошибке')
+    delivery_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='стоимость доставки')
     total_cost = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='итоговая стоимость')
 
     class Meta:
@@ -64,9 +65,3 @@ class DeliveryMethod(models.Model):
     def __str__(self) -> str:
         """ Возвращает название способа доставки. """
         return '{}'.format(self.title)
-
-    def get_delivery_price(self, total_price, free_delivery):
-        """ Получение стоимости доставки. """
-        if self.free_delivery_cost and (total_price >= self.free_delivery_cost or free_delivery):
-            return 0
-        return self.price
