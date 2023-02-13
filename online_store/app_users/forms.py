@@ -87,5 +87,8 @@ class ProfileForm(forms.ModelForm):
         return cd['password2']
 
 
-# class PaymentMethodForm(forms.ModelForm):
-#     """  """
+class PaymentMethodForm(forms.Form):
+    """ Форма выбора способа оплаты заказа. """
+    payment_method = forms.ChoiceField(initial=1,
+                                       choices=[('1', 'Онлайн картой'), ('2', 'Онлайн со случайного чужого счета')],
+                                       widget=forms.RadioSelect())

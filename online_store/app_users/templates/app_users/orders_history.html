@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     {% extends "navigation.html" %}
+    {% load static %}
     <meta charset="UTF-8">
     <title>{% block title %}История заказов{% endblock %}</title>
 </head>
@@ -50,6 +51,23 @@
     {% empty %}
       Вы еще не сделали ни одного заказа.
     {% endfor %}
+  </div>
+  <div class="Pagination">
+    <div class="Pagination-ins">
+      <a class="Pagination-element Pagination-element_prev"
+         href="{% if page_obj.has_previous %}?page={{ page_obj.previous_page_number }}
+         {% else %}?page={{ page_obj.paginator.num_pages }}{% endif %}">
+        <img src="{% static 'assets/img/icons/prevPagination.svg' %}" alt="prevPagination.svg"/></a>
+      {% for p in page_obj.paginator.page_range %}
+        <a class="Pagination-element {% if page_obj.number == p %}Pagination-element_current{% endif %}"
+           href="?page={{ p }}">
+          <span class="Pagination-text">{{ p }}</span>
+        </a>
+      {% endfor %}
+      <a class="Pagination-element Pagination-element_prev"
+         href="{% if page_obj.has_next %}?page={{ page_obj.next_page_number }}{% else %}?page=1{% endif %}">
+        <img src="{% static 'assets/img/icons/nextPagination.svg' %}" alt="nextPagination.svg"/></a>
+    </div>
   </div>
   {% endblock %}
 </body>

@@ -8,13 +8,12 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.views.generic import DetailView, ListView, TemplateView
 
-from .forms import AuthForm, ProfileForm, RegisterForm
+from .forms import AuthForm, ProfileForm, RegisterForm, PaymentMethodForm
 from .models import User
 from app_cart.cart import Cart
 from app_cart.models import CartItem
 from common.functions import register
 from app_ordering.models import Order
-from app_ordering.forms import OrderCreateForm
 
 
 logger = logging.getLogger(__name__)
@@ -136,6 +135,7 @@ class OrdersHistoryListView(LoginRequiredMixin, ListView):
     """ История заказов пользователя. """
     template_name = 'app_users/orders_history.html'
     context_object_name = 'orders'
+    paginate_by = 5
 
     def get_context_data(self, **kwargs):
         """ Возвращает словарь, содержащий названия страницы и секции. """
@@ -145,7 +145,7 @@ class OrdersHistoryListView(LoginRequiredMixin, ListView):
         return context
 
     def get_queryset(self):
-        """ Возвращает все заказы данного пользователя, кроме ожидающих оплаты. """
+        """ Возвращает все заказы данного пользователя. """
         queryset = Order.objects.select_related('user', 'delivery_method').filter(user=self.request.user).\
             order_by('-created', '-id')
         return queryset
@@ -164,14 +164,18 @@ class OrderDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context['page_title'] = 'Заказ №{}'.format(self.object.id)
         context['items'] = self.object.items.select_related('order', 'product').all()
-        context['form'] = OrderCreateForm()
+        context['form'] = PaymentMethodForm()
+        context['section'] = 'order_detail'
         return context
 
     def post(self, request, pk):
-        form = OrderCreateForm(request.POST)
+        """ Выбор способа оплаты заказа. """
+        form = PaymentMethodForm(request.POST)
         if form.is_valid():
             payment_method = form.cleaned_data.get('payment_method')
-            self.object.payment_method = payment_method
+            order = self.get_object()
+            order.payment_method = payment_method
+            order.save()
             if payment_method == '1':
                 return HttpResponseRedirect(reverse('app_ordering:payment', args=[pk]))
             return HttpResponseRedirect(reverse('app_ordering:payment_someone', args=[pk, 'someone']))

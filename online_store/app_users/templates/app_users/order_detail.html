@@ -76,7 +76,7 @@
                           {% if order.paid == None %}Ожидает оплаты{% elif order.paid %}Оплачен{% else %}Не оплачен{% endif %}
                         </div>
                       </div>
-                      {% if order.error_message %}
+                      {% if order.paid == False %}
                       <div class="Order-info Order-info_error">
                         <div class="Order-infoType">Оплата не прошла:
                         </div>
@@ -124,7 +124,7 @@
                       <div class="Cart-block Cart-block_total">
                          <strong class="Cart-title">Итого:<span class="Cart-price">{{ order.total_cost }}$</span></strong>
                       </div>
-                      {% if not order.paid %}
+                      {% if order.paid == False %}
                         <div class="Cart-block">
                           <a class="btn btn_success Order-next" href="#payment-method">Оплатить</a>
                         </div>
