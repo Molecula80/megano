@@ -10,6 +10,8 @@ app_name = 'app_catalog'
 urlpatterns = [
     path('', IndexView.as_view(), name='index'),
     path('catalog/', ProductListView.as_view(), name='catalog'),
+    path('catalog/delivery/<str:free_delivery>/', ProductListView.as_view(), name='free_delivery'),
+    path('catalog/categories/<slug:category_slug>/', ProductListView.as_view(), name='category'),
     path('catalog/sort_order/<str:sort_order>/', ProductListView.as_view(), name='sorted_catalog'),
     path('catalog/products/<slug>/', product_detail_view, name='product_detail'),
     # API

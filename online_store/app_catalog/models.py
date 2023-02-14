@@ -15,6 +15,7 @@ class Category(models.Model):
     parent = models.ForeignKey('Category', blank=True, null=True, on_delete=models.SET_NULL, related_name='children',
                                verbose_name='родитель')
     title = models.CharField(max_length=255, verbose_name='название')
+    slug = models.SlugField(max_length=255, unique=True)
     sort_index = models.PositiveIntegerField(verbose_name='индекс сортировки')
     image = models.ImageField(upload_to='images/categories/', blank=True, null=True, verbose_name='изображение')
     icon = models.FileField(upload_to='images/icons/', blank=True, null=True, verbose_name='иконка')
@@ -31,6 +32,14 @@ class Category(models.Model):
         :rtype: str
         """
         return str(self.title)
+
+    def get_absolute_url(self) -> str:
+        """
+        Возвращает url категории товара.
+        :return: url категории товара
+        :rtype str
+        """
+        return reverse('app_catalog:category', args=[self.slug])
 
 
 class Seller(models.Model):

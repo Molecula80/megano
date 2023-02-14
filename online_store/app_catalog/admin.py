@@ -11,9 +11,10 @@ class CategoryInline(admin.TabularInline):
 
 class CategoryAdmin(admin.ModelAdmin):
     """ Административная модель категории. """
-    list_display = ['id', 'title', 'parent', 'sort_index', 'active']
+    list_display = ['id', 'title', 'slug', 'parent', 'sort_index', 'active']
     list_filter = ['parent', 'sort_index', 'active']
     search_fields = ['title']
+    prepopulated_fields = {'slug': ('title',)}
     inlines = [CategoryInline]
     actions = ['mark_as_active', 'mark_as_inactive']
 

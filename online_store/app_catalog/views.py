@@ -67,6 +67,8 @@ class ProductListView(ListView):
             queryset = self.filter_by_choice_fields(queryset=queryset, form=form)
             queryset = self.filter_by_checkboxes(queryset=queryset, form=form)
         queryset = self.sort_products(queryset=queryset)
+        queryset = self.free_delivery(queryset=queryset)
+        queryset = self.filter_by_category(queryset=queryset)
         return queryset
 
     @classmethod
@@ -126,6 +128,22 @@ class ProductListView(ListView):
         if sort_order in sort_orders:
             logger.debug('Товары отсортированы по параметру "{}"'.format(sort_order))
             return queryset.order_by(sort_order)
+        return queryset
+
+    def free_delivery(self, queryset):
+        """ Возвращает товоры с бесплатной доставкой. """
+        if self.kwargs.get('free_delivery'):
+            queryset = queryset.filter(free_delivery=True)
+            logger.debug('Выполнен поиск товаров с параметром "Свободная доставка: True"')
+        return queryset
+
+    def filter_by_category(self, queryset):
+        """ Возвращает товары, принадлежащие к определенной категории. """
+        slug = self.kwargs.get('category_slug')
+        if slug:
+            category = get_object_or_404(Category, slug=slug)
+            queryset = queryset.filter(categories=category)
+            logger.debug('Выполнен поиск товаров, принадлежащих к категории {}'.format(category.title))
         return queryset
 
 
