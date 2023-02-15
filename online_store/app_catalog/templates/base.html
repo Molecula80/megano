@@ -118,8 +118,10 @@
             <div class="CategoriesButton-content">
               {% for category in categories %}
                 <div class="CategoriesButton-link"><a href="{{ category.get_absolute_url }}">
-                  <div class="CategoriesButton-icon"><img src="{{ category.icon.url }}" alt="1.svg"/>
-                  </div><span class="CategoriesButton-text">{{ category.title }}</span></a>
+                  {% if category.icon %}
+                    <div class="CategoriesButton-icon"><img src="{{ category.icon.url }}" alt="1.svg"/></div>
+                  {% endif %}
+                  <span class="CategoriesButton-text">{{ category.title }}</span></a>
                 </div>
               {% endfor %}
             </div>
