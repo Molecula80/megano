@@ -13,7 +13,7 @@
         <div class="wrap">
           <div class="BannersHome">
             {% for category in three_categories %}
-              <a class="BannersHomeBlock" href="#">
+              <a class="BannersHomeBlock" href="{{ category.get_absolute_url }}">
                 <div class="BannersHomeBlock-row">
                   <div class="BannersHomeBlock-block">
                     <strong class="BannersHomeBlock-title">{{ category.title }}</strong>

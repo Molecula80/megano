@@ -68,7 +68,7 @@
             <div class="Section-columnContent">
               <div class="buttons">
                 {% for category in categories|slice:":6" %}
-                  <a class="btn btn_default btn_sm" href="#">{{ category.title }}</a>
+                  <a class="btn btn_default btn_sm" href="{{ category.get_absolute_url }}">{{ category.title }}</a>
                 {% endfor %}
               </div>
             </div>
