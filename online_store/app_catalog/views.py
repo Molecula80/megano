@@ -9,7 +9,7 @@ from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from .models import Category, Product
-from .forms import ReviewForm, ProductFilterForm
+from .forms import ReviewForm, ProductFilterForm, SearchProductForm
 from app_cart.forms import CartAddProductForm
 
 
@@ -144,6 +144,37 @@ class ProductListView(ListView):
             category = get_object_or_404(Category, slug=slug)
             queryset = queryset.filter(categories=category)
             logger.debug('Выполнен поиск товаров, принадлежащих к категории {}'.format(category.title))
+        return queryset
+
+
+class SearchProductsView(ListView):
+    """ Представление для поиска товаров. """
+    template_name = 'app_catalog/catalog.html'
+    context_object_name = 'products'
+    paginate_by = 8
+
+    def get_context_data(self, **kwargs) -> dict:
+        """ Метод для данных страницы. """
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Каталог'
+        context['form'] = ProductFilterForm
+        context['sort_order'] = self.kwargs.get('sort_order')
+        logger.debug('Запрошена страница со списком товаров.')
+        return context
+
+    def get_queryset(self):
+        """ Метод для вывода и фильтрации продуктов. """
+        form = SearchProductForm(self.request.GET)
+        num_reviews = Count('reviews', filter=Q(reviews__active=True))  # Количество отзывов.
+        queryset = Product.objects.annotate(num_reviews=num_reviews).prefetch_related('categories'). \
+            filter(active=True).order_by('-sort_index')
+        if form.is_valid():
+            title = form.cleaned_data.get('title')
+            search_vector = SearchVector('title', weight='A') + SearchVector('description', weight='B')
+            search_query = SearchQuery(title)
+            rank = SearchRank(search_vector, search_query)
+            logger.debug('Выполнен поиск по строке {}.'.format(title))
+            return queryset.annotate(search=search_vector, rank=rank).filter(search=search_query).order_by('-rank')
         return queryset
 
 

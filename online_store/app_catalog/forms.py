@@ -44,3 +44,12 @@ class ProductFilterForm(forms.Form):
 
     class Meta:
         fields = ('price_range', 'title', 'sellers', 'fabricators', 'in_stock', 'free_delivery')
+
+
+class SearchProductForm(forms.Form):
+    """ Форма для поиска товаров, находящаяся в шапке сайта. """
+    title = forms.CharField(widget=forms.TextInput(attrs={"class": "search-input", "id": "query", "name": "query",
+                                                          "type": "text", "placeholder": "Что вы ищете ..."}))
+
+    class Meta:
+        fields = ('title',)
