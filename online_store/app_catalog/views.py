@@ -60,12 +60,15 @@ class ProductListView(ListView):
         num_reviews = Count('reviews', filter=Q(reviews__active=True))  # Количество отзывов.
         queryset = Product.objects.annotate(num_reviews=num_reviews).prefetch_related('categories').\
             filter(active=True).order_by('-sort_index')
-        form = ProductFilterForm(self.request.GET)
-        if form.is_valid():
-            queryset = self.filter_by_price(queryset=queryset, form=form)
-            queryset = self.search_by_text(queryset=queryset, form=form)
-            queryset = self.filter_by_choice_fields(queryset=queryset, form=form)
-            queryset = self.filter_by_checkboxes(queryset=queryset, form=form)
+        filter_form = ProductFilterForm(self.request.GET)
+        if filter_form.is_valid():
+            queryset = self.filter_by_price(queryset=queryset, form=filter_form)
+            queryset = self.search_by_text(queryset=queryset, form=filter_form)
+            queryset = self.filter_by_choice_fields(queryset=queryset, form=filter_form)
+            queryset = self.filter_by_checkboxes(queryset=queryset, form=filter_form)
+        search_form = SearchProductForm(self.request.GET)
+        if search_form.is_valid():
+            queryset = self.search_by_text(queryset=queryset, form=search_form)
         queryset = self.sort_products(queryset=queryset)
         queryset = self.free_delivery(queryset=queryset)
         queryset = self.filter_by_category(queryset=queryset)
@@ -144,37 +147,6 @@ class ProductListView(ListView):
             category = get_object_or_404(Category, slug=slug)
             queryset = queryset.filter(categories=category)
             logger.debug('Выполнен поиск товаров, принадлежащих к категории {}'.format(category.title))
-        return queryset
-
-
-class SearchProductsView(ListView):
-    """ Представление для поиска товаров. """
-    template_name = 'app_catalog/catalog.html'
-    context_object_name = 'products'
-    paginate_by = 8
-
-    def get_context_data(self, **kwargs) -> dict:
-        """ Метод для данных страницы. """
-        context = super().get_context_data(**kwargs)
-        context['page_title'] = 'Каталог'
-        context['form'] = ProductFilterForm
-        context['sort_order'] = self.kwargs.get('sort_order')
-        logger.debug('Запрошена страница со списком товаров.')
-        return context
-
-    def get_queryset(self):
-        """ Метод для вывода и фильтрации продуктов. """
-        form = SearchProductForm(self.request.GET)
-        num_reviews = Count('reviews', filter=Q(reviews__active=True))  # Количество отзывов.
-        queryset = Product.objects.annotate(num_reviews=num_reviews).prefetch_related('categories'). \
-            filter(active=True).order_by('-sort_index')
-        if form.is_valid():
-            title = form.cleaned_data.get('title')
-            search_vector = SearchVector('title', weight='A') + SearchVector('description', weight='B')
-            search_query = SearchQuery(title)
-            rank = SearchRank(search_vector, search_query)
-            logger.debug('Выполнен поиск по строке {}.'.format(title))
-            return queryset.annotate(search=search_vector, rank=rank).filter(search=search_query).order_by('-rank')
         return queryset
 
 
