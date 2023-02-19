@@ -1,0 +1,1 @@
+[{"model": "app_catalog.fabricator", "pk": 1, "fields": {"title": "fabricator 1"}}, {"model": "app_catalog.fabricator", "pk": 2, "fields": {"title": "fabricator 2"}}, {"model": "app_catalog.fabricator", "pk": 3, "fields": {"title": "fabricator 3"}}]

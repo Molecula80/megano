@@ -1,0 +1,1 @@
+[{"model": "app_ordering.deliverymethod", "pk": 1, "fields": {"title": "Regular delivery", "price": "200.00", "free_delivery_cost": "2000.00"}}, {"model": "app_ordering.deliverymethod", "pk": 2, "fields": {"title": "Express delivery", "price": "500.00", "free_delivery_cost": null}}]
