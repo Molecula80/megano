@@ -29,8 +29,8 @@ class IndexView(TemplateView):
         three_categories = Category.objects.filter(active=True).annotate(
             min_price=Min('products__price')).order_by('-sort_index')[:3]
         num_reviews = Count('reviews', filter=Q(reviews__active=True))  # Количество отзывов.
-        products = Product.objects.annotate(num_reviews=num_reviews).prefetch_related('categories').\
-            filter(active=True).order_by('-sort_index')
+        products = Product.objects.annotate(num_reviews=num_reviews).select_related('seller', 'fabricator').\
+            prefetch_related('categories').filter(active=True).order_by('-sort_index')
         popular_products = products[:8]
         limited_edition = products.filter(limited_edition=True)[:16]
         context['three_categories'] = cache.get_or_set(tc_cache_key, three_categories, 30)
@@ -58,8 +58,8 @@ class ProductListView(ListView):
     def get_queryset(self):
         """ Метод для вывода и фильтрации продуктов. """
         num_reviews = Count('reviews', filter=Q(reviews__active=True))  # Количество отзывов.
-        queryset = Product.objects.annotate(num_reviews=num_reviews).prefetch_related('categories').\
-            filter(active=True).order_by('-sort_index')
+        queryset = Product.objects.annotate(num_reviews=num_reviews).select_related('seller', 'fabricator').\
+            prefetch_related('categories').filter(active=True).order_by('-sort_index')
         filter_form = ProductFilterForm(self.request.GET)
         if filter_form.is_valid():
             queryset = self.filter_by_price(queryset=queryset, form=filter_form)
@@ -199,7 +199,7 @@ def get_initial_values(user) -> dict:
 
 def product_paginator(request, reviews, context):
     """ Производит пагинацию отзывов к товару. """
-    r_per_page = 3
+    r_per_page = 3  # Количество загружаемых отзывов.
     context['r_per_page'] = r_per_page
     paginator = Paginator(reviews, r_per_page)
     page = request.GET.get('page')

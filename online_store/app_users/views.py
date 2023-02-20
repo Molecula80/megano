@@ -7,6 +7,7 @@ from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.generic import DetailView, ListView, TemplateView
+from django.core.cache import cache
 
 from .forms import AuthForm, ProfileForm, RegisterForm, PaymentMethodForm
 from .models import User
@@ -24,6 +25,7 @@ class AccountDetailView(LoginRequiredMixin, TemplateView):
     template_name = 'app_users/account_detail.html'
 
     def get_context_data(self, **kwargs):
+        """ Метод для данных страницы аккаунта. """
         context = super().get_context_data(**kwargs)
         context['page_title'] = 'Личный кабинет'
         context['section'] = 'account'
@@ -60,7 +62,8 @@ def login_view(request):
             if user:
                 if user.is_active:
                     login(request, user)
-                    auth_cart = CartItem.objects.filter(user=user)
+                    # Загружаем корзину пользователя из базы данных и сливаем её с корзиной анонимного пользователя.
+                    auth_cart = CartItem.objects.select_related('user', 'product').filter(user=user)
                     cart.merge_carts(auth_cart)
                     cart.delete_cart_from_database(auth_cart)
                     logger.debug('Пользователь {} вошел в систему.'.format(email))
@@ -108,7 +111,7 @@ def profile_view(request):
                 # Сохраняем корзину в юазе данных.
                 cart = Cart(request)
                 cart.save_cart_in_database(user=user)
-                success = True
+                success = True  # Если профиль успешно изменен, выводим соответствующее сообщение.
                 logger.debug('Пользователь {email} изменил свой профиль.\nОбновленные данные:'
                              '\nФИО: {name}\nТелефон: {telephone}\nEmail: {email}'.format(email=user.email,
                                                                                           name=user.full_name,
@@ -163,7 +166,9 @@ class OrderDetailView(LoginRequiredMixin, DetailView):
             raise Http404
         context = super().get_context_data(**kwargs)
         context['page_title'] = 'Заказ №{}'.format(self.object.id)
-        context['items'] = self.object.items.select_related('order', 'product').all()
+        items_cache_key = 'items'
+        items = self.object.items.select_related('order', 'product').all()
+        context['items'] = cache.get_or_set(items_cache_key, items, 30)
         context['form'] = PaymentMethodForm()
         context['section'] = 'order_detail'
         return context

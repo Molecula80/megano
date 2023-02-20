@@ -10,12 +10,15 @@ logger = logging.getLogger(__name__)
 class PaymentService:
     """ Сервис оплаты заказа. """
     def __init__(self, order_id, card_num, order_cost):
+        """ Инициализация сервиса оплаты. """
         self.__order_id = order_id
         self.__card_num = card_num
         self.__order_cost = order_cost
 
     def pay_order(self):
+        """ Оплата товара. """
         order = Order.objects.select_related('user', 'delivery_method').get(id=self.__order_id)
+        # Если номер нечетный или заканчивается на ноль, вызываем ошибку оплаты.
         last_digits = ['2', '4', '6', '8']
         if (self.__card_num[8] not in last_digits) or ('x' in self.__card_num):
             order.paid = False
@@ -24,13 +27,14 @@ class PaymentService:
             raise PaymentError()
         order.paid = True
         order.save()
+        # Если заказ успешно оплачен, увеличиваем количество покупок для каждого товара.
         self.buy_products(order)
         logger.debug('Заказ №{order_id} успешно оплачен. Сумма заказа {order_cost}$.'.format(
             order_id=self.__order_id, order_cost=self.__order_cost))
 
     @classmethod
     def buy_products(cls, order):
-        """ Покупка товаров. """
+        """ Увеличение параметра "Количество покупок" для каждого купленного товара. """
         items = order.items.select_related('order', 'product').all()
         products = [item.product for item in items]
         for item in items:

@@ -8,10 +8,14 @@ var outputIds = ["name-output", "phone-output", "mail-output", "city-output", "a
 $("#step4-link").click(function(e) {
   e.preventDefault();
   var errors = false;
+  // Получаем способ оплаты заказа.
   var paymentVal = document.querySelector('input[name="payment_method"]:checked').value;
   document.getElementById("payment-output").innerHTML = paymentMethods[paymentVal - 1];
+  // Проходим циклом по значениям, введенным пользователем.
   for (var i = 0; i < 5; i++) {
+    // Элемент вывода значения.
     var outputEl = document.getElementById(outputIds[i]);
+    // Значение, введенное пользователем.
     var inputVal = document.getElementById(formIds[i]).value;
     if (inputVal === "") {
       outputEl.innerHTML = '<span style="color: red;">Обязательно для заполнения!</span>';
@@ -29,17 +33,20 @@ $("#step4-link").click(function(e) {
   } else {
     document.getElementById("order-error").innerHTML = '';
   }
+  // Значение способа доставки.
   var deliveryVal = document.querySelector('input[name="delivery_method"]:checked').value;
   $.post(
     '{% url "app_ordering:get_delivery_method" %}',
     {delivery_val: deliveryVal},
     function (response) {
+      // Присваиваем элементу вывода способа доставки, полученное значение.
       document.getElementById("delivery-output").innerHTML = response.delivery_method;
       if (response.delivery_price > 0) {
         document.getElementById("delivery-price").innerHTML = [response.delivery_price, "$"].join("");
       } else {
         document.getElementById("delivery-price").innerHTML = 'бесплатно';
       }
+      // Присваиваем элементу вывода стоимости доставки, полученное значение.
       document.getElementById("order-price").innerHTML = [response.order_price, "$"].join("");
     }
   );

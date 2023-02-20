@@ -53,6 +53,7 @@ class OrderCreateView(LoginRequiredMixin, View):
                 order.delivery_price = request.session.get('delivery_price')
                 order.total_cost = request.session.get('order_price')
                 order.save()
+                logger.debug('Заказ № {} успешно создан.'.format(order.id))
                 self.create_order_items(cart=cart, order=order)
                 cart.clear()
                 if order.payment_method == '1':
@@ -61,7 +62,6 @@ class OrderCreateView(LoginRequiredMixin, View):
         if request.is_ajax():
             return render(request, 'app_ordering/order_ajax.html', {'form': form, 'page_title': 'Оформление заказа',
                                                                     'cart': cart})
-        logger.debug('Форма содержит ошибки: {}'.format(form.errors))
         return render(request, 'app_ordering/order_create.html', {'form': form, 'page_title': 'Оформление заказа',
                                                                   'cart': cart})
 
@@ -80,11 +80,13 @@ class OrderCreateView(LoginRequiredMixin, View):
 def get_delivery_method(request):
     """ Получение способа доставки. """
     cart = Cart(request)
+    # Значение способа доставки равно 1 или 2.
     delivery_val = request.POST.get('delivery_val')
     try:
         delivery_method = DeliveryMethod.objects.all()[int(delivery_val) - 1]
         delivery_price = cart.get_delivery_price(d_method=delivery_method)
         order_price = cart.total_price + delivery_price
+        # Сохраняем цену доставки и сумарную цену заказа в сессии
         request.session['delivery_price'] = str(delivery_price)
         request.session['order_price'] = str(order_price)
         return JsonResponse({'delivery_method': delivery_method.title, 'delivery_price': delivery_price,
@@ -106,7 +108,7 @@ def register_view(request):
         # Если пользователь с указанным email уже существует, выводим всплывающее окно.
         if register_form.has_error(field='email', code='unique'):
             email_exists = True
-        auth_form = AuthForm(request.POST)
+        auth_form = AuthForm(request.POST)  # Всплывающее окно с формой для входа.
         context = {'register_form': register_form, 'auth_form': auth_form, 'page_title': 'Оформление заказа'}
         if register_form.is_valid():
             return register(request=request, next_page=next_page, form=register_form, template=template,
