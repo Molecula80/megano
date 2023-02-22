@@ -168,7 +168,7 @@ class PaymentView(LoginRequiredMixin, View):
     @classmethod
     def order_payment(cls, order, card_num):
         """ Оплата заказа. """
-        # job.delay(order_id=order.id, card_num=card_num, order_cost=order.total_cost)
+        job.delay(order_id=order.id, card_num=card_num, order_cost=order.total_cost)
         payment_service = PaymentService(order_id=order.id, card_num=card_num, order_cost=order.total_cost)
         try:
             payment_service.pay_order()
