@@ -11,15 +11,13 @@ from django.views.decorators.http import require_POST
 
 from .forms import OrderCreateForm, PaymentForm
 from .models import Order, OrderItem, DeliveryMethod
-from .tasks import job
-from .payment_service import PaymentService
-from .errors import PaymentError
 
 from app_users.forms import RegisterForm, AuthForm
 from common.functions import register
 from common.decorators import ajax_required
 from app_cart.cart import Cart
 from app_cart.models import CartItem
+from app_catalog.models import Product
 
 logger = logging.getLogger(__name__)
 
@@ -156,8 +154,7 @@ class PaymentView(LoginRequiredMixin, View):
         if form.is_valid():
             card_num = form.cleaned_data.get('card_num')
             logger.debug('Номер карты: {}'.format(card_num))
-            order = Order.objects.get(id=order_id)
-            self.order_payment(order=order, card_num=card_num)
+            self.pay_order(order_id=order_id, card_num=card_num)
             return HttpResponseRedirect(reverse('app_ordering:progress_payment', args=[order_id]))
         if request.is_ajax():
             return render(request, 'app_ordering/payment_ajax.html', {'page_title': 'Оплата', 'form': form,
@@ -165,20 +162,30 @@ class PaymentView(LoginRequiredMixin, View):
         return render(request, 'app_ordering/payment.html', {'page_title': 'Оплата', 'form': form,
                                                              'label': 'Номер карты', 'someone': someone})
 
-    @classmethod
-    def order_payment(cls, order, card_num):
-        """ Оплата заказа. """
-        job.delay(order_id=order.id, card_num=card_num, order_cost=order.total_cost)
-        payment_service = PaymentService(order_id=order.id, card_num=card_num, order_cost=order.total_cost)
-        try:
-            payment_service.pay_order()
-        except PaymentError:
-            return
+    def pay_order(self, order_id, card_num):
+        """ Оплата товара. """
+        order = Order.objects.select_related('user', 'delivery_method').get(id=order_id)
+        # Если номер нечетный или заканчивается на ноль, вызываем ошибку оплаты.
+        last_digits = ['2', '4', '6', '8']
+        if (card_num[8] not in last_digits) or ('x' in card_num):
+            order.paid = False
+            order.error_message = 'Ошибка оплаты. Номер карты должен быь четным и не оканчиваться на ноль.'
+        else:
+            order.paid = True
+        order.save()
+        # Если заказ успешно оплачен, увеличиваем количество покупок для каждого товара.
+        self.buy_products(order)
+        logger.debug('Заказ №{order_id} успешно оплачен. Сумма заказа {order_cost}$.'.format(
+            order_id=order_id, order_cost=order.total_cost))
 
     @classmethod
-    def get_payment_status(cls, order):
-        """ Получение статуса оплаты заказа. """
-        return order.paid
+    def buy_products(cls, order):
+        """ Увеличение параметра "Количество покупок" для каждого купленного товара. """
+        items = order.items.select_related('order', 'product').all()
+        products = [item.product for item in items]
+        for item in items:
+            item.product.num_purchases += item.quantity
+        Product.objects.bulk_update(products, fields=['num_purchases'])
 
 
 @login_required
