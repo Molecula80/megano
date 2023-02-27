@@ -9,15 +9,15 @@ from django.urls import reverse
 from django.views import View
 from django.views.decorators.http import require_POST
 
-from .forms import OrderCreateForm, PaymentForm
-from .models import Order, OrderItem, DeliveryMethod
-
-from app_users.forms import RegisterForm, AuthForm
-from common.functions import register
-from common.decorators import ajax_required
 from app_cart.cart import Cart
 from app_cart.models import CartItem
 from app_catalog.models import Product
+from app_users.forms import AuthForm, RegisterForm
+from common.decorators import ajax_required
+from common.functions import register
+
+from .forms import OrderCreateForm, PaymentForm
+from .models import DeliveryMethod, Order, OrderItem
 
 logger = logging.getLogger(__name__)
 

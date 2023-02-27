@@ -1,6 +1,7 @@
+from common.api import ModelDetailApi, ModelListApi
+
 from .models import User
 from .serializers import UserSerializer
-from common.api import ModelListApi, ModelDetailApi
 
 
 class UserListApi(ModelListApi):

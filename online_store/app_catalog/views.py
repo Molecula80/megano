@@ -1,17 +1,18 @@
 import logging
 
-from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404
-from django.views.generic import TemplateView, ListView
+from django.contrib.postgres.search import (SearchQuery, SearchRank,
+                                            SearchVector)
 from django.core.cache import cache
-from django.db.models import Min, Count, Q
-from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.db.models import Count, Min, Q
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, render
+from django.views.generic import ListView, TemplateView
 
-from .models import Category, Product
-from .forms import ReviewForm, ProductFilterForm, SearchProductForm
 from app_cart.forms import CartAddProductForm
 
+from .forms import ProductFilterForm, ReviewForm, SearchProductForm
+from .models import Category, Product
 
 logger = logging.getLogger(__name__)
 

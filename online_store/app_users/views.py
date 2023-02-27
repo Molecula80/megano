@@ -3,19 +3,19 @@ import logging
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect, Http404
+from django.core.cache import cache
+from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.generic import DetailView, ListView, TemplateView
-from django.core.cache import cache
 
-from .forms import AuthForm, ProfileForm, RegisterForm, PaymentMethodForm
-from .models import User
 from app_cart.cart import Cart
 from app_cart.models import CartItem
-from common.functions import register
 from app_ordering.models import Order
+from common.functions import register
 
+from .forms import AuthForm, PaymentMethodForm, ProfileForm, RegisterForm
+from .models import User
 
 logger = logging.getLogger(__name__)
 

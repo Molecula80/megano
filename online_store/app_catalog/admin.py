@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from .models import Category, Fabricator, Product, Seller, DescrPoint, AddInfoPoint, Review
+from .models import (AddInfoPoint, Category, DescrPoint, Fabricator, Product,
+                     Review, Seller)
 
 
 class CategoryInline(admin.TabularInline):

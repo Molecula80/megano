@@ -1,13 +1,14 @@
 from django.contrib.auth.mixins import PermissionRequiredMixin
-
 from rest_framework.generics import GenericAPIView
-from rest_framework.mixins import ListModelMixin, CreateModelMixin, RetrieveModelMixin, UpdateModelMixin, \
-    DestroyModelMixin
+from rest_framework.mixins import (CreateModelMixin, DestroyModelMixin,
+                                   ListModelMixin, RetrieveModelMixin,
+                                   UpdateModelMixin)
 
+from common.api import ModelDetailApi, ModelListApi
+
+from .filters import CartItemFilter
 from .models import CartItem
 from .serializers import CartItemSerializer
-from .filters import CartItemFilter
-from common.api import ModelListApi, ModelDetailApi
 
 
 class CartItemListApi(ModelListApi):

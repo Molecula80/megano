@@ -1,7 +1,8 @@
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from rest_framework.generics import GenericAPIView
-from rest_framework.mixins import ListModelMixin, CreateModelMixin, RetrieveModelMixin, UpdateModelMixin, \
-    DestroyModelMixin
+from rest_framework.mixins import (CreateModelMixin, DestroyModelMixin,
+                                   ListModelMixin, RetrieveModelMixin,
+                                   UpdateModelMixin)
 
 
 class ModelListApi(PermissionRequiredMixin, ListModelMixin, CreateModelMixin, GenericAPIView):

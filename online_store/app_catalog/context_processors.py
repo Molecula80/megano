@@ -1,5 +1,5 @@
-from .models import Category
 from .forms import SearchProductForm
+from .models import Category
 
 
 def categories(request) -> dict:

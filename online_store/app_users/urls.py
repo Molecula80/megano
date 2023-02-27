@@ -1,10 +1,12 @@
+from django.contrib.auth.views import (PasswordResetCompleteView,
+                                       PasswordResetConfirmView,
+                                       PasswordResetDoneView,
+                                       PasswordResetView)
 from django.urls import path
-from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView
-from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetCompleteView
 
-from .views import register_view, logout_view, login_view, AccountDetailView, profile_view, OrdersHistoryListView, \
-    OrderDetailView
-from .api import UserListApi, UserDetailApi
+from .api import UserDetailApi, UserListApi
+from .views import (AccountDetailView, OrderDetailView, OrdersHistoryListView,
+                    login_view, logout_view, profile_view, register_view)
 
 urlpatterns = [
     path('register/', register_view, name='register'),

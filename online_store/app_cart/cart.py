@@ -1,9 +1,11 @@
 from decimal import Decimal
 from typing import Iterable
+
 from django.conf import settings
 
 from app_catalog.models import Product
 from app_users.models import User
+
 from .models import CartItem
 
 

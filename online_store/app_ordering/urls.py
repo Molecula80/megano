@@ -1,8 +1,10 @@
 from django.urls import path
 
-from .views import OrderCreateView, register_view, PaymentView, progress_payment, get_delivery_method
-from .api import OrderListApi, OrderDetailApi, OrderItemListApi, OrderItemDetailApi, DeliveryMethodListApi, \
-    DeliveryMethodDetailApi
+from .api import (DeliveryMethodDetailApi, DeliveryMethodListApi,
+                  OrderDetailApi, OrderItemDetailApi, OrderItemListApi,
+                  OrderListApi)
+from .views import (OrderCreateView, PaymentView, get_delivery_method,
+                    progress_payment, register_view)
 
 app_name = 'app_ordering'
 

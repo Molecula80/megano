@@ -1,5 +1,6 @@
-from .models import Order, OrderItem, DeliveryMethod
 from rest_framework import serializers
+
+from .models import DeliveryMethod, Order, OrderItem
 
 
 class OrderSerializer(serializers.ModelSerializer):

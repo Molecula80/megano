@@ -1,5 +1,6 @@
 from django import forms
-from .models import Order, DeliveryMethod
+
+from .models import DeliveryMethod, Order
 
 
 class OrderCreateForm(forms.ModelForm):

@@ -1,7 +1,7 @@
 from django import forms
-from django.db.models import Min, Max
+from django.db.models import Max, Min
 
-from .models import Product, Seller, Fabricator, Review
+from .models import Fabricator, Product, Review, Seller
 
 
 class ReviewForm(forms.ModelForm):

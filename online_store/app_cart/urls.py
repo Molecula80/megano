@@ -1,7 +1,7 @@
 from django.urls import path
 
-from .views import cart_detail, cart_remove, cart_update, CartAdd
-from .api import CartItemListApi, CartItemDetailApi
+from .api import CartItemDetailApi, CartItemListApi
+from .views import CartAdd, cart_detail, cart_remove, cart_update
 
 app_name = 'app_cart'
 

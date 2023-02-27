@@ -1,8 +1,12 @@
-from .serializers import CategorySerializer, FabricatorSerializer, ProductSerializer, SellerSerializer, \
-    DescrPointSerializer, AddInfoPointSerializer, ReviewSerializer
+from common.api import ModelDetailApi, ModelListApi
+
 from .filters import CategoryFilter, ProductFilter
-from .models import Category, Fabricator, Product, Seller, DescrPoint, AddInfoPoint, Review
-from common.api import ModelListApi, ModelDetailApi
+from .models import (AddInfoPoint, Category, DescrPoint, Fabricator, Product,
+                     Review, Seller)
+from .serializers import (AddInfoPointSerializer, CategorySerializer,
+                          DescrPointSerializer, FabricatorSerializer,
+                          ProductSerializer, ReviewSerializer,
+                          SellerSerializer)
 
 
 class CategoryListApi(ModelListApi):

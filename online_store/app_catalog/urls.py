@@ -1,9 +1,11 @@
 from django.urls import path
 
+from .api import (AddInfoPointDetailApi, AddInfoPointListApi,
+                  CategoryDetailApi, CategoryListApi, DescrPointDetailApi,
+                  DescrPointListApi, FabricatorDetailApi, FabricatorListApi,
+                  ProductDetailApi, ProductListApi, ReviewDetailApi,
+                  ReviewListApi, SellerDetailApi, SellerListApi)
 from .views import IndexView, ProductListView, product_detail_view
-from .api import CategoryListApi, CategoryDetailApi, FabricatorListApi, FabricatorDetailApi, ProductListApi, \
-    ProductDetailApi, DescrPointListApi, DescrPointDetailApi, AddInfoPointListApi, AddInfoPointDetailApi, \
-    SellerListApi, SellerDetailApi, ReviewListApi, ReviewDetailApi
 
 app_name = 'app_catalog'
 

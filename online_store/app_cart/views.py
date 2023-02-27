@@ -1,6 +1,7 @@
 import logging
-from django.shortcuts import render, redirect, get_object_or_404
-from django.http import JsonResponse, Http404
+
+from django.http import Http404, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 from django.views.decorators.http import require_POST
 
@@ -9,7 +10,6 @@ from common.decorators import ajax_required
 
 from .cart import Cart
 from .forms import CartAddProductForm
-
 
 logger = logging.getLogger(__name__)
 

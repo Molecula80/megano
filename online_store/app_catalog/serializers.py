@@ -1,5 +1,7 @@
-from .models import Category, Fabricator, Product, Seller, DescrPoint, AddInfoPoint, Review
 from rest_framework import serializers
+
+from .models import (AddInfoPoint, Category, DescrPoint, Fabricator, Product,
+                     Review, Seller)
 
 
 class CategorySerializer(serializers.ModelSerializer):

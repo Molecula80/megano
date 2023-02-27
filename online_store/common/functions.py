@@ -7,7 +7,6 @@ from django.urls import reverse
 
 from app_users.models import User
 
-
 logger = logging.getLogger(__name__)
 
 
