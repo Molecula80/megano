@@ -1,12 +1,12 @@
 import logging
 
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.views import View
 from django.views.generic import DetailView, ListView, TemplateView
 
 from app_cart.cart import Cart
@@ -49,47 +49,52 @@ def register_view(request):
     return render(request, template, {'form': form, 'page_title': 'регистрация'})
 
 
-def login_view(request):
+class UserLoginView(View):
     """ Страница входа. """
-    error = str()
-    cart = Cart(request)
-    if request.method == 'POST':
+    def get(self, request):
+        error = str()
+        form = AuthForm()
+        return render(request, 'app_users/login.html', context={'form': form,
+                                                                'page_title': 'авторизация',
+                                                                'error': error})
+
+    def post(self, request):
+        error = str()
+        cart = Cart(request)
         form = AuthForm(request.POST)
         if form.is_valid():
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
             user = authenticate(username=email, password=password)
             if user:
-                if user.is_active:
-                    login(request, user)
-                    # Загружаем корзину пользователя из базы данных и сливаем её с корзиной анонимного пользователя.
-                    auth_cart = CartItem.objects.select_related('user', 'product').filter(user=user)
-                    cart.merge_carts(auth_cart)
-                    cart.delete_cart_from_database(auth_cart)
-                    logger.debug('Пользователь {} вошел в систему.'.format(email))
-                    return HttpResponseRedirect(reverse('app_catalog:index'))
-                else:
-                    error = 'Ошибка! Аккаунт пользователя неактивен.'
+                login(request, user)
+                # Загружаем корзину пользователя из базы данных и сливаем её с корзиной анонимного пользователя.
+                auth_cart = CartItem.objects.select_related('user', 'product').filter(user=user)
+                cart.merge_carts(auth_cart)
+                cart.delete_cart_from_database(auth_cart)
+                logger.debug('Пользователь {} вошел в систему.'.format(email))
+                return HttpResponseRedirect(reverse('app_catalog:index'))
             else:
                 error = 'Ошибка! Проверьте правильность написания email и пароля.'
-    else:
-        form = AuthForm()
-    context = {
-        'form': form,
-        'page_title': 'авторизация',
-        'error': error
-    }
-    return render(request, 'app_users/login.html', context=context)
+        return render(request, 'app_users/login.html', context={'form': form,
+                                                                'page_title': 'авторизация',
+                                                                'error': error})
 
 
-@login_required
-def profile_view(request):
+class ProfileView(LoginRequiredMixin, View):
     """ Страница изменения профиля пользователя. """
     page_title = 'профиль'
     section = 'profile'
     success = False
-    old_number = str(request.user.telephone)  # Старый номер телефона.
-    if request.method == 'POST':
+
+    def get(self, request):
+        form = ProfileForm(instance=request.user)
+        logger.debug('Пользователь {email} запросил страницу профиля.')
+        context = {'form': form, 'page_title': self.page_title, 'section': self.section, 'success': self.success}
+        return render(request, 'app_users/edit_profile.html', context)
+
+    def post(self, request):
+        old_number = str(request.user.telephone)  # Старый номер телефона.
         form = ProfileForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
             user = form.save(commit=False)
@@ -108,22 +113,13 @@ def profile_view(request):
                 user.telephone = telephone
                 user.set_password(form.cleaned_data['password1'])
                 user.save()
-                # Сохраняем корзину в юазе данных.
+                # Сохраняем корзину в базе данных.
                 cart = Cart(request)
                 cart.save_cart_in_database(user=user)
-                success = True  # Если профиль успешно изменен, выводим соответствующее сообщение.
-                logger.debug('Пользователь {email} изменил свой профиль.\nОбновленные данные:'
-                             '\nФИО: {name}\nТелефон: {telephone}\nEmail: {email}'.format(email=user.email,
-                                                                                          name=user.full_name,
-                                                                                          telephone=user.telephone))
-    else:
-        form = ProfileForm(instance=request.user)
-        logger.debug('Пользователь {email} запросил страницу профиля.\nДанные пользователя:'
-                     '\nФИО: {name}\nТелефон: {telephone}\nEmail: {email}'.format(email=request.user.email,
-                                                                                  name=request.user.full_name,
-                                                                                  telephone=request.user.telephone))
-    return render(request, 'app_users/edit_profile.html', {'form': form, 'page_title': page_title, 'section': section,
-                                                           'success': success})
+                self.success = True  # Если профиль успешно изменен, выводим соответствующее сообщение.
+                logger.debug('Пользователь {email} изменил свой профиль.')
+        context = {'form': form, 'page_title': self.page_title, 'section': self.section, 'success': self.success}
+        return render(request, 'app_users/edit_profile.html', context)
 
 
 def logout_view(request):

@@ -76,18 +76,18 @@ class ProductAdmin(admin.ModelAdmin):
                'mark_as_unlimited_edition']
     fieldsets = (
         ('Основные сведения', {
-            'fields': ('title', 'slug', 'description', 'price', 'image')
+            'fields': ('title', 'slug', 'description', 'price', 'image'),
         }),
         ('Производитель, продавец и категории', {
             'fields': ('fabricator', 'seller', 'categories'),
             'description': 'Сведения о производителе продавце и категориях',
-            'classes': ['collapse']
+            'classes': ['collapse'],
         }),
         ('Дополнительные сведения', {
             'fields': ('num_purchases', 'sort_index', 'added_at', 'active', 'in_stock', 'free_delivery',
                        'limited_edition'),
-            'classes': ['collapse']
-        })
+            'classes': ['collapse'],
+        }),
     )
 
     def mark_as_active(self, request, queryset) -> None:

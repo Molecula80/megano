@@ -17,7 +17,7 @@ class ModelListApi(PermissionRequiredMixin, ListModelMixin, CreateModelMixin, Ge
         """
         return self.list(request)
 
-    def post(self, request, format=None):
+    def post(self, request):
         """ Метод для создания новой модели. """
         return self.create(request)
 

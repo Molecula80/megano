@@ -1,12 +1,12 @@
 from django.http import HttpResponseBadRequest
 
 
-def ajax_required(f):
+def ajax_required(func):
     """ Декоратор позволяющий представлению принимать только AJAX-запросы. """
     def wrap(request, *args, **kwargs):
         if not request.is_ajax():
             return HttpResponseBadRequest()
-        return f(request, *args, **kwargs)
-    wrap.__doc__ = f.__doc__
-    wrap.__name__ = f.__name__
+        return func(request, *args, **kwargs)
+    wrap.__doc__ = func.__doc__
+    wrap.__name__ = func.__name__
     return wrap

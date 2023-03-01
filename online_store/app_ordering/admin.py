@@ -19,16 +19,16 @@ class OrderAdmin(admin.ModelAdmin):
     actions = ['mark_as_paid', 'mark_as_unpaid', 'mark_as_pending_payment']
     fieldsets = (
         ('Параметры пользователя', {
-            'fields': ('user', 'full_name', 'telephone', 'email')
+            'fields': ('user', 'full_name', 'telephone', 'email'),
         }),
         ('Параметры доставки и оплаты', {
             'fields': ('delivery_method', 'city', 'address', 'payment_method', 'comment'),
-            'classes': ['collapse']
+            'classes': ['collapse'],
         }),
         ('Статус заказа', {
             'fields': ('delivery_price', 'total_cost', 'paid', 'error_message'),
-            'classes': ['collapse']
-        })
+            'classes': ['collapse'],
+        }),
     )
 
     def mark_as_paid(self, request, queryset) -> None:

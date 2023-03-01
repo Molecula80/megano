@@ -6,14 +6,14 @@ from django.urls import path
 
 from .api import UserDetailApi, UserListApi
 from .views import (AccountDetailView, OrderDetailView, OrdersHistoryListView,
-                    login_view, logout_view, profile_view, register_view)
+                    ProfileView, UserLoginView, logout_view, register_view)
 
 urlpatterns = [
     path('register/', register_view, name='register'),
-    path('login/', login_view, name='login'),
+    path('login/', UserLoginView.as_view(), name='login'),
     path('logout/', logout_view, name='logout'),
     path('', AccountDetailView.as_view(), name='account_detail'),
-    path('profile/', profile_view, name='profile'),
+    path('profile/', ProfileView.as_view(), name='profile'),
     path('orders_history/', OrdersHistoryListView.as_view(), name='orders_history'),
     path('orders_history/<int:pk>/', OrderDetailView.as_view(), name='order_detail'),
     # Обработчики восстановления пароля.

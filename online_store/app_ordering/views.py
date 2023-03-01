@@ -84,12 +84,12 @@ def get_delivery_method(request):
         delivery_method = DeliveryMethod.objects.all()[int(delivery_val) - 1]
         delivery_price = cart.get_delivery_price(d_method=delivery_method)
         order_price = cart.total_price + delivery_price
-        # Сохраняем цену доставки и сумарную цену заказа в сессии
+        # Сохраняем цену доставки и суммарную цену заказа в сессии
         request.session['delivery_price'] = str(delivery_price)
         request.session['order_price'] = str(order_price)
         return JsonResponse({'delivery_method': delivery_method.title, 'delivery_price': delivery_price,
                              'order_price': order_price})
-    except:
+    except ValueError:
         pass
     return JsonResponse({'status': 'ok'})
 

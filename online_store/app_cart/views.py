@@ -71,6 +71,8 @@ def cart_update(request):
         quantity = int(quantity)
         cart.update(product_id=product_id, quantity=quantity)
         return JsonResponse({'status': 'ok'})
-    except:
+    except ValueError:
+        pass
+    except TypeError:
         pass
     return JsonResponse({'status': 'ok'})
