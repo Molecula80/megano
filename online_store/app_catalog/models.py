@@ -17,8 +17,7 @@ class Category(models.Model):
     title = models.CharField(max_length=255, verbose_name='название')
     slug = models.SlugField(max_length=255, unique=True)
     sort_index = models.PositiveIntegerField(verbose_name='индекс сортировки')
-    image = models.ImageField(upload_to='images/categories/', blank=True, null=True, verbose_name='изображение')
-    icon = models.FileField(upload_to='images/icons/', blank=True, null=True, verbose_name='иконка')
+    icon = models.ImageField(upload_to='images/', blank=True, null=True, verbose_name='иконка')
     active = models.BooleanField(default=False, verbose_name='активно')
 
     class Meta:
